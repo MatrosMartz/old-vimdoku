@@ -1,6 +1,4 @@
-import { describe, test, expect } from 'vitest'
-
-import { getSectors } from '../test/utils'
+import { getSectors } from '../tests/utils'
 
 import { createSudoku } from './create-sudoku'
 
