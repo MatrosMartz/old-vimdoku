@@ -6,5 +6,6 @@ export default defineConfig({
 	test: {
 		include: defaultInclude,
 		environment: 'happy-dom',
+		globals: true,
 	},
 })
