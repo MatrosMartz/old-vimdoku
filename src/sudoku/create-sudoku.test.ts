@@ -1,23 +1,8 @@
 import { describe, test, expect } from 'vitest'
 
+import { getSectors } from '../test/utils'
+
 import { createSudoku } from './create-sudoku'
-
-const CreateEmptyArray = (length: number) => Array.from({ length }, () => new Set<number>())
-
-function getSectors(sudoku: number[][]) {
-	const quadrants = CreateEmptyArray(9)
-	const columns = CreateEmptyArray(9)
-	const rows = CreateEmptyArray(9)
-	for (let column = 0; column < 9; column++) {
-		for (let row = 0; row < 9; row++) {
-			const quadrant = Math.trunc(row / 3) + Math.trunc(column / 3) * 3
-			columns[column].add(sudoku[column][row])
-			rows[row].add(sudoku[column][row])
-			quadrants[quadrant].add(sudoku[column][row])
-		}
-	}
-	return { quadrants, columns, rows }
-}
 
 describe('Create Sudoku', () => {
 	test.concurrent('Should be not null', () => {
