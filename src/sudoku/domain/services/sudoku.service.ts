@@ -1,10 +1,12 @@
+import type { SudokuService } from '../models'
+
 const getColumn = (x: number) => 3 * (x + 1 + Math.trunc(x / 2))
 const getRow = (x: number) => x + 1 + Math.trunc(x / 2)
 
 const randomColumn = () => getColumn(Math.trunc(Math.random() * 6))
 const randomRow = () => getRow(Math.trunc(Math.random() * 6))
 
-export function createSudoku() {
+function createSudoku() {
 	const columnMultiplier = randomColumn()
 	const rowMultiplier = randomRow()
 
@@ -28,3 +30,5 @@ export function createSudoku() {
 
 	return sudoku
 }
+
+export const sudokuService: SudokuService = { createSudoku }

@@ -1,13 +1,13 @@
-import { getSectors } from '../tests/utils'
+import { getSectors } from '~/tests/utils'
 
-import { createSudoku } from './create-sudoku'
+import { sudokuService } from './sudoku.service'
 
 describe('Create Sudoku', () => {
 	test.concurrent('Should be not null', () => {
-		expect(createSudoku).not.toBeUndefined()
+		expect(sudokuService.createSudoku).not.toBeUndefined()
 	})
 
-	const sudoku = createSudoku()
+	const sudoku = sudokuService.createSudoku()
 
 	test.concurrent('Should return array', () => {
 		expect(Array.isArray(sudoku)).toBe(true)
