@@ -3,11 +3,7 @@ import { getSectors } from '~/tests/utils'
 import { sudokuService } from './sudoku.service'
 
 describe('Create Sudoku', () => {
-	test.concurrent('Should be not null', () => {
-		expect(sudokuService.createSudoku).not.toBeUndefined()
-	})
-
-	const sudoku = sudokuService.createSudoku()
+	const sudoku = sudokuService.create()
 
 	test.concurrent('Should return array', () => {
 		expect(Array.isArray(sudoku)).toBe(true)

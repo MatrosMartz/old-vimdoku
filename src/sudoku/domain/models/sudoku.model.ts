@@ -1,3 +1,3 @@
 export interface SudokuService {
-	createSudoku: () => number[][]
+	create: () => number[][]
 }
