@@ -3,6 +3,12 @@ export interface TimerSchema {
 	seconds: number
 }
 
-export interface TimerService {
-	createTimer: () => TimerSchema
+type DestroyTimer = () => void
+
+export interface TimerServiceSchema {
+	create: () => TimerSchema
+	increment: (timer: TimerSchema) => TimerSchema
+	pause: (timer: TimerSchema) => TimerSchema
+	reset: () => TimerSchema
+	restart: (callback: () => void) => DestroyTimer
 }

@@ -1,16 +1,25 @@
-import { writable } from 'svelte/store'
+import { derived, writable } from 'svelte/store'
 
 import { timerService } from '~/timer/domain/services'
 
 function createTimerStore() {
-	const { subscribe, update } = writable(timerService.createTimer())
+	const { subscribe, update, set } = writable(timerService.create())
 
-	const pause = () => update(({ seconds }) => ({ isPause: true, seconds }))
-	const resume = () => update(({ seconds }) => ({ isPause: false, seconds }))
-	const increment = () => update(({ isPause, seconds }) => ({ isPause, seconds: seconds + 1 }))
-	const reset = () => update(({ isPause }) => ({ isPause, seconds: 0 }))
+	const increment = () => update(timerService.increment)
+	const pause = () => update(timerService.pause)
+	const reset = () => set(timerService.reset())
+	const restart = () => timerService.restart(increment)
 
-	return { subscribe, pause, resume, reset, increment }
+	return { subscribe, pause, reset, restart }
 }
 
 export const timerStore = createTimerStore()
+
+const format = (str: string) => (str.length < 2 ? '0' + str : str)
+
+export const formattedTimer = derived(timerStore, ({ seconds: time }) => {
+	const seconds = String(time % 60)
+	const minutes = String(Math.trunc(time / 60) % 60)
+	const hours = String(Math.trunc(time / 3600))
+	return `${time >= 3600 ? format(hours) + ':' : ''}${format(minutes)}:${format(seconds)}`
+})

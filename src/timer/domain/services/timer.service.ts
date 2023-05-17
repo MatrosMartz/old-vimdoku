@@ -1,5 +1,23 @@
-import type { TimerSchema, TimerService } from '~/timer/domain/models'
+import type { TimerSchema, TimerServiceSchema } from '~/timer/domain/models'
 
-const createTimer = (): TimerSchema => ({ isPause: true, seconds: 0 })
+class TimerService implements TimerServiceSchema {
+	#interval: number | string | NodeJS.Timeout
+	#initialTimer: TimerSchema = { isPause: true, seconds: 0 }
 
-export const timerService: TimerService = { createTimer }
+	create = () => ({ ...this.#initialTimer })
+	increment = ({ seconds }: TimerSchema) => ({ isPause: false, seconds: seconds + 1 })
+	pause = (timer: TimerSchema) => {
+		if (this.#interval) clearInterval(this.#interval)
+		return { ...timer, isPause: true }
+	}
+	reset = () => {
+		if (this.#interval) clearInterval(this.#interval)
+		return { ...this.#initialTimer }
+	}
+	restart = (callback: () => void) => {
+		this.#interval = setInterval(callback, 1000)
+		return () => clearInterval(this.#interval)
+	}
+}
+
+export const timerService = new TimerService()
