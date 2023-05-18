@@ -3,14 +3,13 @@ import { derived, writable } from 'svelte/store'
 import { timerService } from '~/timer/domain/services'
 
 function createTimerStore() {
-	const { subscribe, update, set } = writable(timerService.create())
+	const { subscribe, update } = writable(timerService.create())
 
-	const increment = () => update(timerService.increment)
-	const pause = () => update(timerService.pause)
-	const reset = () => set(timerService.reset())
-	const restart = () => timerService.restart(increment)
+	const stop = () => update(timerService.stop)
+	const reset = () => update(timerService.reset)
+	const start = () => timerService.start(update)
 
-	return { subscribe, pause, reset, restart }
+	return { subscribe, stop, reset, start }
 }
 
 export const timerStore = createTimerStore()
