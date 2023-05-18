@@ -10,8 +10,8 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
     "format": "prettier --plugin-search-dir . --write .",
-    "test": "vitest run src",
-    "test:watch": "vitest src"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@skeletonlabs/skeleton": "^1.5.1",
