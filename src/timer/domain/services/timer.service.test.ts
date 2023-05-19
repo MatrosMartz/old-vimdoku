@@ -62,6 +62,6 @@ describe('Timer Service Format', () => {
 		expect(timerService.formatter(630)).toBe('00:10:30')
 	})
 	test.concurrent('If the hours are 1 it should be 01:00:00', () => {
-		expect(timerService.format(3_600)).toBe('01:00:00')
+		expect(timerService.formatter(3_600)).toBe('01:00:00')
 	})
 })
