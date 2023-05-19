@@ -1,11 +1,6 @@
-/**
- * @vitest-environment node
- */
-
 import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from 'vitest'
 import { get } from 'svelte/store'
 
-import type { TimerSchema } from '~/domain/models'
 import { hours, minutes, seconds } from '~/tests/utils'
 
 import { timerStore, formattedTimer } from './timer.store'
