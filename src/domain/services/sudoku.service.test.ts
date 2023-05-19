@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest'
+
 import { getSectors } from '~/tests/utils'
 
 import { sudokuService } from './sudoku.service'

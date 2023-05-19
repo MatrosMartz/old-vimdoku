@@ -1,6 +1,6 @@
 import { derived, writable } from 'svelte/store'
 
-import { timerService } from '~/timer/domain/services'
+import { timerService } from '~/domain/services'
 
 function createTimerStore() {
 	const { subscribe, update } = writable(timerService.create())

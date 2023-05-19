@@ -1,7 +1,5 @@
 <script lang="ts">
-	import Timer from '~/timer/infrastructure/ui/timer.svelte'
-
-	import { timerStore } from '~/timer/infrastructure/stores'
+	import Timer from './timer.svelte'
 </script>
 
 <div>

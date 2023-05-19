@@ -1,1 +1,1 @@
-export * from './sudoku.model'
+export * from '../sudoku.model'

@@ -1,4 +1,4 @@
-import type { TimerSchema, TimerServiceSchema, Updater } from '~/timer/domain/models'
+import type { TimerSchema, TimerServiceSchema, Updater } from '~/domain/models'
 
 const format = (n: string) => (n.length > 1 ? n : '0' + n)
 

@@ -1,4 +1,4 @@
-import type { TimerSchema, TimerServiceSchema } from '~/timer/domain/models'
+import type { TimerSchema, TimerServiceSchema } from '~/domain/models'
 
 export class TimerMock {
 	#timer: TimerSchema
