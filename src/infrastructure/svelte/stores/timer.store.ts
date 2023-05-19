@@ -14,11 +14,4 @@ function createTimerStore() {
 
 export const timerStore = createTimerStore()
 
-const format = (str: string) => (str.length < 2 ? '0' + str : str)
-
-export const formattedTimer = derived(timerStore, ({ seconds: time }) => {
-	const seconds = String(time % 60)
-	const minutes = String(Math.trunc(time / 60) % 60)
-	const hours = String(Math.trunc(time / 3600))
-	return `${time >= 3600 ? format(hours) + ':' : ''}${format(minutes)}:${format(seconds)}`
-})
+export const formattedTimer = derived(timerStore, ({ seconds }) => timerService.formatter(seconds))
