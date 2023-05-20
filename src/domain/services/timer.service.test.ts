@@ -4,7 +4,7 @@ import { seconds } from '~/tests/utils'
 
 import type { TimerSchema } from '../models'
 import { timerService } from './timer.service'
-import { TimerMock } from '~/infrastructure/mocks/stores'
+import { TimerMock } from '$infra/mocks/stores'
 
 describe('Time Service', () => {
 	const timer = new TimerMock(timerService)
