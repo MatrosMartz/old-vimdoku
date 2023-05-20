@@ -1,1 +1,5 @@
-<span class="timer">00:00</span>
+<script lang="ts">
+	import { formattedTimer } from '$infra/svelte/stores'
+</script>
+
+<span class="timer" data-testid="timer">{$formattedTimer}</span>
