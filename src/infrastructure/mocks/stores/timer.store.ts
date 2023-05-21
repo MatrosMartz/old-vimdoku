@@ -5,7 +5,7 @@ export class TimerMock {
 	#timerService: TimerServiceSchema
 	constructor(timerService: TimerServiceSchema) {
 		this.#timerService = timerService
-		this.#timer = this.#timerService.create()
+		this.#timer = this.#timerService.initialTimer()
 	}
 
 	#update = (callback: (timer: TimerSchema) => TimerSchema) => {
