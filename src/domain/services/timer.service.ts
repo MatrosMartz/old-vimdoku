@@ -5,7 +5,7 @@ const format = (n: string) => (n.length > 1 ? n : '0' + n)
 class TimerService implements TimerServiceSchema {
 	#interval: number | string | NodeJS.Timeout
 
-	create = () => ({ isPause: true, seconds: 0 })
+	initialTimer = () => ({ isPause: true, seconds: 0 })
 	stop = (timer: TimerSchema) => {
 		if (this.#interval) clearInterval(this.#interval)
 		return { ...timer, isPause: true }
