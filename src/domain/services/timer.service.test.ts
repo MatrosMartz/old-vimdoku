@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { seconds } from '~/tests/utils'
 
@@ -12,10 +12,12 @@ describe('Time Service', () => {
 	beforeAll(() => {
 		vi.useFakeTimers()
 	})
+	beforeEach(() => {
+		timer = new TimerMock(new TimerService())
+	})
 	afterEach(() => {
 		timer.stop()
 		timer.reset()
-		timer = new TimerMock(new TimerService())
 	})
 	afterAll(() => {
 		vi.useRealTimers
