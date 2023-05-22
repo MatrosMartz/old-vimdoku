@@ -1,3 +1,3 @@
-export interface SudokuService {
+export interface SudokuModel {
 	create: () => number[][]
 }

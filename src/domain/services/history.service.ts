@@ -1,6 +1,6 @@
-import type { HistoryData, HistoryServiceSchema } from '../models'
+import type { HistoryData, HistoryModel } from '../models'
 
-export class HistoryService implements HistoryServiceSchema {
+export class HistoryService implements HistoryModel {
 	#history: string[] = []
 	#AutocompleteHistory = this.#history
 	#index: number | null = null

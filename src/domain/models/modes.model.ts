@@ -7,4 +7,4 @@ export const enum Modes {
 
 type KeysModes = `set${keyof typeof Modes}`
 
-export interface ModesServiceSchema extends Record<KeysModes, () => Modes> {}
+export interface ModesModel extends Record<KeysModes, () => Modes> {}

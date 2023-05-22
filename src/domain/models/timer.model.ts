@@ -5,7 +5,7 @@ export interface TimerSchema {
 
 export type Updater = (timer: TimerSchema) => TimerSchema
 
-export interface TimerServiceSchema {
+export interface TimerModel {
 	initialTimer: () => TimerSchema
 	stop: (timer: TimerSchema) => TimerSchema
 	reset: (timer: TimerSchema) => TimerSchema

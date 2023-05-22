@@ -3,7 +3,7 @@ export interface HistoryData {
 	update: (history: string[]) => void
 }
 
-export interface HistoryServiceSchema {
+export interface HistoryModel {
 	getAutocompleteHistory: () => string[]
 	getCurrent: () => string | null
 	getHistory: () => string[]
