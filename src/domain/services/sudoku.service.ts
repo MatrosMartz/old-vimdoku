@@ -1,4 +1,4 @@
-import type { SudokuService } from '../models'
+import type { SudokuModel } from '../models'
 
 const getColumn = (x: number) => 3 * (x + 1 + Math.trunc(x / 2))
 const getRow = (x: number) => x + 1 + Math.trunc(x / 2)
@@ -31,4 +31,4 @@ function create() {
 	return sudoku
 }
 
-export const sudokuService: SudokuService = { create }
+export const sudokuService: SudokuModel = { create }
