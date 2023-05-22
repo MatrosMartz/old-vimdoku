@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from 'vitest'
 
-import { historyService } from './history.service'
+import { HistoryService } from './history.service'
 
 import type { HistoryData } from '../models'
 
@@ -20,8 +20,9 @@ const initialHistoryData: HistoryData = {
 }
 
 describe('History Service', () => {
+	let historyService: HistoryService
 	beforeEach(() => {
-		historyService.setHistory(initialHistoryData)
+		historyService = new HistoryService(initialHistoryData)
 	})
 	test.concurrent('The current command should be are ""', () => {
 		expect(historyService.getCurrent()).toBe('')

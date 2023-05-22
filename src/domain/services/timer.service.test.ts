@@ -3,11 +3,11 @@ import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from 'vite
 import { seconds } from '~/tests/utils'
 
 import type { TimerSchema } from '../models'
-import { timerService } from './timer.service'
+import { TimerService } from './timer.service'
 import { TimerMock } from '$infra/mocks/stores'
 
 describe('Time Service', () => {
-	const timer = new TimerMock(timerService)
+	let timer: TimerMock
 
 	beforeAll(() => {
 		vi.useFakeTimers()
@@ -15,6 +15,7 @@ describe('Time Service', () => {
 	afterEach(() => {
 		timer.stop()
 		timer.reset()
+		timer = new TimerMock(new TimerService())
 	})
 	afterAll(() => {
 		vi.useRealTimers
@@ -50,18 +51,18 @@ describe('Time Service', () => {
 
 describe('Timer Service Format', () => {
 	test.concurrent('If the seconds are 5 it should be 00:00:05', () => {
-		expect(timerService.formatter(5)).toBe('00:00:05')
+		expect(TimerService.formatter(5)).toBe('00:00:05')
 	})
 	test.concurrent('If the seconds are 10 it should be 00:00:10', () => {
-		expect(timerService.formatter(10)).toBe('00:00:10')
+		expect(TimerService.formatter(10)).toBe('00:00:10')
 	})
 	test.concurrent('If the minutes are 1 it should be 00:01:00', () => {
-		expect(timerService.formatter(60)).toBe('00:01:00')
+		expect(TimerService.formatter(60)).toBe('00:01:00')
 	})
 	test.concurrent('If the minutes are 10 and seconds 30 it should be 00:10:30', () => {
-		expect(timerService.formatter(630)).toBe('00:10:30')
+		expect(TimerService.formatter(630)).toBe('00:10:30')
 	})
 	test.concurrent('If the hours are 1 it should be 01:00:00', () => {
-		expect(timerService.formatter(3_600)).toBe('01:00:00')
+		expect(TimerService.formatter(3_600)).toBe('01:00:00')
 	})
 })

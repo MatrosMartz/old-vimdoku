@@ -9,7 +9,6 @@ export interface HistoryServiceSchema {
 	getHistory: () => string[]
 	push: (cmd: string) => null
 	redo: () => void
-	setHistory: (store?: HistoryData) => void
 	setAutocomplete: (input?: string) => void
 	undo: () => void
 }

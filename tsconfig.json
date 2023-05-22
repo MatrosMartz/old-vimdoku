@@ -17,7 +17,8 @@
 		"paths": {
 			"~/*": ["./src/*"],
 			"$infra/*": ["./src/infrastructure/*"]
-		}
+		},
+		"strict": true
 	},
 	"include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
 	"references": [{ "path": "./tsconfig.node.json" }]

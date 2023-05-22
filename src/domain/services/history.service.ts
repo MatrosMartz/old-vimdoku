@@ -1,13 +1,22 @@
 import type { HistoryData, HistoryServiceSchema } from '../models'
 
-class HistoryService implements HistoryServiceSchema {
+export class HistoryService implements HistoryServiceSchema {
 	#history: string[] = []
 	#AutocompleteHistory = this.#history
-	#index: number = null
-	#updateData: (history: string[]) => void = null
+	#index: number | null = null
+	#updateData: ((history: string[]) => void) | null = null
+
+	constructor(from?: HistoryData) {
+		if (from) {
+			this.#history = from.getActual()
+			this.#updateData = from.update
+		}
+		this.setAutocomplete()
+		this.#updateData = null
+	}
 
 	getCurrent = () => {
-		return this.#AutocompleteHistory[this.#index] ?? ''
+		return this.#AutocompleteHistory[this.#index ?? Infinity] ?? ''
 	}
 	getHistory = () => this.#history
 	getAutocompleteHistory = () => this.#AutocompleteHistory
@@ -21,21 +30,13 @@ class HistoryService implements HistoryServiceSchema {
 	}
 
 	redo = () => {
-		if (this.#index < this.#AutocompleteHistory.length - 1) this.#index += 1
+		if (this.#index != null && this.#index < this.#AutocompleteHistory.length - 1) this.#index += 1
 	}
 	undo = () => {
-		if (this.#index > 0) this.#index -= 1
+		if (this.#index !== null && this.#index > 0) this.#index -= 1
 		else this.#index = 0
 	}
 
-	setHistory = (from?: HistoryData) => {
-		if (from) {
-			this.#history = from.getActual()
-			this.#updateData = from.update
-		}
-		this.setAutocomplete()
-		this.#updateData = null
-	}
 	setAutocomplete = (input?: string) => {
 		this.#AutocompleteHistory = input
 			? this.#history.filter(cmd => cmd.startsWith(input))
@@ -43,5 +44,3 @@ class HistoryService implements HistoryServiceSchema {
 		this.#index = this.#AutocompleteHistory.length
 	}
 }
-
-export const historyService = new HistoryService()

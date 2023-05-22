@@ -2,8 +2,8 @@ import type { TimerSchema, TimerServiceSchema, Updater } from '~/domain/models'
 
 const format = (n: string) => (n.length > 1 ? n : '0' + n)
 
-class TimerService implements TimerServiceSchema {
-	#interval: number | string | NodeJS.Timeout
+export class TimerService implements TimerServiceSchema {
+	#interval: number | string | NodeJS.Timeout = 0
 
 	initialTimer = () => ({ isPause: true, seconds: 0 })
 	stop = (timer: TimerSchema) => {
@@ -17,7 +17,7 @@ class TimerService implements TimerServiceSchema {
 		}, 1000)
 	}
 
-	formatter = (time: number) => {
+	static formatter = (time: number) => {
 		const seconds = format(String(time % 60))
 		const minutes = format(String(Math.trunc((time % 3_600) / 60)))
 		const hours = format(String(Math.trunc(time / 3_600)))
@@ -25,5 +25,3 @@ class TimerService implements TimerServiceSchema {
 		return `${hours}:${minutes}:${seconds}`
 	}
 }
-
-export const timerService = new TimerService()
