@@ -5,7 +5,17 @@ import { historyService } from './history.service'
 import type { HistoryData } from '../models'
 
 const initialHistoryData: HistoryData = {
-	getActual: () => ['help', 'start', 'set nu', 'pause', 'quit', 'help set'],
+	getActual: () => [
+		'help',
+		'help :start',
+		'start',
+		"help 'nu'",
+		'set nu',
+		"help 'rnu'",
+		'pause',
+		'quit',
+		'help :set',
+	],
 	update: () => {},
 }
 
@@ -16,15 +26,15 @@ describe('History Service', () => {
 	test.concurrent('The current command should be are ""', () => {
 		expect(historyService.getCurrent()).toBe('')
 	})
-	test.concurrent('The command "help start" should be added at the end', () => {
-		historyService.push('help start')
+	test.concurrent('The command "help :start" should be added at the end', () => {
+		historyService.push('help :start')
 
-		expect(historyService.getHistory().at(-1)).toBe('help start')
+		expect(historyService.getHistory().at(-1)).toBe('help :start')
 	})
-	test.concurrent('The current command after undo Should be "se nu"', () => {
+	test.concurrent('The current command after undo Should be "help :set"', () => {
 		historyService.undo()
 
-		expect(historyService.getCurrent()).toBe('help set')
+		expect(historyService.getCurrent()).toBe('help :set')
 	})
 	test.concurrent('The current command after undo two Should be "se nu"', () => {
 		historyService.undo()
@@ -32,13 +42,13 @@ describe('History Service', () => {
 
 		expect(historyService.getCurrent()).toBe('quit')
 	})
-	test.concurrent('The current command after undo four times Should be "se nu"', () => {
+	test.concurrent('The current command after undo four times Should be "help \'rnu\'"', () => {
 		historyService.undo()
 		historyService.undo()
 		historyService.undo()
 		historyService.undo()
 
-		expect(historyService.getCurrent()).toBe('set nu')
+		expect(historyService.getCurrent()).toBe("help 'rnu'")
 	})
 	test.concurrent('The current command after redo Should be ""', () => {
 		historyService.redo()
@@ -70,4 +80,25 @@ describe('History Service', () => {
 			expect(historyService.getCurrent()).toBe('quit')
 		}
 	)
+	test.concurrent(
+		'The autocomplete history should contains only the history commands start with help',
+		() => {
+			historyService.setAutocomplete('help')
+
+			expect(historyService.getAutocompleteHistory()).toEqual([
+				'help',
+				'help :start',
+				"help 'nu'",
+				"help 'rnu'",
+				'help :set',
+			])
+		}
+	)
+	test.concurrent('', () => {
+		historyService.setAutocomplete('help')
+		historyService.undo()
+		historyService.undo()
+
+		expect(historyService.getCurrent()).toBe("help 'rnu'")
+	})
 })

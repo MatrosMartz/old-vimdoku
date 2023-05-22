@@ -4,11 +4,12 @@ export interface HistoryData {
 }
 
 export interface HistoryServiceSchema {
+	getAutocompleteHistory: () => string[]
 	getCurrent: () => string | null
 	getHistory: () => string[]
-	initialHistory: () => string[]
 	push: (cmd: string) => null
 	redo: () => void
 	setHistory: (store?: HistoryData) => void
+	setAutocomplete: (input?: string) => void
 	undo: () => void
 }
