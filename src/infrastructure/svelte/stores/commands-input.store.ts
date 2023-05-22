@@ -1,3 +1,3 @@
-import { readable } from 'svelte/store'
+import { writable } from 'svelte/store'
 
-export const cmdInputStore = readable<HTMLInputElement | null>(null)
+export const cmdInputStore = writable<HTMLInputElement | null>(null)
