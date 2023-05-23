@@ -23,8 +23,15 @@ export interface BoxSchema {
 	value: number
 }
 
+export interface Position {
+	column: number
+	row: number
+}
+
 export interface SudokuModel {
-	getBoard: () => BoxSchema[][]
-	moveSelected: (pos: { column: number; row: number }) => void
-	writeNumber: (pos: { column: number; row: number }, value: number) => void
+	getBoard: () => readonly BoxSchema[][]
+	getBox: (pos: Position) => Readonly<BoxSchema>
+	getSudokuValue: (pos: Position) => number
+	moveSelected: (pos: Position) => void
+	writeNumber: (value: number) => void
 }

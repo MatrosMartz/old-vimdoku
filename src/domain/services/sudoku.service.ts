@@ -1,4 +1,4 @@
-import { BoxStates, type BoxSchema, type SudokuModel, Difficulties } from '../models'
+import { BoxStates, type BoxSchema, type SudokuModel, Difficulties, type Position } from '../models'
 
 interface GetBoxValueArgs {
 	column: number
@@ -16,7 +16,7 @@ function getBoxValue({ column, columnMultiplier, row, rowMultiplier }: GetBoxVal
 function createArray<T>(length: number, mapFn: (index: number) => T) {
 	return Array.from({ length }, (_, index) => mapFn(index))
 }
-function sortSudoku(sudoku: number[][]): readonly number[][] {
+function sortSudoku(sudoku: number[][]) {
 	const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 	const iterations = Math.trunc(Math.random() * 7) + 3
 
@@ -39,9 +39,8 @@ function getSimpleSudoku() {
 
 const probabilityToBeInitial = (difficulty: Difficulties) => !Math.trunc(Math.random() * difficulty)
 
-export const VOID_BOX_VALUE = 0
-
 export class SudokuService implements SudokuModel {
+	static VOID_BOX_VALUE = 0
 	static getNewSudoku = () => sortSudoku(getSimpleSudoku())
 	static getSectors(sudoku: number[][] | readonly number[][]) {
 		const quadrants = createArray(9, () => new Set<number>())
@@ -62,7 +61,7 @@ export class SudokuService implements SudokuModel {
 			columns.every(box => [BoxStates.Initial, BoxStates.Correct].includes(box.state))
 		)
 	}
-	static getFirstVoidBox(board: BoxSchema[][]) {
+	static getFirstVoidBox(board: BoxSchema[][] | readonly BoxSchema[][]) {
 		for (let row = 0; row < board.length; row++) {
 			for (let column = 0; column < board[row].length; column++) {
 				if (board[row][column].state === BoxStates.Void) return { column, row }
@@ -94,29 +93,33 @@ export class SudokuService implements SudokuModel {
 					notes: [],
 					selected: false,
 					state: isInitial ? BoxStates.Initial : BoxStates.Void,
-					value: isInitial ? value : VOID_BOX_VALUE,
+					value: isInitial ? value : SudokuService.VOID_BOX_VALUE,
 				}
 			})
 		)
-	#mapBoard(mapFn: (args: { box: BoxSchema; column: number; row: number }) => BoxSchema) {
+	#boardMap(mapFn: (args: { box: BoxSchema } & Position) => BoxSchema) {
 		this.#board = this.#board.map((columns, row) =>
 			columns.map((box, column) => mapFn({ box, column, row }))
 		)
 	}
+	#updateSelected(update: (args: { box: BoxSchema } & Position) => BoxSchema) {
+		this.#boardMap(args =>
+			!args.box.selected || args.box.state === BoxStates.Initial ? { ...args.box } : update(args)
+		)
+	}
 
-	getBoard = () => this.#board
-	moveSelected = (pos: { column: number; row: number }) =>
-		this.#mapBoard(({ box, column, row }) => ({
+	getBoard = (): readonly BoxSchema[][] => this.#board
+	getBox = ({ column, row }: Position) => Object.freeze(this.#board[row][column])
+	getSudokuValue = ({ column, row }: Position) => this.#sudoku[row][column]
+	moveSelected(pos: Position) {
+		this.#boardMap(({ box, column, row }) => ({
 			...box,
 			selected: pos.column === column && pos.row === row,
 		}))
-	writeNumber = (pos: { column: number; row: number }, value: number) =>
-		this.#mapBoard(({ box, column, row }) => {
-			const isActual = pos.column === column && pos.row === row
-			const isCorrect = this.#sudoku[column][row] === value
-			const isInitial = box.state === BoxStates.Initial
-
-			if (isInitial || !isActual) return { ...box }
+	}
+	writeNumber(value: number) {
+		this.#updateSelected(({ box, ...pos }) => {
+			const isCorrect = this.getSudokuValue(pos) === value
 			return {
 				...box,
 				notes: [],
@@ -124,4 +127,5 @@ export class SudokuService implements SudokuModel {
 				state: isCorrect ? BoxStates.Correct : BoxStates.Incorrect,
 			}
 		})
+	}
 }

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from 'vitest'
 
 import { SudokuService } from './sudoku.service'
-import { BoxStates } from '../models'
+import { BoxStates, type BoxSchema } from '../models'
 
 describe('Create Sudoku', () => {
 	const sudoku = SudokuService.getNewSudoku()
@@ -36,27 +36,50 @@ describe('Create Sudoku', () => {
 
 describe('Sudoku Board', () => {
 	const sudoku = SudokuService.getNewSudoku()
-	let sudokuService: SudokuService
+	let board: SudokuService
+	const standardBox: BoxSchema = {
+		notes: [],
+		selected: true,
+		state: BoxStates.Void,
+		value: 0,
+	}
 
 	beforeEach(() => {
-		sudokuService = new SudokuService({ sudoku })
+		board = new SudokuService({ sudoku })
 	})
 
 	test.concurrent('Not all box should be initials', () => {
 		expect(
-			sudokuService
-				.getBoard()
-				.every(columns => columns.every(box => box.state === BoxStates.Initial))
+			board.getBoard().every(columns => columns.every(box => box.state === BoxStates.Initial))
 		).toBe(false)
 	})
-	test.concurrent('Should change the status to correct', () => {
-		const voidBoxPos = SudokuService.getFirstVoidBox(sudokuService.getBoard())!
-		const correctValue = sudoku[voidBoxPos.row][voidBoxPos.column]
+	test.concurrent('Should change the status to incorrect', () => {
+		const voidBoxPos = SudokuService.getFirstVoidBox(board.getBoard())!
+		const correctValue = board.getSudokuValue(voidBoxPos)
 		const incorrectValue = correctValue > 9 ? 1 : correctValue + 1
 
-		sudokuService.writeNumber(voidBoxPos, incorrectValue)
+		board.moveSelected(voidBoxPos)
+		board.writeNumber(incorrectValue)
 
-		const box = sudokuService.getBoard()[voidBoxPos.row][voidBoxPos.column]
-		expect(box).to.haveOwnProperty('state', BoxStates.Incorrect)
+		const box = board.getBox(voidBoxPos)
+		expect(box).toMatchObject<BoxSchema>({
+			...standardBox,
+			state: BoxStates.Incorrect,
+			value: incorrectValue,
+		})
+	})
+	test.concurrent('Should change the status to correct', () => {
+		const voidBoxPos = SudokuService.getFirstVoidBox(board.getBoard())!
+		const correctValue = board.getSudokuValue(voidBoxPos)
+
+		board.moveSelected(voidBoxPos)
+		board.writeNumber(correctValue)
+
+		const box = board.getBox(voidBoxPos)
+		expect(box).toMatchObject<BoxSchema>({
+			...standardBox,
+			state: BoxStates.Correct,
+			value: correctValue,
+		})
 	})
 })
