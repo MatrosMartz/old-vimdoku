@@ -1,6 +1,7 @@
-import { describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, test } from 'vitest'
 
 import { SudokuService } from './sudoku.service'
+import { BoxStates } from '../models'
 
 describe('Create Sudoku', () => {
 	const sudoku = SudokuService.getNewSudoku()
@@ -30,5 +31,32 @@ describe('Create Sudoku', () => {
 		])('$name should be contain only different numbers', ({ actual }) => {
 			expect(actual.every(value => value.size === 9)).toBe(true)
 		})
+	})
+})
+
+describe('Sudoku Board', () => {
+	const sudoku = SudokuService.getNewSudoku()
+	let sudokuService: SudokuService
+
+	beforeEach(() => {
+		sudokuService = new SudokuService({ sudoku })
+	})
+
+	test.concurrent('Not all box should be initials', () => {
+		expect(
+			sudokuService
+				.getBoard()
+				.every(columns => columns.every(box => box.state === BoxStates.Initial))
+		).toBe(false)
+	})
+	test.concurrent('Should change the status to correct', () => {
+		const voidBoxPos = SudokuService.getFirstVoidBox(sudokuService.getBoard())!
+		const correctValue = sudoku[voidBoxPos.row][voidBoxPos.column]
+		const incorrectValue = correctValue > 9 ? 1 : correctValue + 1
+
+		sudokuService.writeNumber(voidBoxPos, incorrectValue)
+
+		const box = sudokuService.getBoard()[voidBoxPos.row][voidBoxPos.column]
+		expect(box).to.haveOwnProperty('state', BoxStates.Incorrect)
 	})
 })
