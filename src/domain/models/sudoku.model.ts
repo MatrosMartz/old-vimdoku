@@ -29,6 +29,7 @@ export interface Position {
 }
 
 export interface SudokuModel {
+	addNote: (value: number) => void
 	getBoard: () => readonly BoxSchema[][]
 	getBox: (pos: Position) => Readonly<BoxSchema>
 	getSudokuValue: (pos: Position) => number

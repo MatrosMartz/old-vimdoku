@@ -38,6 +38,10 @@ function getSimpleSudoku() {
 }
 
 const probabilityToBeInitial = (difficulty: Difficulties) => !Math.trunc(Math.random() * difficulty)
+function addNewNote(notes: number[], note: number) {
+	if (notes.includes(note)) return [...notes]
+	return [...notes, note].sort()
+}
 
 export class SudokuService implements SudokuModel {
 	static VOID_BOX_VALUE = 0
@@ -61,10 +65,10 @@ export class SudokuService implements SudokuModel {
 			columns.every(box => [BoxStates.Initial, BoxStates.Correct].includes(box.state))
 		)
 	}
-	static getFirstVoidBox(board: BoxSchema[][] | readonly BoxSchema[][]) {
+	static getFirstBoxWithState(board: BoxSchema[][] | readonly BoxSchema[][], state: BoxStates) {
 		for (let row = 0; row < board.length; row++) {
 			for (let column = 0; column < board[row].length; column++) {
-				if (board[row][column].state === BoxStates.Void) return { column, row }
+				if (board[row][column].state === state) return { column, row }
 			}
 		}
 	}
@@ -108,6 +112,14 @@ export class SudokuService implements SudokuModel {
 		)
 	}
 
+	addNote(value: number) {
+		this.#updateSelected(({ box }) => ({
+			...box,
+			value: SudokuService.VOID_BOX_VALUE,
+			notes: addNewNote(box.notes, value),
+			state: BoxStates.WhitNotes,
+		}))
+	}
 	getBoard = (): readonly BoxSchema[][] => this.#board
 	getBox = ({ column, row }: Position) => Object.freeze(this.#board[row][column])
 	getSudokuValue = ({ column, row }: Position) => this.#sudoku[row][column]
