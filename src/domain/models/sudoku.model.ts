@@ -1,3 +1,1 @@
-export interface SudokuModel {
-	create: () => number[][]
-}
+export interface SudokuModel {}

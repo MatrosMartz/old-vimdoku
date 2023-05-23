@@ -1,11 +1,9 @@
 import { describe, expect, test } from 'vitest'
 
-import { getSectors } from '~/tests/utils'
-
-import { sudokuService } from './sudoku.service'
+import { SudokuService } from './sudoku.service'
 
 describe('Create Sudoku', () => {
-	const sudoku = sudokuService.create()
+	const sudoku = SudokuService.getNewSudoku()
 
 	test.concurrent('Should return array', () => {
 		expect(Array.isArray(sudoku)).toBe(true)
@@ -24,7 +22,7 @@ describe('Create Sudoku', () => {
 	})
 
 	describe('sudoku are correct', () => {
-		const { columns, quadrants, rows } = getSectors(sudoku)
+		const { columns, quadrants, rows } = SudokuService.getSectors(sudoku)
 		test.concurrent.each([
 			{ name: 'columns', actual: columns },
 			{ name: 'quadrants', actual: quadrants },
