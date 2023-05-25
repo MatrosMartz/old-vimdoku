@@ -1,4 +1,4 @@
-export interface DataStorageModel {
-	getActual: () => string[]
-	update: (history: string[]) => void
+export interface DataStorageModel<T> {
+	getActual: () => T
+	update: (history: T) => void
 }

@@ -4,7 +4,7 @@ import { HistoryService } from './history.service'
 
 import type { DataStorageModel } from '../models'
 
-const initialHistoryData: DataStorageModel = {
+const initialHistoryData: DataStorageModel<string[]> = {
 	getActual: () => [
 		'help',
 		'help :start',

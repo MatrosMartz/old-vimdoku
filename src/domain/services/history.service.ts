@@ -6,7 +6,7 @@ export class HistoryService implements HistoryModel {
 	#index: number | null = null
 	#updateData: ((history: string[]) => void) | null = null
 
-	constructor(from?: DataStorageModel) {
+	constructor(from?: DataStorageModel<string[]>) {
 		if (from) {
 			this.#history = from.getActual()
 			this.#updateData = from.update
