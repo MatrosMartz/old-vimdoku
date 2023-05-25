@@ -1,4 +1,4 @@
-import type { HistoryData, HistoryModel } from '../models'
+import type { DataStorage, HistoryModel } from '../models'
 
 export class HistoryService implements HistoryModel {
 	#history: string[] = []
@@ -6,7 +6,7 @@ export class HistoryService implements HistoryModel {
 	#index: number | null = null
 	#updateData: ((history: string[]) => void) | null = null
 
-	constructor(from?: HistoryData) {
+	constructor(from?: DataStorage) {
 		if (from) {
 			this.#history = from.getActual()
 			this.#updateData = from.update

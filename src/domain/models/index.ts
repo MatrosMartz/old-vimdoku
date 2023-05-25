@@ -1,3 +1,4 @@
+export * from './data-storage'
 export * from './history.model'
 export * from './modes.model'
 export * from './sudoku.model'

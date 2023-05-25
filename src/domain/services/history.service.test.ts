@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, test } from 'vitest'
 
 import { HistoryService } from './history.service'
 
-import type { HistoryData } from '../models'
+import type { DataStorage } from '../models'
 
-const initialHistoryData: HistoryData = {
+const initialHistoryData: DataStorage = {
 	getActual: () => [
 		'help',
 		'help :start',

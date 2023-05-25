@@ -1,8 +1,3 @@
-export interface HistoryData {
-	getActual: () => string[]
-	update: (history: string[]) => void
-}
-
 export interface HistoryModel {
 	getAutocompleteHistory: () => string[]
 	getCurrent: () => string | null
