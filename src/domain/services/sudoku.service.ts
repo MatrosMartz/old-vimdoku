@@ -83,7 +83,7 @@ export class SudokuService implements SudokuModel {
 	}: {
 		sudoku?: readonly number[][]
 		difficulty?: Difficulties
-	}) {
+	} = {}) {
 		this.#sudoku = sudoku
 		this.#difficulty = difficulty
 		this.#board = this.#createBoard()
