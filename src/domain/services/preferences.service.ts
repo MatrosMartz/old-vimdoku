@@ -1,11 +1,5 @@
-import {
-	Langs,
-	type DataStorageModel,
-	MouseEnable,
-	type Preferences,
-	type PreferencesModel,
-	Themes,
-} from '../models'
+import { Langs, MouseEnable, type Preferences, type PreferencesModel, Themes } from '../models'
+import type { DataStorageRepo } from '../repositories'
 
 const defaultPreferences: Preferences = {
 	animations: true,
@@ -24,17 +18,19 @@ const defaultPreferences: Preferences = {
 
 export class PreferencesService implements PreferencesModel {
 	#preferences = defaultPreferences
-	#updateData: ((preferences: Preferences) => void) | null = null
+	#updateData = () => {}
 
-	constructor(from?: DataStorageModel<Preferences>) {
+	constructor(from?: DataStorageRepo<Preferences>) {
 		if (from) {
-			this.#preferences = from.getActual()
-			this.#updateData = from.update
+			const newPreferences = from.get()
+			if (newPreferences != null) this.#preferences = newPreferences
+
+			this.#updateData = () => from.set(this.#preferences)
 		}
 	}
 	getPreferences = () => this.#preferences
 	setPreference = <T extends keyof Preferences>(preference: T, newValue: Preferences[T]) => {
 		this.#preferences[preference] = newValue
-		this.#updateData?.(this.#preferences)
+		this.#updateData()
 	}
 }

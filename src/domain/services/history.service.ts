@@ -1,18 +1,20 @@
-import type { DataStorageModel, HistoryModel } from '../models'
+import type { HistoryModel } from '../models'
+import type { DataStorageRepo } from '../repositories'
 
 export class HistoryService implements HistoryModel {
 	#history: string[] = []
 	#AutocompleteHistory = this.#history
 	#index: number | null = null
-	#updateData: ((history: string[]) => void) | null = null
+	#updateData = () => {}
 
-	constructor(from?: DataStorageModel<string[]>) {
+	constructor(from?: DataStorageRepo<string[]>) {
 		if (from) {
-			this.#history = from.getActual()
-			this.#updateData = from.update
+			const newHistory = from.get()
+			if (newHistory != null) this.#history = newHistory
+
+			this.#updateData = () => from.set(this.#history)
 		}
 		this.setAutocomplete()
-		this.#updateData = null
 	}
 
 	getCurrent = () => {
@@ -21,10 +23,10 @@ export class HistoryService implements HistoryModel {
 	getHistory = () => this.#history
 	getAutocompleteHistory = () => this.#AutocompleteHistory
 	push = (cmd: string) => {
-		this.#history = [...this.#history, cmd]
+		this.#history.push(cmd)
 		this.setAutocomplete()
 
-		this.#updateData?.(this.#history)
+		this.#updateData()
 
 		return null
 	}

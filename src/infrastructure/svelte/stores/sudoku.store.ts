@@ -71,3 +71,5 @@ function createBoxSelectedStore() {
 
 	return { subscribe, moveDown, moveLeft, moveRight, moveUp }
 }
+
+export const boxSelectedStore = createBoxSelectedStore()

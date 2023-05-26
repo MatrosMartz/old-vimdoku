@@ -2,10 +2,10 @@ import { beforeEach, describe, expect, test } from 'vitest'
 
 import { HistoryService } from './history.service'
 
-import type { DataStorageModel } from '../models'
+import type { DataStorageRepo } from '../repositories'
 
-const initialHistoryData: DataStorageModel<string[]> = {
-	getActual: () => [
+const initialHistoryData: DataStorageRepo<string[]> = {
+	get: () => [
 		'help',
 		'help :start',
 		'start',
@@ -16,7 +16,7 @@ const initialHistoryData: DataStorageModel<string[]> = {
 		'quit',
 		'help :set',
 	],
-	update: () => {},
+	set: () => {},
 }
 
 describe('History Service', () => {
