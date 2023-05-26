@@ -1,5 +1,5 @@
 export const enum Themes {
-	Default = "default"
+	Default = 'default',
 }
 export const enum Langs {
 	EN = 'en',
@@ -36,7 +36,7 @@ export interface UserPreferences {
 
 export interface Preferences extends VimPreferences, SudokuPreferences, UserPreferences {}
 
-export interface PreferencesModel {
+export interface IPreferencesService {
 	getPreferences: () => Preferences
 	setPreference: <T extends keyof Preferences>(key: T, newValue: Preferences[T]) => void
 }

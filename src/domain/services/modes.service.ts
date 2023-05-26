@@ -1,6 +1,6 @@
-import { Modes, type ModesModel } from '~/domain/models'
+import { Modes, type IModesService } from '~/domain/models'
 
-class ModesService implements ModesModel {
+class ModesService implements IModesService {
 	setAnnotation = () => Modes.Annotation
 	setCommand = () => Modes.Command
 	setInsert = () => Modes.Insert

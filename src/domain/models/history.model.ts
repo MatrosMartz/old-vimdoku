@@ -1,4 +1,4 @@
-export interface HistoryModel {
+export interface IHistoryService {
 	getAutocompleteHistory: () => string[]
 	getCurrent: () => string | null
 	getHistory: () => string[]

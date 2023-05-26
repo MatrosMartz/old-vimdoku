@@ -1,4 +1,10 @@
-import { BoxStates, type BoxSchema, type SudokuModel, Difficulties, type Position } from '../models'
+import {
+	BoxStates,
+	type BoxSchema,
+	type ISudokuService,
+	Difficulties,
+	type Position,
+} from '../models'
 
 interface GetBoxValueArgs {
 	column: number
@@ -43,7 +49,7 @@ function addNewNote(notes: number[], note: number) {
 	return [...notes, note].sort()
 }
 
-export class SudokuService implements SudokuModel {
+export class SudokuService implements ISudokuService {
 	static VOID_BOX_VALUE = 0
 	static getNewSudoku = () => sortSudoku(getSimpleSudoku())
 	static getSectors(sudoku: number[][] | readonly number[][]) {

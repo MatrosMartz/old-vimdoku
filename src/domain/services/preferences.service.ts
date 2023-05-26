@@ -1,4 +1,4 @@
-import { Langs, MouseEnable, type Preferences, type PreferencesModel, Themes } from '../models'
+import { Langs, MouseEnable, type Preferences, type IPreferencesService, Themes } from '../models'
 import type { DataStorageRepo } from '../repositories'
 
 const defaultPreferences: Preferences = {
@@ -16,7 +16,7 @@ const defaultPreferences: Preferences = {
 	timer: true,
 }
 
-export class PreferencesService implements PreferencesModel {
+export class PreferencesService implements IPreferencesService {
 	#preferences = defaultPreferences
 	#updateData = () => {}
 

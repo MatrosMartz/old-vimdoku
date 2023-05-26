@@ -1,8 +1,8 @@
-import type { TimerSchema, TimerModel, Updater } from '~/domain/models'
+import type { TimerSchema, ITimerService, Updater } from '~/domain/models'
 
 const format = (n: string) => (n.length > 1 ? n : '0' + n)
 
-export class TimerService implements TimerModel {
+export class TimerService implements ITimerService {
 	#interval: number | string | NodeJS.Timeout = 0
 
 	initialTimer = () => ({ isPause: true, seconds: 0 })

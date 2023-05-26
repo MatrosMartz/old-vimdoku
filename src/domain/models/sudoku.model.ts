@@ -28,7 +28,7 @@ export interface Position {
 	row: number
 }
 
-export interface SudokuModel {
+export interface ISudokuService {
 	addNote: (value: number) => void
 	getBoard: () => readonly BoxSchema[][]
 	getBox: (pos: Position) => Readonly<BoxSchema>

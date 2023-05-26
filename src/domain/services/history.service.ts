@@ -1,7 +1,7 @@
-import type { HistoryModel } from '../models'
+import type { IHistoryService } from '../models'
 import type { DataStorageRepo } from '../repositories'
 
-export class HistoryService implements HistoryModel {
+export class HistoryService implements IHistoryService {
 	#history: string[] = []
 	#AutocompleteHistory = this.#history
 	#index: number | null = null
