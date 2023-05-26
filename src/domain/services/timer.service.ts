@@ -1,6 +1,6 @@
 import type { TimerSchema, ITimerService, Updater } from '~/domain/models'
 
-const format = (n: string) => (n.length > 1 ? n : '0' + n)
+import { formatNumber } from '../utils'
 
 export class TimerService implements ITimerService {
 	#interval: number | string | NodeJS.Timeout = 0
@@ -18,9 +18,9 @@ export class TimerService implements ITimerService {
 	}
 
 	static formatter = (time: number) => {
-		const seconds = format(String(time % 60))
-		const minutes = format(String(Math.trunc((time % 3_600) / 60)))
-		const hours = format(String(Math.trunc(time / 3_600)))
+		const seconds = formatNumber(String(time % 60))
+		const minutes = formatNumber(String(Math.trunc((time % 3_600) / 60)))
+		const hours = formatNumber(String(Math.trunc(time / 3_600)))
 
 		return `${hours}:${minutes}:${seconds}`
 	}
