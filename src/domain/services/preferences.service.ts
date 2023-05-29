@@ -20,12 +20,12 @@ export class PreferencesService implements IPreferencesService {
 	#preferences = defaultPreferences
 	#updateData = () => {}
 
-	constructor(from?: DataStorageRepo<Preferences>) {
-		if (from) {
-			const newPreferences = from.get()
+	constructor(repo?: DataStorageRepo<Preferences>) {
+		if (repo) {
+			const newPreferences = repo.get()
 			if (newPreferences != null) this.#preferences = newPreferences
 
-			this.#updateData = () => from.set(this.#preferences)
+			this.#updateData = () => repo.set(this.#preferences)
 		}
 	}
 	getPreferences = () => this.#preferences

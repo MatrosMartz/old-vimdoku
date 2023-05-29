@@ -7,12 +7,12 @@ export class HistoryService implements IHistoryService {
 	#index: number | null = null
 	#updateData = () => {}
 
-	constructor(from?: DataStorageRepo<string[]>) {
-		if (from) {
-			const newHistory = from.get()
+	constructor(repo?: DataStorageRepo<string[]>) {
+		if (repo) {
+			const newHistory = repo.get()
 			if (newHistory != null) this.#history = newHistory
 
-			this.#updateData = () => from.set(this.#history)
+			this.#updateData = () => repo.set(this.#history)
 		}
 		this.setAutocomplete()
 	}
