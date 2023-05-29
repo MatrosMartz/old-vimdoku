@@ -1,11 +1,4 @@
-import {
-	Langs,
-	MouseEnable,
-	type Preferences,
-	type IPreferencesService,
-	Themes,
-	defaultPreferences,
-} from '../models'
+import { type Preferences, type IPreferencesService, defaultPreferences } from '../models'
 import type { DataStorageRepo } from '../repositories'
 import { noop } from '../utils'
 
