@@ -12,43 +12,72 @@ import {
 	createEmptyBoard,
 	randomNumbers,
 	isSafe,
-	cleanRowAndCol,
-	isAnyEmptyBox,
 } from '../utils'
 
 export class SudokuService implements ISudokuService {
-	static createSudoku() {
-		let board = createEmptyBoard()
-		let mistakes = 0
-		for (let i = 0; i < 9; i++) {
-			for (let j = i; j < 9; j++) {
-				const numbers = randomNumbers()
-				for (const num of numbers) {
-					if (isSafe({ num, row: i, col: j, board })) board[i][j] = num
-					if (isSafe({ num, row: j, col: i, board })) board[j][i] = num
-				}
-				if (isAnyEmptyBox(board[i][j], board[j][i])) {
-					// restart fill board
-					if (mistakes > 9) {
-						board = createEmptyBoard()
-						i = -1
-					}
-					// restart fill row and col
-					else {
-						cleanRowAndCol({ board, i })
-						// repeat i
-						i > 1 ? i-- : (i = 0)
-						// add mistake
-						mistakes++
-					}
-					break
-				}
-				// restart mistakes
-				if (j === 8) {
-					mistakes = 0
+	static createSolution() {
+		const board = createEmptyBoard()
+
+		function fillDiagonal() {
+			for (let i = 0; i < 9; i += 3) {
+				fillBox(i, i)
+			}
+		}
+
+		function fillBox(row: number, col: number) {
+			const numbers = randomNumbers()
+
+			for (let i = 0; i < 3; i++) {
+				for (let j = 0; j < 3; j++) {
+					board[row + i][col + j] = numbers[i * 3 + j]
 				}
 			}
 		}
+
+		function fillRemaining(row: number, col: number): boolean {
+			if (col >= 9 && row < 9 - 1) {
+				row = row + 1
+				col = 0
+			}
+
+			if (row >= 9 && col >= 9) {
+				return true
+			}
+
+			if (row < 3) {
+				if (col < 3) {
+					col = 3
+				}
+			} else if (row < 9 - 3) {
+				if (col === Math.floor(row / 3) * 3) {
+					col = col + 3
+				}
+			} else {
+				if (col === 9 - 3) {
+					row = row + 1
+					col = 0
+					if (row >= 9) {
+						return true
+					}
+				}
+			}
+
+			for (let num = 1; num <= 9; num++) {
+				if (isSafe({ row, col, num }, board)) {
+					board[row][col] = num
+					if (fillRemaining(row, col + 1)) {
+						return true
+					}
+					board[row][col] = 0
+				}
+			}
+
+			return false
+		}
+
+		fillDiagonal()
+		fillRemaining(0, 3)
+
 		return board
 	}
 	static VOID_BOX_VALUE = 0
@@ -84,7 +113,7 @@ export class SudokuService implements ISudokuService {
 	#sudoku: readonly number[][]
 
 	constructor({
-		sudoku = SudokuService.createSudoku(),
+		sudoku = SudokuService.createSolution(),
 		difficulty = Difficulties.Basic,
 	}: {
 		sudoku?: readonly number[][]

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, test } from 'vitest'
 import { SudokuService } from './sudoku.service'
 import { BoxStates, type BoxSchema } from '../models'
 
-const sudoku = SudokuService.createSudoku()
+const sudoku = SudokuService.createSolution()
 
 console.log(sudoku.map(cols => cols.join(' | ')))
 

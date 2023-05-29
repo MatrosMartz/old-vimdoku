@@ -1,46 +1,46 @@
 import type { Difficulties } from '../models'
 
-export function isAnyEmptyBox(...number: number[]) {
-	return number.includes(0)
-}
-
-export function cleanRowAndCol({ board, i }: { board: number[][]; i: number }) {
-	for (let k = i; k < 9; k++) {
-		board[k][i] = 0
-		board[i][k] = 0
-	}
-}
-
-export function isSafe({
-	num,
-	row,
-	col,
-	board,
-}: {
-	num: number
-	row: number
-	col: number
+export function isSafe(
+	{ row, col, num }: { row: number; col: number; num: number },
 	board: number[][]
-}) {
-	const quadrant = {
-		row: (i: number) => (i % 3) + Math.trunc(row / 3) * 3,
-		col: (i: number) => Math.trunc(i / 3) + Math.trunc(col / 3) * 3,
-	}
-	if (board[row][col] !== 0) return false
+): boolean {
+	return (
+		!usedInRow({ row, num }, board) &&
+		!usedInCol({ col, num }, board) &&
+		!usedInBox({ boxStartRow: row - (row % 3), boxStartCol: col - (col % 3), num }, board)
+	)
+}
 
-	for (let i = 0; i < 9; i++) {
-		if (
-			// isn't Valid in row
-			board[row][i] === num ||
-			// isn't Valid in col
-			board[i][col] === num ||
-			// isn't valid in quadrant
-			board[quadrant.row(i)][quadrant.col(i)] === num
-		)
-			return false
+function usedInRow({ row, num }: { row: number; num: number }, board: number[][]): boolean {
+	for (let col = 0; col < 9; col++) {
+		if (board[row][col] === num) {
+			return true
+		}
 	}
+	return false
+}
 
-	return true
+function usedInCol({ col, num }: { col: number; num: number }, board: number[][]): boolean {
+	for (let row = 0; row < 9; row++) {
+		if (board[row][col] === num) {
+			return true
+		}
+	}
+	return false
+}
+
+function usedInBox(
+	{ boxStartCol, boxStartRow, num }: { boxStartRow: number; boxStartCol: number; num: number },
+	board: number[][]
+): boolean {
+	for (let row = 0; row < 3; row++) {
+		for (let col = 0; col < 3; col++) {
+			if (board[row + boxStartRow][col + boxStartCol] === num) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 export function addNewNote(notes: number[], note: number) {
