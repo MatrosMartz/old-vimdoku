@@ -1,9 +1,9 @@
-import type { TimerSchema, TimerModel } from '~/domain/models'
+import type { TimerSchema, ITimerService } from '~/domain/models'
 
 export class TimerMock {
 	#timer: TimerSchema
-	#timerService: TimerModel
-	constructor(timerService: TimerModel) {
+	#timerService: ITimerService
+	constructor(timerService: ITimerService) {
 		this.#timerService = timerService
 		this.#timer = this.#timerService.initialTimer()
 	}
