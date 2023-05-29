@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, test } from 'vitest'
 import { HistoryService } from './history.service'
 
 import type { DataStorageRepo } from '../repositories'
+import { noop } from '../utils'
 
 const initialHistoryData: DataStorageRepo<string[]> = {
 	get: () => [
@@ -16,7 +17,7 @@ const initialHistoryData: DataStorageRepo<string[]> = {
 		'quit',
 		'help :set',
 	],
-	set: () => {},
+	set: noop,
 }
 
 describe('History Service', () => {

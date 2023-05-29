@@ -1,5 +1,6 @@
 import { Langs, MouseEnable, type Preferences, type IPreferencesService, Themes } from '../models'
 import type { DataStorageRepo } from '../repositories'
+import { noop } from '../utils'
 
 const defaultPreferences: Preferences = {
 	animations: true,
@@ -18,7 +19,7 @@ const defaultPreferences: Preferences = {
 
 export class PreferencesService implements IPreferencesService {
 	#preferences = defaultPreferences
-	#updateData = () => {}
+	#updateData = noop
 
 	constructor(repo?: DataStorageRepo<Preferences>) {
 		if (repo) {

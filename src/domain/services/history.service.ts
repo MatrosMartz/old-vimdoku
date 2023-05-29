@@ -1,11 +1,12 @@
 import type { IHistoryService } from '../models'
 import type { DataStorageRepo } from '../repositories'
+import { noop } from '../utils'
 
 export class HistoryService implements IHistoryService {
 	#history: string[] = []
 	#AutocompleteHistory = this.#history
 	#index: number | null = null
-	#updateData = () => {}
+	#updateData = noop
 
 	constructor(repo?: DataStorageRepo<string[]>) {
 		if (repo) {
