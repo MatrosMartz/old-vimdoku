@@ -2,7 +2,7 @@ export const enum BoxStates {
 	Correct = 'correct',
 	Incorrect = 'incorrect',
 	Initial = 'initial',
-	Void = 'void',
+	Empty = 'empty',
 	WhitNotes = 'notes',
 }
 

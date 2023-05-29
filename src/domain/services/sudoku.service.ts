@@ -102,7 +102,7 @@ export class SudokuService implements ISudokuService {
 				return {
 					notes: [],
 					selected: false,
-					state: isInitial ? BoxStates.Initial : BoxStates.Void,
+					state: isInitial ? BoxStates.Initial : BoxStates.Empty,
 					value: isInitial ? value : SudokuService.VOID_BOX_VALUE,
 				}
 			})

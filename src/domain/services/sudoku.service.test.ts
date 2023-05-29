@@ -41,7 +41,7 @@ describe('Sudoku Board', () => {
 	const standardBox: BoxSchema = {
 		notes: [],
 		selected: true,
-		state: BoxStates.Void,
+		state: BoxStates.Empty,
 		value: SudokuService.VOID_BOX_VALUE,
 	}
 
@@ -72,7 +72,7 @@ describe('Sudoku Board', () => {
 			})
 		})
 		test.concurrent('Should change the status to incorrect', () => {
-			const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Void)!
+			const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 			const incorrectValue = correctValue > 9 ? 1 : correctValue + 1
 
@@ -87,7 +87,7 @@ describe('Sudoku Board', () => {
 			})
 		})
 		test.concurrent('Should change the status to correct', () => {
-			const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Void)!
+			const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 
 			board.moveSelected(voidBoxPos)
@@ -101,7 +101,7 @@ describe('Sudoku Board', () => {
 			})
 		})
 		test.concurrent('should reset notes', () => {
-			const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Void)!
+			const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 
 			board.moveSelected(voidBoxPos)
@@ -119,7 +119,7 @@ describe('Sudoku Board', () => {
 
 	describe('Add Notes', () => {
 		test.concurrent('Should change the status to notes', () => {
-			const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Void)!
+			const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
 
 			board.moveSelected(voidBoxPos)
 			board.addNote(1)
@@ -133,7 +133,7 @@ describe('Sudoku Board', () => {
 		})
 	})
 	test.concurrent('should arrange the notes correctly', () => {
-		const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Void)!
+		const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
 
 		board.moveSelected(voidBoxPos)
 		board.addNote(3)
@@ -149,7 +149,7 @@ describe('Sudoku Board', () => {
 		})
 	})
 	test.concurrent('should not repeat notes', () => {
-		const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Void)!
+		const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
 
 		board.moveSelected(voidBoxPos)
 		board.addNote(1)
@@ -163,7 +163,7 @@ describe('Sudoku Board', () => {
 		})
 	})
 	test.concurrent('should reset value', () => {
-		const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Void)!
+		const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
 
 		board.moveSelected(voidBoxPos)
 		board.writeNumber(9)
