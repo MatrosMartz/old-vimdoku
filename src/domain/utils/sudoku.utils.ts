@@ -7,7 +7,7 @@ export function isSafe(
 	return (
 		!usedInRow({ row, num }, board) &&
 		!usedInCol({ col, num }, board) &&
-		!usedInBox({ boxStartRow: row - (row % 3), boxStartCol: col - (col % 3), num }, board)
+		!usedInQuadrant({ boxStartRow: row - (row % 3), boxStartCol: col - (col % 3), num }, board)
 	)
 }
 
@@ -29,7 +29,7 @@ function usedInCol({ col, num }: { col: number; num: number }, board: number[][]
 	return false
 }
 
-function usedInBox(
+function usedInQuadrant(
 	{ boxStartCol, boxStartRow, num }: { boxStartRow: number; boxStartCol: number; num: number },
 	board: number[][]
 ): boolean {
