@@ -42,7 +42,7 @@ describe('Sudoku Board', () => {
 		notes: [],
 		selected: true,
 		state: BoxStates.Empty,
-		value: SudokuService.VOID_BOX_VALUE,
+		value: SudokuService.EMPTY_BOX_VALUE,
 	}
 
 	beforeEach(() => {

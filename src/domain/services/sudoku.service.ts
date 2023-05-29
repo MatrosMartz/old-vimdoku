@@ -80,7 +80,7 @@ export class SudokuService implements ISudokuService {
 
 		return board
 	}
-	static VOID_BOX_VALUE = 0
+	static EMPTY_BOX_VALUE = 0
 	static getSectors(sudoku: readonly number[][]) {
 		const quadrants = createArrayMap(9, () => new Set<number>())
 		const columns = createArrayMap(9, () => new Set<number>())
@@ -132,7 +132,7 @@ export class SudokuService implements ISudokuService {
 					notes: [],
 					selected: false,
 					state: isInitial ? BoxStates.Initial : BoxStates.Empty,
-					value: isInitial ? value : SudokuService.VOID_BOX_VALUE,
+					value: isInitial ? value : SudokuService.EMPTY_BOX_VALUE,
 				}
 			})
 		)
@@ -150,7 +150,7 @@ export class SudokuService implements ISudokuService {
 	addNote(value: number) {
 		this.#updateSelected(({ box }) => ({
 			...box,
-			value: SudokuService.VOID_BOX_VALUE,
+			value: SudokuService.EMPTY_BOX_VALUE,
 			notes: addNewNote(box.notes, value),
 			state: BoxStates.WhitNotes,
 		}))
