@@ -12,7 +12,7 @@ function createSudokuStore() {
 		set(sudokuService.getBoard())
 	}
 	const erase = () => {
-		sudokuService.writeNumber(SudokuService.VOID_BOX_VALUE)
+		sudokuService.writeNumber(SudokuService.EMPTY_BOX_VALUE)
 		set(sudokuService.getBoard())
 	}
 	const move = (pos: Position) => {
