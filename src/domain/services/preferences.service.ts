@@ -1,21 +1,13 @@
-import { Langs, MouseEnable, type Preferences, type IPreferencesService, Themes } from '../models'
+import {
+	Langs,
+	MouseEnable,
+	type Preferences,
+	type IPreferencesService,
+	Themes,
+	defaultPreferences,
+} from '../models'
 import type { DataStorageRepo } from '../repositories'
 import { noop } from '../utils'
-
-const defaultPreferences: Preferences = {
-	animations: true,
-	automaticNoteDeletion: true,
-	fontSize: 16,
-	highlightNumber: true,
-	history: 100,
-	language: Langs.EN,
-	mouse: MouseEnable.All,
-	numbers: true,
-	relativeNumbers: true,
-	remainingNumbers: true,
-	theme: Themes.Default,
-	timer: true,
-}
 
 export class PreferencesService implements IPreferencesService {
 	#preferences = defaultPreferences

@@ -40,3 +40,18 @@ export interface IPreferencesService {
 	getPreferences: () => Preferences
 	setPreference: <T extends keyof Preferences>(key: T, newValue: Preferences[T]) => void
 }
+
+export const defaultPreferences: Preferences = {
+	animations: true,
+	automaticNoteDeletion: true,
+	fontSize: 16,
+	highlightNumber: true,
+	history: 100,
+	language: Langs.EN,
+	mouse: MouseEnable.All,
+	numbers: true,
+	relativeNumbers: true,
+	remainingNumbers: true,
+	theme: Themes.Default,
+	timer: true,
+}
