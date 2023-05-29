@@ -1,44 +1,61 @@
 import type { Difficulties } from '../models'
 
-import { createArray } from './array.utils'
+export function isAnyEmptyBox(...number: number[]) {
+	return number.includes(0)
+}
 
-interface GetBoxValueArgs {
-	column: number
-	columnMultiplier: number
+export function cleanRowAndCol({ board, i }: { board: number[][]; i: number }) {
+	for (let k = i; k < 9; k++) {
+		board[k][i] = 0
+		board[i][k] = 0
+	}
+}
+
+export function isSafe({
+	num,
+	row,
+	col,
+	board,
+}: {
+	num: number
 	row: number
-	rowMultiplier: number
-}
+	col: number
+	board: number[][]
+}) {
+	const quadrant = {
+		row: (i: number) => (i % 3) + Math.trunc(row / 3) * 3,
+		col: (i: number) => Math.trunc(i / 3) + Math.trunc(col / 3) * 3,
+	}
+	if (board[row][col] !== 0) return false
 
-const getRowMultiplier = () => Math.trunc(1 + Math.trunc(Math.random() * 6) * 1.5)
-const getColumnMultiplier = () => getRowMultiplier() * 3
-
-function getBoxValue({ column, columnMultiplier, row, rowMultiplier }: GetBoxValueArgs) {
-	return 1 + ((column * columnMultiplier + Math.floor(column / 3) * rowMultiplier + row) % 9)
-}
-
-export function sortSudoku(sudoku: number[][]) {
-	const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-	const iterations = Math.trunc(Math.random() * 7) + 3
-
-	for (let i = 0; i < iterations; i++) {
-		const replaceNumbers = [...numbers].sort(() => Math.trunc(Math.random() * 2) - 1)
-
-		sudoku = sudoku.map(rows => rows.map(box => replaceNumbers[numbers.indexOf(box)]))
+	for (let i = 0; i < 9; i++) {
+		if (
+			// isn't Valid in row
+			board[row][i] === num ||
+			// isn't Valid in col
+			board[i][col] === num ||
+			// isn't valid in quadrant
+			board[quadrant.row(i)][quadrant.col(i)] === num
+		)
+			return false
 	}
 
-	return Object.freeze(sudoku)
+	return true
 }
-export function getSimpleSudoku() {
-	const columnMultiplier = getColumnMultiplier()
-	const rowMultiplier = getRowMultiplier()
 
-	return createArray(9, column =>
-		createArray(9, row => getBoxValue({ column, columnMultiplier, row, rowMultiplier }))
-	)
-}
 export function addNewNote(notes: number[], note: number) {
 	if (notes.includes(note)) return [...notes]
 	return [...notes, note].sort()
 }
 export const probabilityToBeInitial = (difficulty: Difficulties) =>
 	!Math.trunc(Math.random() * difficulty)
+
+export function randomNumbers() {
+	const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+	for (let i = numbers.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i - 1))
+		;[numbers[i], numbers[j]] = [numbers[j], numbers[i]]
+	}
+	return numbers
+}

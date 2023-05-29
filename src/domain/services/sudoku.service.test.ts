@@ -3,7 +3,9 @@ import { beforeEach, describe, expect, test } from 'vitest'
 import { SudokuService } from './sudoku.service'
 import { BoxStates, type BoxSchema } from '../models'
 
-const sudoku = SudokuService.getNewSudoku()
+const sudoku = SudokuService.createSudoku()
+
+console.log(sudoku.map(cols => cols.join(' | ')))
 
 describe('Create Sudoku', () => {
 	test.concurrent('Should return array', () => {

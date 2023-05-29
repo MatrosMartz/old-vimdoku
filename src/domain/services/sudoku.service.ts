@@ -7,19 +7,55 @@ import {
 } from '../models'
 import {
 	addNewNote,
-	createArray,
-	getSimpleSudoku,
 	probabilityToBeInitial,
-	sortSudoku,
+	createArrayMap,
+	createEmptyBoard,
+	randomNumbers,
+	isSafe,
+	cleanRowAndCol,
+	isAnyEmptyBox,
 } from '../utils'
 
 export class SudokuService implements ISudokuService {
+	static createSudoku() {
+		let board = createEmptyBoard()
+		let mistakes = 0
+		for (let i = 0; i < 9; i++) {
+			for (let j = i; j < 9; j++) {
+				const numbers = randomNumbers()
+				for (const num of numbers) {
+					if (isSafe({ num, row: i, col: j, board })) board[i][j] = num
+					if (isSafe({ num, row: j, col: i, board })) board[j][i] = num
+				}
+				if (isAnyEmptyBox(board[i][j], board[j][i])) {
+					// restart fill board
+					if (mistakes > 9) {
+						board = createEmptyBoard()
+						i = -1
+					}
+					// restart fill row and col
+					else {
+						cleanRowAndCol({ board, i })
+						// repeat i
+						i > 1 ? i-- : (i = 0)
+						// add mistake
+						mistakes++
+					}
+					break
+				}
+				// restart mistakes
+				if (j === 8) {
+					mistakes = 0
+				}
+			}
+		}
+		return board
+	}
 	static VOID_BOX_VALUE = 0
-	static getNewSudoku = () => sortSudoku(getSimpleSudoku())
 	static getSectors(sudoku: readonly number[][]) {
-		const quadrants = createArray(9, () => new Set<number>())
-		const columns = createArray(9, () => new Set<number>())
-		const rows = createArray(9, () => new Set<number>())
+		const quadrants = createArrayMap(9, () => new Set<number>())
+		const columns = createArrayMap(9, () => new Set<number>())
+		const rows = createArrayMap(9, () => new Set<number>())
 		for (let column = 0; column < 9; column++) {
 			for (let row = 0; row < 9; row++) {
 				const quadrant = Math.trunc(row / 3) + Math.trunc(column / 3) * 3
@@ -48,7 +84,7 @@ export class SudokuService implements ISudokuService {
 	#sudoku: readonly number[][]
 
 	constructor({
-		sudoku = SudokuService.getNewSudoku(),
+		sudoku = SudokuService.createSudoku(),
 		difficulty = Difficulties.Basic,
 	}: {
 		sudoku?: readonly number[][]
