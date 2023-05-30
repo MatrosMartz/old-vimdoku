@@ -30,43 +30,31 @@ function createSudokuStore() {
 export const sudokuStore = createSudokuStore()
 
 function createBoxSelectedStore() {
-	const { subscribe, update } = writable<Position>({ column: 0, row: 0 })
+	const { subscribe, update } = writable<Position>({ col: 0, row: 0 })
 
 	const moveDown = (times = 1) =>
-		update(({ column, row }) => {
-			const newColumn = column + times
-			const newRow = row + Math.trunc(newColumn / 10)
-			return {
-				row: newRow % 10,
-				column: newColumn % 10,
-			}
+		update(({ col, row }) => {
+			const newCol = col + times
+			const newRow = row + Math.trunc(newCol / 10)
+			return { row: newRow % 10, col: newCol % 10 }
 		})
 	const moveLeft = (times = 1) =>
-		update(({ column, row }) => {
+		update(({ col, row }) => {
 			const newRow = row - times
-			const newColumn = column - Math.trunc(newRow / 10)
-			return {
-				column: (newColumn % 10) + newColumn < 0 ? 10 : 0,
-				row: (newRow % 10) + newRow < 0 ? 10 : 0,
-			}
+			const newCol = col - Math.trunc(newRow / 10)
+			return { col: (newCol % 10) + newCol < 0 ? 10 : 0, row: (newRow % 10) + newRow < 0 ? 10 : 0 }
 		})
 	const moveRight = (times = 1) =>
-		update(({ column, row }) => {
+		update(({ col, row }) => {
 			const newRow = row + times
-			const newColumn = column + Math.trunc(newRow / 10)
-			return {
-				column: newColumn % 10,
-				row: newRow % 10,
-			}
+			const newCol = col + Math.trunc(newRow / 10)
+			return { col: newCol % 10, row: newRow % 10 }
 		})
 	const moveUp = (times = 1) =>
-		update(({ column, row }) => {
-			const newColumn = column - times
-			const newRow = row - Math.trunc(newColumn / 10)
-			return {
-				row: (newRow % 10) + newRow < 0 ? 10 : 0,
-				column: (newColumn % 10) + newColumn < 0 ? 10 : 0,
-			}
+		update(({ col, row }) => {
+			const newCol = col - times
+			const newRow = row - Math.trunc(newCol / 10)
+			return { row: (newRow % 10) + newRow < 0 ? 10 : 0, col: (newCol % 10) + newCol < 0 ? 10 : 0 }
 		})
 
 	return { subscribe, moveDown, moveLeft, moveRight, moveUp }

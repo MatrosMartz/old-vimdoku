@@ -83,27 +83,27 @@ export class SudokuService implements ISudokuService {
 	static EMPTY_BOX_VALUE = 0
 	static getSectors(sudoku: readonly number[][]) {
 		const quadrants = createArrayMap(9, () => new Set<number>())
-		const columns = createArrayMap(9, () => new Set<number>())
+		const cols = createArrayMap(9, () => new Set<number>())
 		const rows = createArrayMap(9, () => new Set<number>())
-		for (let column = 0; column < 9; column++) {
+		for (let col = 0; col < 9; col++) {
 			for (let row = 0; row < 9; row++) {
-				const quadrant = Math.trunc(row / 3) + Math.trunc(column / 3) * 3
-				columns[column].add(sudoku[column][row])
-				rows[row].add(sudoku[column][row])
-				quadrants[quadrant].add(sudoku[column][row])
+				const quadrant = Math.trunc(row / 3) + Math.trunc(col / 3) * 3
+				cols[col].add(sudoku[col][row])
+				rows[row].add(sudoku[col][row])
+				quadrants[quadrant].add(sudoku[col][row])
 			}
 		}
-		return { quadrants, columns, rows }
+		return { quadrants, cols, rows }
 	}
 	static isWin(board: readonly BoxSchema[][]) {
-		return board.every(columns =>
-			columns.every(box => [BoxStates.Initial, BoxStates.Correct].includes(box.state))
+		return board.every(cols =>
+			cols.every(box => [BoxStates.Initial, BoxStates.Correct].includes(box.state))
 		)
 	}
 	static getFirstBoxWithState(board: readonly BoxSchema[][], state: BoxStates) {
 		for (let row = 0; row < board.length; row++) {
-			for (let column = 0; column < board[row].length; column++) {
-				if (board[row][column].state === state) return { column, row }
+			for (let col = 0; col < board[row].length; col++) {
+				if (board[row][col].state === state) return { col, row }
 			}
 		}
 	}
@@ -125,8 +125,8 @@ export class SudokuService implements ISudokuService {
 	}
 
 	#createBoard = () =>
-		this.#sudoku.map(columns =>
-			columns.map<BoxSchema>(value => {
+		this.#sudoku.map(cols =>
+			cols.map<BoxSchema>(value => {
 				const isInitial = probabilityToBeInitial(this.#difficulty)
 				return {
 					notes: [],
@@ -137,9 +137,7 @@ export class SudokuService implements ISudokuService {
 			})
 		)
 	#boardMap(mapFn: (args: { box: BoxSchema } & Position) => BoxSchema) {
-		this.#board = this.#board.map((columns, row) =>
-			columns.map((box, column) => mapFn({ box, column, row }))
-		)
+		this.#board = this.#board.map((cols, row) => cols.map((box, col) => mapFn({ box, col, row })))
 	}
 	#updateSelected(update: (args: { box: BoxSchema } & Position) => BoxSchema) {
 		this.#boardMap(args =>
@@ -156,12 +154,12 @@ export class SudokuService implements ISudokuService {
 		}))
 	}
 	getBoard = (): readonly BoxSchema[][] => this.#board
-	getBox = ({ column, row }: Position) => Object.freeze(this.#board[row][column])
-	getSudokuValue = ({ column, row }: Position) => this.#sudoku[row][column]
+	getBox = ({ col, row }: Position) => Object.freeze(this.#board[row][col])
+	getSudokuValue = ({ col, row }: Position) => this.#sudoku[row][col]
 	moveSelected(pos: Position) {
-		this.#boardMap(({ box, column, row }) => ({
+		this.#boardMap(({ box, col, row }) => ({
 			...box,
-			selected: pos.column === column && pos.row === row,
+			selected: pos.col === col && pos.row === row,
 		}))
 	}
 	writeNumber(value: number) {

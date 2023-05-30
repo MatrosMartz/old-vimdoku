@@ -5,7 +5,7 @@ import { BoxStates, type BoxSchema } from '../models'
 
 const sudoku = SudokuService.createSolution()
 
-console.log(sudoku.map(cols => cols.join(' | ')))
+console.log(sudoku.map(col => col.join(' | ')))
 
 describe('Create Sudoku', () => {
 	test.concurrent('Should return array', () => {
@@ -15,19 +15,19 @@ describe('Create Sudoku', () => {
 		expect(sudoku).toHaveLength(9)
 	})
 	test.concurrent('The length of columns should be nine', () => {
-		expect(sudoku.every(column => column.length === 9)).toBe(true)
+		expect(sudoku.every(col => col.length === 9)).toBe(true)
 	})
 	test.concurrent('All boxes should be numbers', () => {
-		expect(sudoku.every(column => column.every(box => typeof box === 'number'))).toBe(true)
+		expect(sudoku.every(col => col.every(box => typeof box === 'number'))).toBe(true)
 	})
 	test.concurrent('All boxes should be contain numbers from one to nine', () => {
-		expect(sudoku.every(column => column.every(box => 0 < box && box < 10))).toBe(true)
+		expect(sudoku.every(col => col.every(box => 0 < box && box < 10))).toBe(true)
 	})
 
 	describe('sudoku are correct', () => {
-		const { columns, quadrants, rows } = SudokuService.getSectors(sudoku)
+		const { cols, quadrants, rows } = SudokuService.getSectors(sudoku)
 		test.concurrent.each([
-			{ name: 'columns', actual: columns },
+			{ name: 'columns', actual: cols },
 			{ name: 'quadrants', actual: quadrants },
 			{ name: 'rows', actual: rows },
 		])('$name should be contain only different numbers', ({ actual }) => {
@@ -50,9 +50,9 @@ describe('Sudoku Board', () => {
 	})
 
 	test.concurrent('Not all box should be initials', () => {
-		expect(
-			board.getBoard().every(columns => columns.every(box => box.state === BoxStates.Initial))
-		).toBe(false)
+		expect(board.getBoard().every(col => col.every(box => box.state === BoxStates.Initial))).toBe(
+			false
+		)
 	})
 
 	describe('Write Number', () => {

@@ -24,7 +24,7 @@ export interface BoxSchema {
 }
 
 export interface Position {
-	column: number
+	col: number
 	row: number
 }
 
