@@ -5,8 +5,6 @@ import { BoxStates, type BoxSchema } from '../models'
 
 const sudoku = SudokuService.createSolution()
 
-console.log(sudoku.map(col => col.join(' | ')))
-
 describe('Create Sudoku', () => {
 	test.concurrent('Should return array', () => {
 		expect(Array.isArray(sudoku)).toBe(true)
