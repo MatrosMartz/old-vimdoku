@@ -124,25 +124,37 @@ export class SudokuService implements ISudokuService {
 		this.#board = this.#createBoard()
 	}
 
-	#createBoard = () =>
-		this.#sudoku.map(cols =>
-			cols.map<BoxSchema>(value => {
+	#createBoard() {
+		const board: BoxSchema[][] = []
+		for (let row = 0; row < 9; row++) {
+			board[row] = []
+			for (let col = 0; col < 9; col++) {
 				const isInitial = probabilityToBeInitial(this.#difficulty)
-				return {
+				board[row][col] = {
 					notes: [],
 					selected: false,
 					state: isInitial ? BoxStates.Initial : BoxStates.Empty,
-					value: isInitial ? value : SudokuService.EMPTY_BOX_VALUE,
+					value: isInitial ? this.#sudoku[row][col] : SudokuService.EMPTY_BOX_VALUE,
 				}
-			})
-		)
+			}
+		}
+		return board
+	}
 	#boardMap(mapFn: (args: { box: BoxSchema } & Position) => BoxSchema) {
-		this.#board = this.#board.map((cols, row) => cols.map((box, col) => mapFn({ box, col, row })))
+		for (let row = 0; row < 9; row++) {
+			for (let col = 0; col < 9; col++) {
+				this.#board[row][col] = mapFn({ box: this.getBox({ col, row }), col, row })
+			}
+		}
 	}
 	#updateSelected(update: (args: { box: BoxSchema } & Position) => BoxSchema) {
-		this.#boardMap(args =>
-			!args.box.selected || args.box.state === BoxStates.Initial ? { ...args.box } : update(args)
-		)
+		for (let row = 0; row < 9; row++) {
+			for (let col = 0; col < 9; col++) {
+				const box = this.getBox({ col, row })
+				if (box.selected && box.state !== BoxStates.Initial)
+					this.#board[row][col] = update({ box, col, row })
+			}
+		}
 	}
 
 	addNote(value: number) {
