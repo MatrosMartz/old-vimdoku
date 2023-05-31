@@ -111,17 +111,21 @@ export class SudokuService implements ISudokuService {
 	#board: BoxSchema[][]
 	#difficulty: Difficulties
 	#sudoku: readonly number[][]
+	#selectedPos: Position
 
 	constructor({
 		sudoku = SudokuService.createSolution(),
 		difficulty = Difficulties.Basic,
+		initialPosition = { col: 0, row: 0 },
 	}: {
 		sudoku?: readonly number[][]
 		difficulty?: Difficulties
+		initialPosition?: Position
 	} = {}) {
 		this.#sudoku = sudoku
 		this.#difficulty = difficulty
 		this.#board = this.#createBoard()
+		this.#selectedPos = initialPosition
 	}
 
 	#createBoard() {
@@ -168,11 +172,43 @@ export class SudokuService implements ISudokuService {
 	getBoard = (): readonly BoxSchema[][] => this.#board
 	getBox = ({ col, row }: Position) => Object.freeze(this.#board[row][col])
 	getSudokuValue = ({ col, row }: Position) => this.#sudoku[row][col]
+	getSelectedPosition = () => this.#selectedPos
 	moveSelected(pos: Position) {
-		this.#boardMap(({ box, col, row }) => ({
-			...box,
-			selected: pos.col === col && pos.row === row,
-		}))
+		this.#boardMap(({ box, col, row }) => {
+			const selected = pos.col === col && pos.row === row
+			if (selected) this.#selectedPos = pos
+			return { ...box, selected }
+		})
+	}
+	moveDown(times = 1) {
+		const newCol = this.#selectedPos.col + times
+		const newRow = this.#selectedPos.row + Math.trunc(newCol / 10)
+
+		this.moveSelected({ row: newRow % 10, col: newCol % 10 })
+	}
+	moveLeft(times = 1) {
+		const newRow = this.#selectedPos.row - times
+		const newCol = this.#selectedPos.col - Math.trunc(newRow / 10)
+
+		this.moveSelected({
+			col: (newCol % 10) + newCol < 0 ? 10 : 0,
+			row: (newRow % 10) + newRow < 0 ? 10 : 0,
+		})
+	}
+	moveRight(times = 1) {
+		const newRow = this.#selectedPos.row + times
+		const newCol = this.#selectedPos.col + Math.trunc(newRow / 10)
+
+		this.moveSelected({ row: newCol % 10, col: newRow % 10 })
+	}
+	moveUp(times = 1) {
+		const newCol = this.#selectedPos.col - times
+		const newRow = this.#selectedPos.row - Math.trunc(newCol / 10)
+
+		this.moveSelected({
+			col: (newRow % 10) + newRow < 0 ? 10 : 0,
+			row: (newCol % 10) + newCol < 0 ? 10 : 0,
+		})
 	}
 	writeNumber(value: number) {
 		this.#updateSelected(({ box, ...pos }) => {
