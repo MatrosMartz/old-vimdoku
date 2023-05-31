@@ -1,10 +1,11 @@
-import { writable } from 'svelte/store'
+import { derived, writable } from 'svelte/store'
 
 import { Difficulties, type Position } from '~/domain/models'
 import { SudokuService } from '~/domain/services'
 
+const sudokuService = new SudokuService({ difficulty: Difficulties.Expert })
+
 function createSudokuStore() {
-	const sudokuService = new SudokuService({ difficulty: Difficulties.Expert })
 	const { subscribe, set } = writable(sudokuService.getBoard())
 
 	const addNote = (note: number) => {
@@ -44,3 +45,5 @@ function createSudokuStore() {
 }
 
 export const sudokuStore = createSudokuStore()
+
+export const selectedPositionStore = derived(sudokuStore, () => sudokuService.getSelectedPosition())
