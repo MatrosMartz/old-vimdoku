@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from 'vitest'
 
 import { SudokuService } from './sudoku.service'
-import { BoxStates, type BoxSchema } from '../models'
+import { BoxStates, type BoxSchema, type Position } from '../models'
 
 const sudoku = SudokuService.createSolution()
 
@@ -173,6 +173,125 @@ describe('Sudoku Board', () => {
 			...standardBox,
 			state: BoxStates.WhitNotes,
 			notes: [1],
+		})
+	})
+})
+
+describe('Sudoku Move', () => {
+	let board: SudokuService
+
+	beforeEach(() => {
+		board = new SudokuService({ sudoku })
+	})
+
+	describe.concurrent('Left', () => {
+		test.concurrent('should move to the left', () => {
+			const initialPosition: Position = { col: 0, row: 8 }
+			board.moveSelected(initialPosition)
+			board.moveLeft()
+			const actualPosition = board.getSelectedPosition()
+
+			expect(actualPosition).toEqual<Position>({ col: 0, row: 7 })
+		})
+		test.concurrent('should move to the left and up column', () => {
+			const initialPosition: Position = { col: 8, row: 0 }
+			board.moveSelected(initialPosition)
+			board.moveLeft()
+			const actualPosition = board.getSelectedPosition()
+
+			expect(actualPosition).toEqual<Position>({ col: 7, row: 8 })
+		})
+		test.concurrent('should not move to the left if col and row are zero', () => {
+			const initialPosition: Position = { col: 0, row: 0 }
+			board.moveSelected(initialPosition)
+			board.moveLeft()
+			const actualPosition = board.getSelectedPosition()
+
+			expect(actualPosition).toEqual<Position>({ col: 0, row: 0 })
+		})
+	})
+
+	describe.concurrent('Right', () => {
+		test.concurrent('should move to the right', () => {
+			const initialPosition: Position = { col: 0, row: 0 }
+			board.moveSelected(initialPosition)
+			board.moveRight()
+			const actualPosition = board.getSelectedPosition()
+
+			expect(actualPosition).toEqual<Position>({ col: 0, row: 1 })
+		})
+		test.concurrent('should move to the right and down column', () => {
+			const initialPosition: Position = { col: 0, row: 8 }
+			board.moveSelected(initialPosition)
+			board.moveRight()
+			const actualPosition = board.getSelectedPosition()
+
+			expect(actualPosition).toEqual<Position>({ col: 1, row: 0 })
+		})
+
+		test.concurrent('should not move to the right if col and row are 8', () => {
+			const initialPosition: Position = { col: 8, row: 8 }
+			board.moveSelected(initialPosition)
+			board.moveRight()
+			const actualPosition = board.getSelectedPosition()
+
+			expect(actualPosition).toEqual<Position>({ col: 8, row: 8 })
+		})
+	})
+
+	describe.concurrent('Down', () => {
+		test.concurrent('should move to the down', () => {
+			const initialPosition: Position = { col: 0, row: 0 }
+			board.moveSelected(initialPosition)
+			board.moveDown()
+			const actualPosition = board.getSelectedPosition()
+
+			expect(actualPosition).toEqual<Position>({ col: 1, row: 0 })
+		})
+		test.concurrent('should move to the end if col is 8 ', () => {
+			const initialPosition: Position = { col: 8, row: 0 }
+			board.moveSelected(initialPosition)
+			board.moveDown()
+			const actualPosition = board.getSelectedPosition()
+
+			expect(actualPosition).toEqual<Position>({ col: 8, row: 8 })
+		})
+
+		test.concurrent('should not move to the down if col and row are 8', () => {
+			const initialPosition: Position = { col: 8, row: 8 }
+			board.moveSelected(initialPosition)
+			board.moveDown()
+			const actualPosition = board.getSelectedPosition()
+
+			expect(actualPosition).toEqual<Position>({ col: 8, row: 8 })
+		})
+	})
+
+	describe.concurrent('Up', () => {
+		test.concurrent('should move to the up', () => {
+			const initialPosition: Position = { col: 8, row: 8 }
+			board.moveSelected(initialPosition)
+			board.moveUp()
+			const actualPosition = board.getSelectedPosition()
+
+			expect(actualPosition).toEqual<Position>({ col: 7, row: 8 })
+		})
+		test.concurrent('should move to the start if col is 0', () => {
+			const initialPosition: Position = { col: 0, row: 8 }
+			board.moveSelected(initialPosition)
+			board.moveUp()
+			const actualPosition = board.getSelectedPosition()
+
+			expect(actualPosition).toEqual<Position>({ col: 0, row: 0 })
+		})
+
+		test.concurrent('should not move to the up if col and row are 0', () => {
+			const initialPosition: Position = { col: 0, row: 0 }
+			board.moveSelected(initialPosition)
+			board.moveUp()
+			const actualPosition = board.getSelectedPosition()
+
+			expect(actualPosition).toEqual<Position>({ col: 0, row: 0 })
 		})
 	})
 })
