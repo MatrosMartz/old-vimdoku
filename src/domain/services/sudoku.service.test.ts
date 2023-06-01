@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from 'vitest'
 
 import { SudokuService } from './sudoku.service'
-import { BoxStates, type BoxSchema, type Position } from '../models'
+import { BoxKinds, type BoxSchema, type Position } from '../models'
 
 const sudoku = SudokuService.createSolution()
 
@@ -39,7 +39,7 @@ describe('Sudoku Board', () => {
 	const standardBox: BoxSchema = {
 		notes: [],
 		selected: true,
-		state: BoxStates.Empty,
+		kind: BoxKinds.Empty,
 		value: SudokuService.EMPTY_BOX_VALUE,
 	}
 
@@ -48,14 +48,14 @@ describe('Sudoku Board', () => {
 	})
 
 	test.concurrent('Not all box should be initials', () => {
-		expect(board.getBoard().every(col => col.every(box => box.state === BoxStates.Initial))).toBe(
+		expect(board.getBoard().every(col => col.every(box => box.kind === BoxKinds.Initial))).toBe(
 			false
 		)
 	})
 
 	describe('Write Number', () => {
 		test.concurrent('Should change the status to incorrect', () => {
-			const initialBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Initial)!
+			const initialBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Initial)!
 			const correctValue = board.getSudokuValue(initialBoxPos)
 			const incorrectValue = correctValue > 9 ? 1 : correctValue + 1
 
@@ -65,12 +65,12 @@ describe('Sudoku Board', () => {
 			const box = board.getBox(initialBoxPos)
 			expect(box).toMatchObject<BoxSchema>({
 				...standardBox,
-				state: BoxStates.Initial,
+				kind: BoxKinds.Initial,
 				value: correctValue,
 			})
 		})
 		test.concurrent('Should change the status to incorrect', () => {
-			const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
+			const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 			const incorrectValue = correctValue > 9 ? 1 : correctValue + 1
 
@@ -80,12 +80,12 @@ describe('Sudoku Board', () => {
 			const box = board.getBox(voidBoxPos)
 			expect(box).toMatchObject<BoxSchema>({
 				...standardBox,
-				state: BoxStates.Incorrect,
+				kind: BoxKinds.Incorrect,
 				value: incorrectValue,
 			})
 		})
 		test.concurrent('Should change the status to correct', () => {
-			const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
+			const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 
 			board.moveSelected(voidBoxPos)
@@ -94,12 +94,12 @@ describe('Sudoku Board', () => {
 			const box = board.getBox(voidBoxPos)
 			expect(box).toMatchObject<BoxSchema>({
 				...standardBox,
-				state: BoxStates.Correct,
+				kind: BoxKinds.Correct,
 				value: correctValue,
 			})
 		})
 		test.concurrent('should reset notes', () => {
-			const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
+			const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 
 			board.moveSelected(voidBoxPos)
@@ -109,7 +109,7 @@ describe('Sudoku Board', () => {
 			const box = board.getBox(voidBoxPos)
 			expect(box).toMatchObject<BoxSchema>({
 				...standardBox,
-				state: BoxStates.Correct,
+				kind: BoxKinds.Correct,
 				value: correctValue,
 			})
 		})
@@ -117,7 +117,7 @@ describe('Sudoku Board', () => {
 
 	describe('Add Notes', () => {
 		test.concurrent('Should change the status to notes', () => {
-			const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
+			const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
 			board.moveSelected(voidBoxPos)
 			board.addNote(1)
@@ -125,13 +125,13 @@ describe('Sudoku Board', () => {
 			const box = board.getBox(voidBoxPos)
 			expect(box).toMatchObject<BoxSchema>({
 				...standardBox,
-				state: BoxStates.WhitNotes,
+				kind: BoxKinds.WhitNotes,
 				notes: [1],
 			})
 		})
 	})
 	test.concurrent('should arrange the notes correctly', () => {
-		const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
+		const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
 		board.moveSelected(voidBoxPos)
 		board.addNote(3)
@@ -142,12 +142,12 @@ describe('Sudoku Board', () => {
 		const box = board.getBox(voidBoxPos)
 		expect(box).toMatchObject<BoxSchema>({
 			...standardBox,
-			state: BoxStates.WhitNotes,
+			kind: BoxKinds.WhitNotes,
 			notes: [1, 2, 3, 9],
 		})
 	})
 	test.concurrent('should not repeat notes', () => {
-		const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
+		const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
 		board.moveSelected(voidBoxPos)
 		board.addNote(1)
@@ -156,12 +156,12 @@ describe('Sudoku Board', () => {
 		const box = board.getBox(voidBoxPos)
 		expect(box).toMatchObject<BoxSchema>({
 			...standardBox,
-			state: BoxStates.WhitNotes,
+			kind: BoxKinds.WhitNotes,
 			notes: [1],
 		})
 	})
 	test.concurrent('should reset value', () => {
-		const voidBoxPos = SudokuService.getFirstBoxWithState(board.getBoard(), BoxStates.Empty)!
+		const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
 		board.moveSelected(voidBoxPos)
 		board.writeNumber(9)
@@ -171,7 +171,7 @@ describe('Sudoku Board', () => {
 		const box = board.getBox(voidBoxPos)
 		expect(box).toMatchObject<BoxSchema>({
 			...standardBox,
-			state: BoxStates.WhitNotes,
+			kind: BoxKinds.WhitNotes,
 			notes: [1],
 		})
 	})

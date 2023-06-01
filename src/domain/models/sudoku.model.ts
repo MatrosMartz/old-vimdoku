@@ -1,4 +1,4 @@
-export const enum BoxStates {
+export const enum BoxKinds {
 	Correct = 'correct',
 	Incorrect = 'incorrect',
 	Initial = 'initial',
@@ -19,7 +19,7 @@ export const enum Difficulties {
 export interface BoxSchema {
 	notes: number[]
 	selected: boolean
-	state: BoxStates
+	kind: BoxKinds
 	value: number
 }
 

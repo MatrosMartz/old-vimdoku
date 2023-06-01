@@ -1,5 +1,5 @@
 import {
-	BoxStates,
+	BoxKinds,
 	type BoxSchema,
 	type ISudokuService,
 	Difficulties,
@@ -99,13 +99,13 @@ export class SudokuService implements ISudokuService {
 	}
 	static isWin(board: readonly BoxSchema[][]) {
 		return board.every(cols =>
-			cols.every(box => [BoxStates.Initial, BoxStates.Correct].includes(box.state))
+			cols.every(box => [BoxKinds.Initial, BoxKinds.Correct].includes(box.kind))
 		)
 	}
-	static getFirstBoxWithState(board: readonly BoxSchema[][], state: BoxStates) {
+	static getFirstBoxWithKind(board: readonly BoxSchema[][], kind: BoxKinds) {
 		for (let row = 0; row < board.length; row++) {
 			for (let col = 0; col < board[row].length; col++) {
-				if (board[row][col].state === state) return { col, row }
+				if (board[row][col].kind === kind) return { col, row }
 			}
 		}
 	}
@@ -139,7 +139,7 @@ export class SudokuService implements ISudokuService {
 				board[row][col] = {
 					notes: [],
 					selected: false,
-					state: isInitial ? BoxStates.Initial : BoxStates.Empty,
+					kind: isInitial ? BoxKinds.Initial : BoxKinds.Empty,
 					value: isInitial ? this.#sudoku[row][col] : SudokuService.EMPTY_BOX_VALUE,
 				}
 			}
@@ -157,7 +157,7 @@ export class SudokuService implements ISudokuService {
 		for (let row = 0; row < 9; row++) {
 			for (let col = 0; col < 9; col++) {
 				const box = this.getBox({ col, row })
-				if (box.selected && box.state !== BoxStates.Initial)
+				if (box.selected && box.kind !== BoxKinds.Initial)
 					this.#board[row][col] = update({ box, col, row })
 			}
 		}
@@ -174,7 +174,7 @@ export class SudokuService implements ISudokuService {
 			...box,
 			value: SudokuService.EMPTY_BOX_VALUE,
 			notes: addNewNote(box.notes, value),
-			state: BoxStates.WhitNotes,
+			kind: BoxKinds.WhitNotes,
 		}))
 	}
 
@@ -237,7 +237,7 @@ export class SudokuService implements ISudokuService {
 				...box,
 				notes: [],
 				value: value,
-				state: isCorrect ? BoxStates.Correct : BoxStates.Incorrect,
+				kind: isCorrect ? BoxKinds.Correct : BoxKinds.Incorrect,
 			}
 		})
 	}
