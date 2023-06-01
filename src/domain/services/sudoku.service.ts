@@ -194,40 +194,40 @@ export class SudokuService implements ISudokuService {
 	moveDown(times = 1) {
 		if (this.#isEndPosition()) return
 
-		const col = this.#selectedPos.col + times
-		const colIsMax = col > SudokuService.MAX_BOX_POS
-		const row = colIsMax ? SudokuService.MAX_BOX_POS : this.#selectedPos.row
+		const row = this.#selectedPos.row + times
+		const rowIsMax = row > SudokuService.MAX_BOX_POS
+		const col = rowIsMax ? SudokuService.MAX_BOX_POS : this.#selectedPos.col
 
-		this.moveSelected({ col: colIsMax ? SudokuService.MAX_BOX_POS : col, row })
+		this.moveSelected({ row: rowIsMax ? SudokuService.MAX_BOX_POS : row, col })
 	}
 	moveLeft(times = 1) {
 		if (this.#isStartPosition()) return
 
-		const row = this.#selectedPos.row - times
-		const rowIxMin = row < SudokuService.MIN_BOX_POS
-		const col = this.#selectedPos.col + (rowIxMin ? row : SudokuService.MIN_BOX_POS)
+		const col = this.#selectedPos.col - times
+		const colIxMin = col < SudokuService.MIN_BOX_POS
+		const row = this.#selectedPos.row + (colIxMin ? col : SudokuService.MIN_BOX_POS)
 
 		this.moveSelected({
-			col,
-			row: rowIxMin ? row + 9 : row,
+			row,
+			col: colIxMin ? col + 9 : col,
 		})
 	}
 	moveRight(times = 1) {
 		if (this.#isEndPosition()) return
 
-		const newRow = this.#selectedPos.row + times
-		const newCol = this.#selectedPos.col + Math.trunc(newRow / 9)
+		const col = this.#selectedPos.col + times
+		const row = this.#selectedPos.row + Math.trunc(col / 9)
 
-		this.moveSelected({ col: newCol, row: newRow % 9 })
+		this.moveSelected({ row, col: col % 9 })
 	}
 	moveUp(times = 1) {
 		if (this.#isStartPosition()) return
 
-		const col = this.#selectedPos.col - times
-		const colISMin = col < SudokuService.MIN_BOX_POS
-		const row = colISMin ? SudokuService.MIN_BOX_POS : this.#selectedPos.row
+		const row = this.#selectedPos.row - times
+		const rowISMin = row < SudokuService.MIN_BOX_POS
+		const col = rowISMin ? SudokuService.MIN_BOX_POS : this.#selectedPos.col
 
-		this.moveSelected({ col: colISMin ? SudokuService.MIN_BOX_POS : col, row })
+		this.moveSelected({ row: rowISMin ? SudokuService.MIN_BOX_POS : row, col })
 	}
 
 	writeNumber(value: number) {
