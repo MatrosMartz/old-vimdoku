@@ -81,6 +81,8 @@ export class SudokuService implements ISudokuService {
 		return board
 	}
 	static EMPTY_BOX_VALUE = 0
+	static MAX_BOX_POS = 8
+	static MIN_BOX_POS = 0
 	static getSectors(sudoku: readonly number[][]) {
 		const quadrants = createArrayMap(9, () => new Set<number>())
 		const cols = createArrayMap(9, () => new Set<number>())
@@ -160,6 +162,12 @@ export class SudokuService implements ISudokuService {
 			}
 		}
 	}
+	#isStartPosition = () =>
+		this.#selectedPos.row === SudokuService.MIN_BOX_POS &&
+		this.#selectedPos.col === SudokuService.MIN_BOX_POS
+	#isEndPosition = () =>
+		this.#selectedPos.row === SudokuService.MAX_BOX_POS &&
+		this.#selectedPos.col === SudokuService.MAX_BOX_POS
 
 	addNote(value: number) {
 		this.#updateSelected(({ box }) => ({
@@ -169,10 +177,12 @@ export class SudokuService implements ISudokuService {
 			state: BoxStates.WhitNotes,
 		}))
 	}
+
 	getBoard = (): readonly BoxSchema[][] => this.#board
 	getBox = ({ col, row }: Position) => Object.freeze(this.#board[row][col])
 	getSudokuValue = ({ col, row }: Position) => this.#sudoku[row][col]
 	getSelectedPosition = () => this.#selectedPos
+
 	moveSelected(pos: Position) {
 		this.#boardMap(({ box, col, row }) => {
 			const selected = pos.col === col && pos.row === row
@@ -180,36 +190,46 @@ export class SudokuService implements ISudokuService {
 			return { ...box, selected }
 		})
 	}
-	moveDown(times = 1) {
-		const newCol = this.#selectedPos.col + times
-		const newRow = this.#selectedPos.row + Math.trunc(newCol / 10)
 
-		this.moveSelected({ row: newRow % 10, col: newCol % 10 })
+	moveDown(times = 1) {
+		if (this.#isEndPosition()) return
+
+		const col = this.#selectedPos.col + times
+		const colIsMax = col > SudokuService.MAX_BOX_POS
+		const row = colIsMax ? SudokuService.MAX_BOX_POS : this.#selectedPos.row
+
+		this.moveSelected({ col: colIsMax ? SudokuService.MAX_BOX_POS : col, row })
 	}
 	moveLeft(times = 1) {
-		const newRow = this.#selectedPos.row - times
-		const newCol = this.#selectedPos.col - Math.trunc(newRow / 10)
+		if (this.#isStartPosition()) return
+
+		const row = this.#selectedPos.row - times
+		const rowIxMin = row < SudokuService.MIN_BOX_POS
+		const col = this.#selectedPos.col + (rowIxMin ? row : SudokuService.MIN_BOX_POS)
 
 		this.moveSelected({
-			col: (newCol % 10) + newCol < 0 ? 10 : 0,
-			row: (newRow % 10) + newRow < 0 ? 10 : 0,
+			col,
+			row: rowIxMin ? row + 9 : row,
 		})
 	}
 	moveRight(times = 1) {
-		const newRow = this.#selectedPos.row + times
-		const newCol = this.#selectedPos.col + Math.trunc(newRow / 10)
+		if (this.#isEndPosition()) return
 
-		this.moveSelected({ row: newCol % 10, col: newRow % 10 })
+		const newRow = this.#selectedPos.row + times
+		const newCol = this.#selectedPos.col + Math.trunc(newRow / 9)
+
+		this.moveSelected({ col: newCol, row: newRow % 9 })
 	}
 	moveUp(times = 1) {
-		const newCol = this.#selectedPos.col - times
-		const newRow = this.#selectedPos.row - Math.trunc(newCol / 10)
+		if (this.#isStartPosition()) return
 
-		this.moveSelected({
-			col: (newRow % 10) + newRow < 0 ? 10 : 0,
-			row: (newCol % 10) + newCol < 0 ? 10 : 0,
-		})
+		const col = this.#selectedPos.col - times
+		const colISMin = col < SudokuService.MIN_BOX_POS
+		const row = colISMin ? SudokuService.MIN_BOX_POS : this.#selectedPos.row
+
+		this.moveSelected({ col: colISMin ? SudokuService.MIN_BOX_POS : col, row })
 	}
+
 	writeNumber(value: number) {
 		this.#updateSelected(({ box, ...pos }) => {
 			const isCorrect = this.getSudokuValue(pos) === value
