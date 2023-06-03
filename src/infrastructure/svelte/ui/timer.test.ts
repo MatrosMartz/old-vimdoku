@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/svelte'
 
 import { hours, minutes, seconds } from '~/tests/utils'
@@ -11,20 +11,20 @@ describe('Timer Component', () => {
 
 	beforeAll(() => {
 		vi.useFakeTimers()
+		return () => {
+			vi.useRealTimers()
+		}
 	})
 	beforeEach(() => {
-		cleanup()
 		render(Timer)
 		timerStore.start()
 		timer = screen.getByTestId('timer')
-	})
-	afterEach(() => {
-		timerStore.stop()
-		timerStore.reset()
-		vi.clearAllTimers()
-	})
-	afterAll(() => {
-		vi.useRealTimers()
+		return () => {
+			cleanup()
+			timerStore.stop()
+			timerStore.reset()
+			vi.clearAllTimers()
+		}
 	})
 
 	test('Should start with zero', () => {
