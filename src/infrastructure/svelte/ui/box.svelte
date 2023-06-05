@@ -1,27 +1,27 @@
 <script lang="ts">
 	import { BoxKinds, Modes } from '~/domain/models'
-	import { SudokuService } from '~/domain/services'
+	import { BoardService } from '~/domain/services'
 
-	import { modesStore, sudokuStore } from '../stores'
+	import { modesStore, boardStore, selectionStore } from '../stores'
 
 	export let row: number
 	export let col: number
 
-	$: box = $sudokuStore[row][col]
+	$: box = $boardStore[row][col]
 	$: value = box.value > 0 ? box.value : ''
+	$: selected = $selectionStore.col === col && $selectionStore.row === row
 
-	const InputHandler = () => sudokuStore.move({ row, col })
+	const InputHandler = () => selectionStore.moveTo({ row, col })
 
 	const KeyHandler = (e: KeyboardEvent) => {
-		if (box.selected || box.kind !== BoxKinds.Initial) {
+		if (selected || box.kind !== BoxKinds.Initial) {
 			const insertNum = Number(e.key)
-			if (e.code === 'Backspace' || insertNum === 0)
-				sudokuStore.write(SudokuService.EMPTY_BOX_VALUE)
+			if (e.code === 'Backspace' || insertNum === 0) boardStore.write(BoardService.EMPTY_BOX_VALUE)
 			else if (!Number.isNaN(insertNum)) {
-				if ($modesStore === Modes.Insert) sudokuStore.write(insertNum)
-				else if ($modesStore === Modes.Annotation) sudokuStore.addNote(insertNum)
+				if ($modesStore === Modes.Insert) boardStore.write(insertNum)
+				else if ($modesStore === Modes.Annotation) boardStore.addNote(insertNum)
 			}
-			sudokuStore.moveUp()
+			selectionStore.moveUp()
 		}
 	}
 </script>
@@ -29,16 +29,24 @@
 <button
 	data-testid="{row}-{col}"
 	class:initial={box.kind === BoxKinds.Initial}
-	class:selected={box.selected}
-	class="rounded-lg border-2 border-transparent box-border z-10 outline-none father"
+	class:selected
+	class="rounded-lg border-2 border-transparent box-border z-10 relative father"
 	id="{row}-{col}"
 	on:click={InputHandler}
 	on:keydown={KeyHandler}
 >
-	<span data-testid="value" class="flex justify-center items-center" hidden={box.notes.length > 0}>
+	<span
+		data-testid="value"
+		class="flex justify-center items-center absolute top-0 left-0"
+		hidden={box.notes.length > 0}
+	>
 		{value}
 	</span>
-	<span data-testid="notes" class="grid grid-cols-3 grid-rows-3" hidden={box.notes.length === 0}>
+	<span
+		data-testid="notes"
+		class="grid grid-cols-3 grid-rows-3 w-max h-max absolute top-0 left-0"
+		hidden={box.notes.length === 0}
+	>
 		{#each [1, 2, 3, 4, 5, 6, 7, 8, 9] as note}
 			<span data-testid="note-{note}" class="note-{note}" hidden={!box.notes.includes(note)}>
 				{note}
@@ -51,6 +59,7 @@
 	.father {
 		width: 2.5rem;
 		height: 2.5rem;
+		outline: none;
 	}
 	.initial {
 		color: rgb(var(--color-primary-600));

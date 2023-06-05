@@ -18,7 +18,6 @@ export const enum Difficulties {
 
 export interface BoxSchema {
 	notes: number[]
-	selected: boolean
 	kind: BoxKinds
 	value: number
 }
@@ -28,16 +27,20 @@ export interface Position {
 	row: number
 }
 
-export interface ISudokuService {
+export interface IBoardService {
 	addNote: (value: number) => void
 	getBoard: () => readonly BoxSchema[][]
 	getBox: (pos: Position) => Readonly<BoxSchema>
-	getSelectedPosition: () => Position
 	getSudokuValue: (pos: Position) => number
-	moveSelected: (pos: Position) => void
+	writeNumber: (value: number) => void
+	isSelected: (pos: Position) => boolean
+}
+
+export interface ISelectionService {
 	moveDown: (times?: number) => void
 	moveLeft: (times?: number) => void
 	moveRight: (times?: number) => void
+	moveTo: (pos: Position) => void
 	moveUp: (times?: number) => void
-	writeNumber: (value: number) => void
+	getSelectionPosition: () => Position
 }

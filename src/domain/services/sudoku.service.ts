@@ -1,9 +1,10 @@
 import {
 	BoxKinds,
 	type BoxSchema,
-	type ISudokuService,
+	type IBoardService,
 	Difficulties,
 	type Position,
+	type ISelectionService,
 } from '../models'
 import {
 	addNewNote,
@@ -14,7 +15,65 @@ import {
 	isSafe,
 } from '../utils'
 
-export class SudokuService implements ISudokuService {
+export class SelectionService implements ISelectionService {
+	static MAX_BOX_POS = 8
+	static MIN_BOX_POS = 0
+	#position: Position
+
+	#isEndPosition = () => this.#position.row === 8 && this.#position.col === 8
+	#isStartPosition = () => this.#position.row === 0 && this.#position.col === 0
+
+	constructor(initialPosition: Position = { col: 0, row: 0 }) {
+		this.#position = initialPosition
+	}
+
+	moveDown(times = 1) {
+		if (this.#isEndPosition()) return
+
+		const row = this.#position.row + times
+		const rowIsMax = row > SelectionService.MAX_BOX_POS
+		const col = rowIsMax ? SelectionService.MAX_BOX_POS : this.#position.col
+
+		this.#position = { row: rowIsMax ? SelectionService.MAX_BOX_POS : row, col }
+	}
+	moveLeft(times = 1) {
+		if (this.#isStartPosition()) return
+
+		const col = this.#position.col - times
+		const colIxMin = col < SelectionService.MIN_BOX_POS
+		const row = this.#position.row + (colIxMin ? col : SelectionService.MIN_BOX_POS)
+
+		this.#position = {
+			row,
+			col: colIxMin ? col + 9 : col,
+		}
+	}
+	moveRight(times = 1) {
+		if (this.#isEndPosition()) return
+
+		const col = this.#position.col + times
+		const row = this.#position.row + Math.trunc(col / 9)
+
+		this.#position = { row, col: col % 9 }
+	}
+	moveUp(times = 1) {
+		if (this.#isStartPosition()) return
+
+		const row = this.#position.row - times
+		const rowISMin = row < SelectionService.MIN_BOX_POS
+		const col = rowISMin ? SelectionService.MIN_BOX_POS : this.#position.col
+
+		this.#position = { row: rowISMin ? SelectionService.MIN_BOX_POS : row, col }
+	}
+	moveTo(newPosition: Position) {
+		this.#position = newPosition
+	}
+	getSelectionPosition = () => this.#position
+}
+
+export const selection = new SelectionService()
+
+export class BoardService implements IBoardService {
 	static createSolution() {
 		const board = createEmptyBoard()
 
@@ -81,8 +140,6 @@ export class SudokuService implements ISudokuService {
 		return board
 	}
 	static EMPTY_BOX_VALUE = 0
-	static MAX_BOX_POS = 8
-	static MIN_BOX_POS = 0
 	static getSectors(sudoku: readonly number[][]) {
 		const quadrants = createArrayMap(9, () => new Set<number>())
 		const cols = createArrayMap(9, () => new Set<number>())
@@ -113,21 +170,21 @@ export class SudokuService implements ISudokuService {
 	#board: BoxSchema[][]
 	#difficulty: Difficulties
 	#sudoku: readonly number[][]
-	#selectedPos: Position
+	#selectionService: SelectionService
 
 	constructor({
-		sudoku = SudokuService.createSolution(),
+		sudoku = BoardService.createSolution(),
 		difficulty = Difficulties.Basic,
-		initialPosition = { col: 0, row: 0 },
+		selectionService = selection,
 	}: {
 		sudoku?: readonly number[][]
 		difficulty?: Difficulties
-		initialPosition?: Position
+		selectionService?: SelectionService
 	} = {}) {
 		this.#sudoku = sudoku
 		this.#difficulty = difficulty
 		this.#board = this.#createBoard()
-		this.#selectedPos = initialPosition
+		this.#selectionService = selectionService
 	}
 
 	#createBoard() {
@@ -138,41 +195,31 @@ export class SudokuService implements ISudokuService {
 				const isInitial = probabilityToBeInitial(this.#difficulty)
 				board[row][col] = {
 					notes: [],
-					selected: false,
 					kind: isInitial ? BoxKinds.Initial : BoxKinds.Empty,
-					value: isInitial ? this.#sudoku[row][col] : SudokuService.EMPTY_BOX_VALUE,
+					value: isInitial ? this.#sudoku[row][col] : BoardService.EMPTY_BOX_VALUE,
 				}
 			}
 		}
 		return board
 	}
-	#boardMap(mapFn: (args: { box: BoxSchema } & Position) => BoxSchema) {
-		for (let row = 0; row < 9; row++) {
-			for (let col = 0; col < 9; col++) {
-				this.#board[row][col] = mapFn({ box: this.getBox({ col, row }), col, row })
-			}
-		}
-	}
 	#updateSelected(update: (args: { box: BoxSchema } & Position) => BoxSchema) {
 		for (let row = 0; row < 9; row++) {
 			for (let col = 0; col < 9; col++) {
 				const box = this.getBox({ col, row })
-				if (box.selected && box.kind !== BoxKinds.Initial)
+				if (this.isSelected({ row, col }) && box.kind !== BoxKinds.Initial)
 					this.#board[row][col] = update({ box, col, row })
 			}
 		}
 	}
-	#isStartPosition = () =>
-		this.#selectedPos.row === SudokuService.MIN_BOX_POS &&
-		this.#selectedPos.col === SudokuService.MIN_BOX_POS
-	#isEndPosition = () =>
-		this.#selectedPos.row === SudokuService.MAX_BOX_POS &&
-		this.#selectedPos.col === SudokuService.MAX_BOX_POS
 
+	isSelected({ col, row }: Position) {
+		const { col: selectedCol, row: selectedRow } = this.#selectionService.getSelectionPosition()
+		return col === selectedCol && row === selectedRow
+	}
 	addNote(value: number) {
 		this.#updateSelected(({ box }) => ({
 			...box,
-			value: SudokuService.EMPTY_BOX_VALUE,
+			value: BoardService.EMPTY_BOX_VALUE,
 			notes: addNewNote(box.notes, value),
 			kind: BoxKinds.WhitNotes,
 		}))
@@ -181,54 +228,6 @@ export class SudokuService implements ISudokuService {
 	getBoard = (): readonly BoxSchema[][] => this.#board
 	getBox = ({ col, row }: Position) => Object.freeze(this.#board[row][col])
 	getSudokuValue = ({ col, row }: Position) => this.#sudoku[row][col]
-	getSelectedPosition = () => this.#selectedPos
-
-	moveSelected(pos: Position) {
-		this.#boardMap(({ box, col, row }) => {
-			const selected = pos.col === col && pos.row === row
-			if (selected) this.#selectedPos = pos
-			return { ...box, selected }
-		})
-	}
-
-	moveDown(times = 1) {
-		if (this.#isEndPosition()) return
-
-		const row = this.#selectedPos.row + times
-		const rowIsMax = row > SudokuService.MAX_BOX_POS
-		const col = rowIsMax ? SudokuService.MAX_BOX_POS : this.#selectedPos.col
-
-		this.moveSelected({ row: rowIsMax ? SudokuService.MAX_BOX_POS : row, col })
-	}
-	moveLeft(times = 1) {
-		if (this.#isStartPosition()) return
-
-		const col = this.#selectedPos.col - times
-		const colIxMin = col < SudokuService.MIN_BOX_POS
-		const row = this.#selectedPos.row + (colIxMin ? col : SudokuService.MIN_BOX_POS)
-
-		this.moveSelected({
-			row,
-			col: colIxMin ? col + 9 : col,
-		})
-	}
-	moveRight(times = 1) {
-		if (this.#isEndPosition()) return
-
-		const col = this.#selectedPos.col + times
-		const row = this.#selectedPos.row + Math.trunc(col / 9)
-
-		this.moveSelected({ row, col: col % 9 })
-	}
-	moveUp(times = 1) {
-		if (this.#isStartPosition()) return
-
-		const row = this.#selectedPos.row - times
-		const rowISMin = row < SudokuService.MIN_BOX_POS
-		const col = rowISMin ? SudokuService.MIN_BOX_POS : this.#selectedPos.col
-
-		this.moveSelected({ row: rowISMin ? SudokuService.MIN_BOX_POS : row, col })
-	}
 
 	writeNumber(value: number) {
 		this.#updateSelected(({ box, ...pos }) => {
@@ -242,3 +241,5 @@ export class SudokuService implements ISudokuService {
 		})
 	}
 }
+
+export const board = new BoardService()

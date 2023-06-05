@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/svelte'
 
 import { BoxKinds } from '~/domain/models'
 import { getBoxAndPosByKind } from '~/tests/utils'
-import { modesStore, sudokuStore } from '../stores'
+import { modesStore, boardStore } from '../stores'
 
 import Box from './box.svelte'
 
@@ -17,8 +17,8 @@ describe('Box Component in Insert Mode', () => {
 
 	describe('Box Component Empty', () => {
 		test('should be selectable', async () => {
-			render(Box, { props: { row: 0, col: 0 } })
-			const button = screen.getByTestId('0-0')
+			render(Box, { props: { row: 1, col: 1 } })
+			const button = screen.getByTestId('1-1')
 
 			expect(button).not.toHaveClass('selected')
 
@@ -35,7 +35,7 @@ describe('Box Component in Insert Mode', () => {
 	})
 	describe('Box Component Empty', () => {
 		test('should write three', async () => {
-			const { pos } = getBoxAndPosByKind(sudokuStore, BoxKinds.Empty)!
+			const { pos } = getBoxAndPosByKind(boardStore, BoxKinds.Empty)!
 
 			expect(pos).not.toBeUndefined()
 
@@ -51,7 +51,7 @@ describe('Box Component in Insert Mode', () => {
 			expect(value).toHaveTextContent('3')
 		})
 		test('should deselected after write', async () => {
-			const { pos } = getBoxAndPosByKind(sudokuStore, BoxKinds.Empty)!
+			const { pos } = getBoxAndPosByKind(boardStore, BoxKinds.Empty)!
 
 			expect(pos).not.toBeUndefined()
 
@@ -64,7 +64,7 @@ describe('Box Component in Insert Mode', () => {
 			expect(button).not.toHaveClass('selected')
 		})
 		test('should delete number with press zero', async () => {
-			const { pos } = getBoxAndPosByKind(sudokuStore, BoxKinds.Empty)!
+			const { pos } = getBoxAndPosByKind(boardStore, BoxKinds.Empty)!
 
 			expect(pos).not.toBeUndefined()
 
@@ -84,7 +84,7 @@ describe('Box Component in Insert Mode', () => {
 			expect(value).toHaveTextContent('')
 		})
 		test('should delete number with press Backspace', async () => {
-			const { pos } = getBoxAndPosByKind(sudokuStore, BoxKinds.Empty)!
+			const { pos } = getBoxAndPosByKind(boardStore, BoxKinds.Empty)!
 
 			expect(pos).not.toBeUndefined()
 
@@ -105,7 +105,7 @@ describe('Box Component in Insert Mode', () => {
 	})
 	describe('Box Component Initial', () => {
 		test('should have initial class', async () => {
-			const { pos } = getBoxAndPosByKind(sudokuStore, BoxKinds.Initial)!
+			const { pos } = getBoxAndPosByKind(boardStore, BoxKinds.Initial)!
 
 			expect(pos).not.toBeUndefined()
 
@@ -115,7 +115,7 @@ describe('Box Component in Insert Mode', () => {
 			expect(button).toHaveClass('initial')
 		})
 		test('should not write', async () => {
-			const { pos, box } = getBoxAndPosByKind(sudokuStore, BoxKinds.Initial)!
+			const { pos, box } = getBoxAndPosByKind(boardStore, BoxKinds.Initial)!
 
 			expect(pos).not.toBeUndefined()
 			expect(box.value).not.toBe(0)
@@ -139,7 +139,7 @@ describe('Box Component in Annotation Mode', () => {
 		return () => modesStore.setNormal()
 	})
 	test('should be add note', async () => {
-		const { pos, box } = getBoxAndPosByKind(sudokuStore, BoxKinds.Empty)!
+		const { pos, box } = getBoxAndPosByKind(boardStore, BoxKinds.Empty)!
 
 		expect(box).not.toBeUndefined()
 		expect(box.value).toBe(0)
@@ -155,7 +155,7 @@ describe('Box Component in Annotation Mode', () => {
 		expect(notes).toBeVisible()
 	})
 	test('should not visible value', async () => {
-		const { pos, box } = getBoxAndPosByKind(sudokuStore, BoxKinds.Empty)!
+		const { pos, box } = getBoxAndPosByKind(boardStore, BoxKinds.Empty)!
 
 		expect(box).not.toBeUndefined()
 		expect(box.value).toBe(0)
@@ -170,7 +170,7 @@ describe('Box Component in Annotation Mode', () => {
 		expect(value).not.toBeVisible()
 	})
 	test('should be render notes', async () => {
-		const { pos, box } = getBoxAndPosByKind(sudokuStore, BoxKinds.Empty)!
+		const { pos, box } = getBoxAndPosByKind(boardStore, BoxKinds.Empty)!
 
 		expect(box).not.toBeUndefined()
 		expect(box.value).toBe(0)

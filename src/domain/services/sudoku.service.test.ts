@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test } from 'vitest'
 
-import { SudokuService } from './sudoku.service'
+import { BoardService, SelectionService } from './sudoku.service'
 import { BoxKinds, type BoxSchema, type Position } from '../models'
 
-const sudoku = SudokuService.createSolution()
+const sudoku = BoardService.createSolution()
 
 describe('Create Sudoku', () => {
 	test.concurrent('Should return array', () => {
@@ -23,7 +23,7 @@ describe('Create Sudoku', () => {
 	})
 
 	describe('sudoku are correct', () => {
-		const { cols, quadrants, rows } = SudokuService.getSectors(sudoku)
+		const { cols, quadrants, rows } = BoardService.getSectors(sudoku)
 		test.concurrent.each([
 			{ name: 'columns', actual: cols },
 			{ name: 'quadrants', actual: quadrants },
@@ -35,16 +35,16 @@ describe('Create Sudoku', () => {
 })
 
 describe('Sudoku Board', () => {
-	let board: SudokuService
+	let board: BoardService, selection: SelectionService
 	const standardBox: BoxSchema = {
 		notes: [],
-		selected: true,
 		kind: BoxKinds.Empty,
-		value: SudokuService.EMPTY_BOX_VALUE,
+		value: BoardService.EMPTY_BOX_VALUE,
 	}
 
 	beforeEach(() => {
-		board = new SudokuService({ sudoku })
+		selection = new SelectionService()
+		board = new BoardService({ sudoku, selectionService: selection })
 	})
 
 	test.concurrent('Not all box should be initials', () => {
@@ -55,11 +55,11 @@ describe('Sudoku Board', () => {
 
 	describe('Write Number', () => {
 		test.concurrent('Should change the status to incorrect', () => {
-			const initialBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Initial)!
+			const initialBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Initial)!
 			const correctValue = board.getSudokuValue(initialBoxPos)
 			const incorrectValue = correctValue > 9 ? 1 : correctValue + 1
 
-			board.moveSelected(initialBoxPos)
+			selection.moveTo(initialBoxPos)
 			board.writeNumber(incorrectValue)
 
 			const box = board.getBox(initialBoxPos)
@@ -70,11 +70,11 @@ describe('Sudoku Board', () => {
 			})
 		})
 		test.concurrent('Should change the status to incorrect', () => {
-			const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 			const incorrectValue = correctValue > 9 ? 1 : correctValue + 1
 
-			board.moveSelected(voidBoxPos)
+			selection.moveTo(voidBoxPos)
 			board.writeNumber(incorrectValue)
 
 			const box = board.getBox(voidBoxPos)
@@ -85,10 +85,10 @@ describe('Sudoku Board', () => {
 			})
 		})
 		test.concurrent('Should change the status to correct', () => {
-			const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 
-			board.moveSelected(voidBoxPos)
+			selection.moveTo(voidBoxPos)
 			board.writeNumber(correctValue)
 
 			const box = board.getBox(voidBoxPos)
@@ -99,10 +99,10 @@ describe('Sudoku Board', () => {
 			})
 		})
 		test.concurrent('should reset notes', () => {
-			const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 
-			board.moveSelected(voidBoxPos)
+			selection.moveTo(voidBoxPos)
 			board.addNote(1)
 			board.writeNumber(correctValue)
 
@@ -117,9 +117,9 @@ describe('Sudoku Board', () => {
 
 	describe('Add Notes', () => {
 		test.concurrent('Should change the status to notes', () => {
-			const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
-			board.moveSelected(voidBoxPos)
+			selection.moveTo(voidBoxPos)
 			board.addNote(1)
 
 			const box = board.getBox(voidBoxPos)
@@ -131,9 +131,9 @@ describe('Sudoku Board', () => {
 		})
 	})
 	test.concurrent('should arrange the notes correctly', () => {
-		const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
-		board.moveSelected(voidBoxPos)
+		selection.moveTo(voidBoxPos)
 		board.addNote(3)
 		board.addNote(9)
 		board.addNote(1)
@@ -147,9 +147,9 @@ describe('Sudoku Board', () => {
 		})
 	})
 	test.concurrent('should not repeat notes', () => {
-		const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
-		board.moveSelected(voidBoxPos)
+		selection.moveTo(voidBoxPos)
 		board.addNote(1)
 		board.addNote(1)
 
@@ -161,9 +161,9 @@ describe('Sudoku Board', () => {
 		})
 	})
 	test.concurrent('should reset value', () => {
-		const voidBoxPos = SudokuService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
-		board.moveSelected(voidBoxPos)
+		selection.moveTo(voidBoxPos)
 		board.writeNumber(9)
 		board.addNote(1)
 		board.addNote(1)
@@ -177,35 +177,35 @@ describe('Sudoku Board', () => {
 	})
 })
 
-describe('Sudoku Move', () => {
-	let board: SudokuService
+describe('selection Move', () => {
+	let selection: SelectionService
 
 	beforeEach(() => {
-		board = new SudokuService({ sudoku })
+		selection = new SelectionService()
 	})
 
 	describe.concurrent('Left', () => {
 		test.concurrent('should move to the left', () => {
 			const initialPosition: Position = { col: 8, row: 0 }
-			board.moveSelected(initialPosition)
-			board.moveLeft()
-			const actualPosition = board.getSelectedPosition()
+			selection.moveTo(initialPosition)
+			selection.moveLeft()
+			const actualPosition = selection.getSelectionPosition()
 
 			expect(actualPosition).toEqual<Position>({ col: 7, row: 0 })
 		})
 		test.concurrent('should move to the left and up column', () => {
 			const initialPosition: Position = { col: 0, row: 8 }
-			board.moveSelected(initialPosition)
-			board.moveLeft()
-			const actualPosition = board.getSelectedPosition()
+			selection.moveTo(initialPosition)
+			selection.moveLeft()
+			const actualPosition = selection.getSelectionPosition()
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 7 })
 		})
 		test.concurrent('should not move to the left if column and row are zero', () => {
 			const initialPosition: Position = { col: 0, row: 0 }
-			board.moveSelected(initialPosition)
-			board.moveLeft()
-			const actualPosition = board.getSelectedPosition()
+			selection.moveTo(initialPosition)
+			selection.moveLeft()
+			const actualPosition = selection.getSelectionPosition()
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 0 })
 		})
@@ -214,26 +214,26 @@ describe('Sudoku Move', () => {
 	describe.concurrent('Right', () => {
 		test.concurrent('should move to the right', () => {
 			const initialPosition: Position = { col: 0, row: 0 }
-			board.moveSelected(initialPosition)
-			board.moveRight()
-			const actualPosition = board.getSelectedPosition()
+			selection.moveTo(initialPosition)
+			selection.moveRight()
+			const actualPosition = selection.getSelectionPosition()
 
 			expect(actualPosition).toEqual<Position>({ col: 1, row: 0 })
 		})
 		test.concurrent('should move to the right and down column', () => {
 			const initialPosition: Position = { col: 8, row: 0 }
-			board.moveSelected(initialPosition)
-			board.moveRight()
-			const actualPosition = board.getSelectedPosition()
+			selection.moveTo(initialPosition)
+			selection.moveRight()
+			const actualPosition = selection.getSelectionPosition()
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 1 })
 		})
 
 		test.concurrent('should not move to the right if column and row are 8', () => {
 			const initialPosition: Position = { col: 8, row: 8 }
-			board.moveSelected(initialPosition)
-			board.moveRight()
-			const actualPosition = board.getSelectedPosition()
+			selection.moveTo(initialPosition)
+			selection.moveRight()
+			const actualPosition = selection.getSelectionPosition()
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 8 })
 		})
@@ -242,26 +242,26 @@ describe('Sudoku Move', () => {
 	describe.concurrent('Down', () => {
 		test.concurrent('should move to the down', () => {
 			const initialPosition: Position = { col: 0, row: 0 }
-			board.moveSelected(initialPosition)
-			board.moveDown()
-			const actualPosition = board.getSelectedPosition()
+			selection.moveTo(initialPosition)
+			selection.moveDown()
+			const actualPosition = selection.getSelectionPosition()
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 1 })
 		})
 		test.concurrent('should move to the end if column is 8 ', () => {
 			const initialPosition: Position = { col: 0, row: 8 }
-			board.moveSelected(initialPosition)
-			board.moveDown()
-			const actualPosition = board.getSelectedPosition()
+			selection.moveTo(initialPosition)
+			selection.moveDown()
+			const actualPosition = selection.getSelectionPosition()
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 8 })
 		})
 
 		test.concurrent('should not move to the down if column and row are 8', () => {
 			const initialPosition: Position = { col: 8, row: 8 }
-			board.moveSelected(initialPosition)
-			board.moveDown()
-			const actualPosition = board.getSelectedPosition()
+			selection.moveTo(initialPosition)
+			selection.moveDown()
+			const actualPosition = selection.getSelectionPosition()
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 8 })
 		})
@@ -270,26 +270,26 @@ describe('Sudoku Move', () => {
 	describe.concurrent('Up', () => {
 		test.concurrent('should move to the up', () => {
 			const initialPosition: Position = { col: 8, row: 8 }
-			board.moveSelected(initialPosition)
-			board.moveUp()
-			const actualPosition = board.getSelectedPosition()
+			selection.moveTo(initialPosition)
+			selection.moveUp()
+			const actualPosition = selection.getSelectionPosition()
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 7 })
 		})
 		test.concurrent('should move to the start if column is 0', () => {
 			const initialPosition: Position = { col: 8, row: 0 }
-			board.moveSelected(initialPosition)
-			board.moveUp()
-			const actualPosition = board.getSelectedPosition()
+			selection.moveTo(initialPosition)
+			selection.moveUp()
+			const actualPosition = selection.getSelectionPosition()
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 0 })
 		})
 
 		test.concurrent('should not move to the up if column and row are 0', () => {
 			const initialPosition: Position = { col: 0, row: 0 }
-			board.moveSelected(initialPosition)
-			board.moveUp()
-			const actualPosition = board.getSelectedPosition()
+			selection.moveTo(initialPosition)
+			selection.moveUp()
+			const actualPosition = selection.getSelectionPosition()
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 0 })
 		})
