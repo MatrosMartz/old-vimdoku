@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { BoxKinds } from '~/domain/models'
+	import { BoxKinds, Modes } from '~/domain/models'
 	import { SudokuService } from '~/domain/services'
 
-	import { sudokuStore } from '../stores'
+	import { modesStore, sudokuStore } from '../stores'
 
 	export let row: number
 	export let col: number
@@ -15,8 +15,12 @@
 	const KeyHandler = (e: KeyboardEvent) => {
 		if (box.selected || box.kind !== BoxKinds.Initial) {
 			const insertNum = Number(e.key)
-			if (!Number.isNaN(insertNum)) sudokuStore.write(insertNum)
-			if (e.code === 'Backspace') sudokuStore.write(SudokuService.EMPTY_BOX_VALUE)
+			if (e.code === 'Backspace' || insertNum === 0)
+				sudokuStore.write(SudokuService.EMPTY_BOX_VALUE)
+			else if (!Number.isNaN(insertNum)) {
+				if ($modesStore === Modes.Insert) sudokuStore.write(insertNum)
+				else if ($modesStore === Modes.Annotation) sudokuStore.addNote(insertNum)
+			}
 			sudokuStore.moveUp()
 		}
 	}
@@ -26,13 +30,20 @@
 	data-testid="{row}-{col}"
 	class:initial={box.kind === BoxKinds.Initial}
 	class:selected={box.selected}
-	class="rounded-lg border-2 border-transparent box-border father"
+	class="rounded-lg border-2 border-transparent box-border z-10 outline-none father"
 	id="{row}-{col}"
 	on:click={InputHandler}
 	on:keydown={KeyHandler}
 >
-	<span class="flex justify-center items-center">
+	<span data-testid="value" class="flex justify-center items-center" hidden={box.notes.length > 0}>
 		{value}
+	</span>
+	<span data-testid="notes" class="grid grid-cols-3 grid-rows-3" hidden={box.notes.length === 0}>
+		{#each [1, 2, 3, 4, 5, 6, 7, 8, 9] as note}
+			<span data-testid="note-{note}" class="note-{note}" hidden={!box.notes.includes(note)}>
+				{note}
+			</span>
+		{/each}
 	</span>
 </button>
 
@@ -40,9 +51,6 @@
 	.father {
 		width: 2.5rem;
 		height: 2.5rem;
-		border-color: transparent;
-		z-index: 9;
-		outline: none;
 	}
 	.initial {
 		color: rgb(var(--color-primary-600));
@@ -71,5 +79,35 @@
 	.father * {
 		width: 100%;
 		height: 100%;
+	}
+	.note-1,
+	.note-4,
+	.note-7 {
+		grid-row: 0 1;
+	}
+	.note-2,
+	.note-5,
+	.note-8 {
+		grid-row: 1 2;
+	}
+	.note-3,
+	.note-6,
+	.note-9 {
+		grid-row: 2 3;
+	}
+	.note-1,
+	.note-2,
+	.note-3 {
+		grid-column: 0 1;
+	}
+	.note-4,
+	.note-5,
+	.note-6 {
+		grid-column: 1 2;
+	}
+	.note-7,
+	.note-8,
+	.note-9 {
+		grid-column: 2 3;
 	}
 </style>
