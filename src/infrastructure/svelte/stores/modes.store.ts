@@ -1,14 +1,15 @@
 import { writable } from 'svelte/store'
 import { ModesService } from '~/domain/services'
 
-function createModesStore() {
-	const modesService = new ModesService()
-	const { set, subscribe } = writable(modesService.setNormal())
+export const modes = new ModesService()
 
-	const setAnnotation = () => set(modesService.setAnnotation())
-	const setCommand = () => set(modesService.setCommand())
-	const setInsert = () => set(modesService.setInsert())
-	const setNormal = () => set(modesService.setNormal())
+function createModesStore() {
+	const { set, subscribe } = writable(modes.setNormal())
+
+	const setAnnotation = () => set(modes.setAnnotation())
+	const setCommand = () => set(modes.setCommand())
+	const setInsert = () => set(modes.setInsert())
+	const setNormal = () => set(modes.setNormal())
 
 	return { setAnnotation, setCommand, setInsert, setNormal, subscribe }
 }
