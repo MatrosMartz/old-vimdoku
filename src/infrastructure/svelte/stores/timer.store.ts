@@ -2,13 +2,14 @@ import { derived, writable } from 'svelte/store'
 
 import { TimerService } from '~/domain/services'
 
-function createTimerStore() {
-	const timerService = new TimerService()
-	const { subscribe, update } = writable(timerService.initialTimer())
+export const timer = new TimerService()
 
-	const stop = () => update(timerService.stop)
-	const reset = () => update(timerService.reset)
-	const start = () => timerService.start(update)
+function createTimerStore() {
+	const { subscribe, update } = writable(timer.initialTimer())
+
+	const stop = () => update(timer.stop)
+	const reset = () => update(timer.reset)
+	const start = () => timer.start(update)
 
 	return { subscribe, stop, reset, start }
 }
