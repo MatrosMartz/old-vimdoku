@@ -1,7 +1,10 @@
 import { writable } from 'svelte/store'
 
 import { type Position } from '~/domain/models'
-import { board, BoardService, selection } from '~/domain/services'
+import { BoardService, SelectionService } from '~/domain/services'
+
+export const selection = new SelectionService()
+export const board = new BoardService({ selectionService: selection })
 
 function createBoardStore() {
 	const { subscribe, set } = writable(board.getBoard())

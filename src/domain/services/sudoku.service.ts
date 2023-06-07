@@ -71,8 +71,6 @@ export class SelectionService implements ISelectionService {
 	getSelectionPosition = () => this.#position
 }
 
-export const selection = new SelectionService()
-
 export class BoardService implements IBoardService {
 	static createSolution() {
 		const board = createEmptyBoard()
@@ -175,7 +173,7 @@ export class BoardService implements IBoardService {
 	constructor({
 		sudoku = BoardService.createSolution(),
 		difficulty = Difficulties.Basic,
-		selectionService = selection,
+		selectionService = new SelectionService(),
 	}: {
 		sudoku?: readonly number[][]
 		difficulty?: Difficulties
@@ -241,5 +239,3 @@ export class BoardService implements IBoardService {
 		})
 	}
 }
-
-export const board = new BoardService()
