@@ -1,36 +1,31 @@
 import type { IHistoryService } from '../models'
-import type { DataStorageRepo } from '../repositories'
-import { noop } from '../utils'
+import type { IHistoryRepo } from '../repositories'
 
 export class HistoryService implements IHistoryService {
-	#history: string[] = []
-	#AutocompleteHistory = this.#history
-	#index: number | null = null
-	#updateData = noop
+	#AutocompleteHistory: string[]
 	#autocompleteTimeout?: ReturnType<typeof setTimeout>
+	#index: number | null = null
+	#repo: IHistoryRepo
 
-	constructor(repo?: DataStorageRepo<string[]>) {
-		if (repo) {
-			const newHistory = repo.get()
-			if (newHistory != null) this.#history = newHistory
+	constructor(repo: IHistoryRepo) {
+		this.#repo = repo
+		this.#AutocompleteHistory = this.#repo.get()
+	}
 
-			this.#updateData = () => repo.set(this.#history)
-		}
-		this.updateAutocomplete()
+	#getAutocomplete(input?: string) {
+		const history = this.#repo.get()
+		return input ? history.filter(cmd => cmd.startsWith(input)) : history
 	}
 
 	getCurrent() {
-		return this.#AutocompleteHistory[this.#index ?? Infinity] ?? ''
+		if (this.#index == null) return ''
+		return this.#AutocompleteHistory[this.#index] ?? ''
 	}
-	getHistory = () => this.#history
+	getHistory = () => this.#repo.get()
 	getAutocompleteHistory = () => this.#AutocompleteHistory
 	push(cmd: string) {
-		this.#history.push(cmd)
+		this.#repo.update(history => [...history, cmd])
 		this.updateAutocomplete()
-
-		this.#updateData()
-
-		return null
 	}
 
 	redo() {
@@ -45,9 +40,7 @@ export class HistoryService implements IHistoryService {
 		if (this.#autocompleteTimeout != null) clearTimeout(this.#autocompleteTimeout)
 
 		this.#autocompleteTimeout = setTimeout(() => {
-			this.#AutocompleteHistory = input
-				? this.#history.filter(cmd => cmd.startsWith(input))
-				: this.#history
+			this.#AutocompleteHistory = this.#getAutocomplete(input)
 			this.#index = this.#AutocompleteHistory.length
 		}, 100)
 	}

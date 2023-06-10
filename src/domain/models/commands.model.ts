@@ -11,7 +11,7 @@ export interface IHistoryService {
 	 * get All History
 	 */
 	getHistory: () => string[]
-	push: (cmd: string) => null
+	push: (cmd: string) => void
 	redo: () => void
 	updateAutocomplete: (input?: string) => void
 	undo: () => void
