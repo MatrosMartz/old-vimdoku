@@ -1,4 +1,4 @@
-export * from './history.model'
+export * from './commands.model'
 export * from './modes.model'
 export * from './preferences.model'
 export * from './sudoku.model'

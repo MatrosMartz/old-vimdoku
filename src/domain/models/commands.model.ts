@@ -13,6 +13,6 @@ export interface IHistoryService {
 	getHistory: () => string[]
 	push: (cmd: string) => null
 	redo: () => void
-	setAutocomplete: (input?: string) => void
+	updateAutocomplete: (input?: string) => void
 	undo: () => void
 }

@@ -20,10 +20,7 @@ function createHistoryStore() {
 		history.undo()
 		set(history.getCurrent())
 	}
-	const setAutocomplete = (cmd: string) => {
-		history.setAutocomplete(cmd)
-		set(history.getCurrent())
-	}
+	const updateAutocomplete = (cmd: string) => history.updateAutocomplete(cmd)
 
-	return { subscribe, push, redo, undo }
+	return { subscribe, push, redo, undo, updateAutocomplete }
 }

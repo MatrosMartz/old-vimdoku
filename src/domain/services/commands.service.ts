@@ -7,6 +7,7 @@ export class HistoryService implements IHistoryService {
 	#AutocompleteHistory = this.#history
 	#index: number | null = null
 	#updateData = noop
+	#autocompleteTimeout?: ReturnType<typeof setTimeout>
 
 	constructor(repo?: DataStorageRepo<string[]>) {
 		if (repo) {
@@ -15,35 +16,39 @@ export class HistoryService implements IHistoryService {
 
 			this.#updateData = () => repo.set(this.#history)
 		}
-		this.setAutocomplete()
+		this.updateAutocomplete()
 	}
 
-	getCurrent = () => {
+	getCurrent() {
 		return this.#AutocompleteHistory[this.#index ?? Infinity] ?? ''
 	}
 	getHistory = () => this.#history
 	getAutocompleteHistory = () => this.#AutocompleteHistory
-	push = (cmd: string) => {
+	push(cmd: string) {
 		this.#history.push(cmd)
-		this.setAutocomplete()
+		this.updateAutocomplete()
 
 		this.#updateData()
 
 		return null
 	}
 
-	redo = () => {
+	redo() {
 		if (this.#index != null && this.#index < this.#AutocompleteHistory.length - 1) this.#index += 1
 	}
-	undo = () => {
+	undo() {
 		if (this.#index !== null && this.#index > 0) this.#index -= 1
 		else this.#index = 0
 	}
 
-	setAutocomplete = (input?: string) => {
-		this.#AutocompleteHistory = input
-			? this.#history.filter(cmd => cmd.startsWith(input))
-			: this.#history
-		this.#index = this.#AutocompleteHistory.length
+	updateAutocomplete(input?: string) {
+		if (this.#autocompleteTimeout != null) clearTimeout(this.#autocompleteTimeout)
+
+		this.#autocompleteTimeout = setTimeout(() => {
+			this.#AutocompleteHistory = input
+				? this.#history.filter(cmd => cmd.startsWith(input))
+				: this.#history
+			this.#index = this.#AutocompleteHistory.length
+		}, 100)
 	}
 }
