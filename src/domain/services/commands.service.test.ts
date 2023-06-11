@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, test } from 'vitest'
 
-import type { DataStorageRepo } from '../repositories'
+import type { IHistoryRepo } from '../repositories'
 import { noop } from '../utils'
 
 import { HistoryService } from './commands.service'
 
-const initialHistoryData: DataStorageRepo<string[]> = {
+const initialHistoryData: IHistoryRepo = {
 	get: () => [
 		'help',
 		'help :start',
@@ -17,7 +17,7 @@ const initialHistoryData: DataStorageRepo<string[]> = {
 		'quit',
 		'help :set',
 	],
-	set: noop,
+	update: noop,
 }
 
 describe.concurrent('History Service', () => {

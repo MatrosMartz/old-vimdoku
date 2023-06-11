@@ -1,9 +1,10 @@
 import { writable } from 'svelte/store'
 import { HistoryService } from '~/domain/services'
 import { DataStorageBrowser } from '$infra/browser/repositories/local-storage.repo'
+import { HistoryRepo } from '~/infrastructure/repository/history.repo'
 
-const historyRepo = new DataStorageBrowser<string[]>({ keyName: 'history' })
-export const history = new HistoryService(historyRepo)
+const historyStorage = new DataStorageBrowser<string[]>({ keyName: 'history' })
+export const history = new HistoryService(new HistoryRepo({ storage: historyStorage }))
 
 function createHistoryStore() {
 	const { subscribe, set } = writable(history.getCurrent())
@@ -24,3 +25,5 @@ function createHistoryStore() {
 
 	return { subscribe, push, redo, undo, updateAutocomplete }
 }
+
+export const historyStore = createHistoryStore()
