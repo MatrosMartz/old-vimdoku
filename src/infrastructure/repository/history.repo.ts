@@ -8,8 +8,7 @@ export class HistoryRepo implements IHistoryRepo {
 	}
 
 	get() {
-		const newHistory = this.#storage.get()
-		if (newHistory != null) this.#history = newHistory
+		this.#history = [...(this.#storage.get() ?? this.#history)]
 
 		return this.#history
 	}
