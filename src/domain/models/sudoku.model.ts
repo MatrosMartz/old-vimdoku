@@ -6,7 +6,7 @@ export const enum BoxKinds {
 	WhitNotes = 'notes',
 }
 
-export const enum Difficulties {
+export enum Difficulties {
 	Beginner = 1.1,
 	Basic = 1.4,
 	Easy = 2,

@@ -1,4 +1,5 @@
 export * from './array.utils'
 export * from './common.utils'
 export * from './format.utils'
+export * from './preferences.utils'
 export * from './sudoku.utils'

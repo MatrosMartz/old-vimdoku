@@ -1,4 +1,4 @@
-export const enum Modes {
+export enum Modes {
 	Annotation = 'annotation',
 	Command = 'command',
 	Insert = 'insert',
