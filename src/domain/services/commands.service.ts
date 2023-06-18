@@ -20,17 +20,28 @@ export class CommandsSuggestionService implements ICommandsSuggestionsService {
 		return this.#suggestions.filter(({ match }) => match(commands))
 	}
 	highlighting(input: string) {
+		// strings
 		input = input.replace(
 			/(('[^']*'?)|("[^"]*"?))/g,
 			'<span class="text-primary-500-400-token">$1</span>'
 		)
+		// numbers
 		input = input.replace(
-			/(?<!\w-?)(\d[_\d]*)\b(?![^<>]*<\/span>)/g,
+			/(?<!\w-?)(\d[_\d]*)\b(?![^<]*<\/span>)/g,
 			'<span class="text-secondary-400-500-token">$1</span>'
 		)
 		input = input.replace(
-			/(?<!<span class)(=)(?![^<>]*<\/span>)/g,
-			'<span class="text-tertiary-500-400-token">$1</span>'
+			/(?<!\w-?)(0x[a-fA-F\d_]*)\b(?![^<]*<\/span>)/g,
+			'<span class="text-secondary-400-500-token">$1</span>'
+		)
+		// special chars
+		input = input.replace(
+			/(?<!<span class=[^>]*['"])([=:!?&+\-\^])(?![^<]*<\/span>)/g,
+			'<span class="text-tertiary-600-300-token">$1</span>'
+		)
+		input = input.replace(
+			/(?<![^\s\t])(no|inv)(?![^<]*<\/span>)/g,
+			'<span class="text-tertiary-600-300-token">$1</span>'
 		)
 
 		const cmdSeparator = input.search(/(?<!<span) /)
