@@ -1,11 +1,89 @@
 <script lang="ts">
-	import { cmdInputStore } from '../stores'
+	import { CommandsSuggestionService } from '~/domain/services'
 
-	import Timer from './timer.svelte'
+	const commandsSuggestion = new CommandsSuggestionService()
+
+	let currentValue = ''
+	let input: HTMLInputElement
+	$: highlight = commandsSuggestion.highlighting(currentValue)
+	$: suggestionsOptions = commandsSuggestion.getSuggestions(currentValue)
+
+	function autocompleteClickHandler(e: Event & { currentTarget: HTMLButtonElement }) {
+		const btnAutocomplete = e.currentTarget
+		if ('value' in btnAutocomplete.dataset) {
+			const newValue = btnAutocomplete.dataset.value!
+			currentValue = newValue
+			input.focus()
+			if ('selection' in btnAutocomplete.dataset) {
+				const newSelection: [number, number] = JSON.parse(btnAutocomplete.dataset.selection!)
+
+				input.setSelectionRange(...newSelection)
+			}
+		}
+	}
 </script>
 
-<div>
-	<Timer />
-	<div class="commands"><span>Normal</span><input type="text" bind:this={$cmdInputStore} /></div>
-	<span class="line-number">0:0</span>
-</div>
+<section
+	class="absolute inset-0 h-full w-full badge-glass z-50 flex flex-col justify-center items-center pb-[60vh]"
+>
+	<div class="relative bg-surface-50-900-token command-width rounded-lg">
+		<div class="px-2 py-1 flex justify-start">
+			<span><span class="text-tertiary-600-300-token">:</span>{@html highlight}</span>
+			<input
+				maxlength="35"
+				type="text"
+				class="command-input"
+				bind:value={currentValue}
+				bind:this={input}
+			/>
+		</div>
+		<ul class="autocomplete-list">
+			{#each suggestionsOptions as option, index (option.id)}
+				<li>
+					<button
+						class="autocomplete-option bg-surface-200-700-token"
+						tabindex={index + 1}
+						data-value={option.value}
+						data-selection={JSON.stringify(option.newSelection)}
+						on:click={autocompleteClickHandler}
+					>
+						<h6 class="command-option">{@html option.command}</h6>
+						<span
+							class="italic text-tertiary-500-400-token whitespace-nowrap text-ellipsis overflow-hidden"
+							>{option.description}</span
+						>
+					</button>
+				</li>
+			{/each}
+		</ul>
+	</div>
+</section>
+
+<style lang="postcss">
+	.command-width {
+		min-width: 35ch;
+		width: 75vw;
+	}
+	.command-input {
+		@apply absolute pl-[1ch] bg-transparent text-transparent caret-primary-900 w-full outline-none;
+	}
+	:global(.dark) .command-input {
+		@apply caret-primary-50;
+	}
+	.autocomplete-list {
+		max-width: calc(80vmax + 1ch + 1rem);
+		@apply absolute top-[100%] overflow-hidden rounded-b-lg overflow-y-auto max-h-72 text-clip command-width;
+	}
+	.autocomplete-option {
+		@apply flex justify-between px-2 py-1 gap-4 w-full hover:brightness-90 focus:saturate-[1.3] rounded-none transition-[filter] outline-none border-none;
+	}
+	:global(.dark) .autocomplete-option {
+		@apply hover:brightness-110;
+	}
+	.command-option {
+		@apply whitespace-nowrap;
+	}
+	.command-option :global(span) {
+		@apply text-base;
+	}
+</style>
