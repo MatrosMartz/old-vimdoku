@@ -31,10 +31,11 @@ export const testCommands = {
 	subCommand: (
 		subcommand: string,
 		input?: string,
-		separator: string = '',
+		separator?: string,
 		remove: boolean = false
 	) => {
 		if (input == null) return false
+		if (separator == null) return true
 		if (remove) return subcommand.includes(input.replaceAll(separator, ''))
 		return subcommand.includes(input.split(separator)[0])
 	},
