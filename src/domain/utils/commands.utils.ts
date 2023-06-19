@@ -29,12 +29,17 @@ export function getKeysByType(preferences: Record<string, any>) {
 
 export const testCommands = {
 	continue: (input: string) => 'continue'.includes(input),
+	exit: (input: string) => 'exit'.includes(input),
 	help: (input: string) => 'help'.includes(input),
 	pause: (input: string) => 'pause'.includes(input),
 	quit: (input: string) => 'quit'.includes(input),
+	quitExcl: (input: string) => 'quit!'.includes(input),
 	reset: (input: string) => 'reset'.includes(input),
 	set: (input: string) => 'set'.includes(input),
 	start: (input: string) => 'start'.includes(input),
+	writeQuit: (input: string) => 'wquit'.includes(input),
+	write: (input: string) => 'write'.includes(input),
+	xit: (input: string) => 'xit'.includes(input),
 	subCommand: (subcommand: string, input?: string, separator?: string, remove: boolean = false) => {
 		if (input == null) return false
 		if (subcommand.length < 2) return true

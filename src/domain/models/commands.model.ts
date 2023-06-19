@@ -29,7 +29,20 @@ const modesKeys: Array<{ mode: Modes; letter: string }> = [
 const difficultiesKeys = Object.keys(Difficulties)
 	.filter(difficulty => Number.isNaN(Number(difficulty)))
 	.map(difficulty => difficulty.toLowerCase())
-export const commandsKeys = ['help', 'set', 'start', 'pause', 'reset', 'continue', 'quit']
+const commandsKeys = [
+	'continue',
+	'exit',
+	'help',
+	'pause',
+	'quit!',
+	'quit',
+	'reset',
+	'set',
+	'start',
+	'wquit',
+	'write',
+	'xit',
+]
 
 export const gameSuggestions: SuggestionOption[] = [
 	{
@@ -257,10 +270,56 @@ export const setSuggestions: SuggestionOption[] = [
 	},
 ]
 
+export const quitSuggestions: SuggestionOption[] = [
+	{
+		command: `:q${opt('uit')}`,
+		description: 'Quit the current windows.',
+		id: 'quit',
+		match: input => testCommands.quit(input[0]),
+		value: 'quit',
+	},
+	{
+		command: `:q${opt('uit')}!`,
+		description: 'Quit without save, also when the current game has changes.',
+		id: 'quit-unsaved',
+		match: input => testCommands.quitExcl(input[0]),
+		value: 'quit!',
+	},
+	{
+		command: `:wq${opt('uit')}`,
+		description: 'Save the current game and close the windows.',
+		id: 'quit-and-save',
+		match: input => testCommands.writeQuit(input[0]),
+		value: 'wquit',
+	},
+	{
+		command: `:w${opt('rite')}`,
+		description: 'Save the current game.',
+		id: 'save',
+		match: input => testCommands.write(input[0]),
+		value: 'write',
+	},
+	{
+		command: `:x${opt('it')}`,
+		description: 'Like ":wq", but save only when changes have been made.',
+		id: 'xit',
+		match: input => testCommands.xit(input[0]),
+		value: 'xit',
+	},
+	{
+		command: `:exi${opt('t')}`,
+		description: 'Like ":wq", but save only when changes have been made.',
+		id: 'exit',
+		match: input => testCommands.exit(input[0]),
+		value: 'xit',
+	},
+]
+
 export const suggestions: SuggestionOption[] = [
 	...helpSuggestions,
 	...setSuggestions,
 	...gameSuggestions,
+	...quitSuggestions,
 ].sort(({ command: cmd1 }, { command: cmd2 }) => Number(cmd1 > cmd2) - 1)
 
 export interface IHistoryService {
