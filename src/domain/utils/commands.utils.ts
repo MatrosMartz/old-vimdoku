@@ -1,7 +1,7 @@
 const initialPreferencesKeys: {
-	toggleKeys: string[]
-	numberKeys: string[]
-	stringKeys: string[]
+	toggleKeys: { name: string; preference: string }[]
+	numberKeys: { name: string; preference: string }[]
+	stringKeys: { name: string; preference: string }[]
 } = {
 	toggleKeys: [],
 	numberKeys: [],
@@ -12,9 +12,14 @@ export function getKeysByType(preferences: Record<string, any>) {
 	const entries = Object.entries(preferences)
 
 	return entries.reduce((keys, [entryKey, entryValue]) => {
-		if (typeof entryValue === 'boolean') keys.toggleKeys.push(entryKey.toLowerCase())
-		else if (typeof entryValue === 'number') keys.numberKeys.push(entryKey.toLowerCase())
-		else if (typeof entryValue === 'string') keys.stringKeys.push(entryKey.toLowerCase())
+		const newKey = {
+			name:
+				entryKey[0].toUpperCase() + entryKey.substring(1).replace(/[A-Z]/g, match => ' ' + match),
+			preference: entryKey.toLowerCase(),
+		}
+		if (typeof entryValue === 'boolean') keys.toggleKeys.push(newKey)
+		else if (typeof entryValue === 'number') keys.numberKeys.push(newKey)
+		else if (typeof entryValue === 'string') keys.stringKeys.push(newKey)
 		else throw new TypeError('type of preference is invalid')
 		return keys
 	}, initialPreferencesKeys)
@@ -28,14 +33,10 @@ export const testCommands = {
 	reset: (input: string) => 'reset'.includes(input),
 	set: (input: string) => 'set'.includes(input),
 	start: (input: string) => 'start'.includes(input),
-	subCommand: (
-		subcommand: string,
-		input?: string,
-		separator?: string,
-		remove: boolean = false
-	) => {
+	subCommand: (subcommand: string, input?: string, separator?: string, remove: boolean = false) => {
 		if (input == null) return false
-		if (separator == null) return true
+		if (subcommand.length < 2) return true
+		if (separator == null) return false
 		if (remove) return subcommand.includes(input.replaceAll(separator, ''))
 		return subcommand.includes(input.split(separator)[0])
 	},
