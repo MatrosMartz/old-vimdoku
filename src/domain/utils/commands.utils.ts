@@ -1,3 +1,5 @@
+import type { SuggestionOption } from '../models'
+
 const initialPreferencesKeys: {
 	toggleKeys: { name: string; preference: string }[]
 	numberKeys: { name: string; preference: string }[]
@@ -46,3 +48,5 @@ export const holder = (str: string) => `<span class="text-surface-500-400-token"
 export const opt = (str: string) => `<span class="text-tertiary-600-300-token">[${str}]</span>`
 export const pref = (str: string) => `<span class="text-secondary-600-300-token">${str}</span>`
 export const text = (str: string) => `<span class="text-primary-500-400-token">${str}</span>`
+
+export const mapKeys = <T>(arr: T[], mapFn: (value: T) => SuggestionOption) => arr.map(mapFn)

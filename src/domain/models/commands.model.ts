@@ -1,4 +1,4 @@
-import { getKeysByType, holder, opt, pref, testCommands, text } from '../utils'
+import { getKeysByType, holder, mapKeys, opt, pref, testCommands, text } from '../utils'
 import { Modes } from './modes.model'
 import { defaultPreferences } from './preferences.model'
 import { Difficulties } from './sudoku.model'
@@ -60,15 +60,13 @@ export const gameSuggestions: SuggestionOption[] = [
 		match: input => testCommands.start(input[0]),
 		value: 'start ',
 	},
-	...(function () {
-		return difficultiesKeys.map<SuggestionOption>(difficulty => ({
-			command: `:st${opt('art')} ${difficulty}`,
-			description: `start sudoku game in ${difficulty}`,
-			id: `start-difficulty-${difficulty}`,
-			match: input => testCommands.start(input[0]) && testCommands.subCommand(difficulty, input[1]),
-			value: `start ${difficulty}`,
-		}))
-	})(),
+	...mapKeys(difficultiesKeys, difficulty => ({
+		command: `:st${opt('art')} ${difficulty}`,
+		description: `start sudoku game in ${difficulty}`,
+		id: `start-difficulty-${difficulty}`,
+		match: input => testCommands.start(input[0]) && testCommands.subCommand(difficulty, input[1]),
+		value: `start ${difficulty}`,
+	})),
 ]
 
 export const helpSuggestions: SuggestionOption[] = [
@@ -86,35 +84,29 @@ export const helpSuggestions: SuggestionOption[] = [
 		match: input => testCommands.help(input[0]),
 		value: 'help ',
 	},
-	...(function () {
-		return modesKeys.map<SuggestionOption>(({ mode, letter }) => ({
-			command: `:h${opt('elp')} ${letter}`,
-			description: `Open a window and display the help of ${mode} mode.`,
-			id: `help-mode-${mode}`,
-			match: input => testCommands.help(input[0]) && testCommands.subCommand(letter, input[1]),
-			value: `help ${letter}`,
-		}))
-	})(),
-	...(function () {
-		return commandsKeys.map<SuggestionOption>(cmd => ({
-			command: `:h${opt('elp')} <span class="text-secondary-600-300-token">:${cmd}</span>`,
-			description: `Open a window and display the help of ${cmd} command.`,
-			id: `help-command-${cmd}`,
-			match: input =>
-				testCommands.help(input[0]) && testCommands.subCommand(cmd, input[1], ':', true),
-			value: `help :${cmd}`,
-		}))
-	})(),
-	...(function () {
-		return allPreferencesKeys.map<SuggestionOption>(({ preference, name }) => ({
-			command: `:h${opt('elp')} ${text(`'${preference}'`)}`,
-			description: `Open a window and display the help of ${name} preference.`,
-			id: `help-preference-${preference}`,
-			match: input =>
-				testCommands.help(input[0]) && testCommands.subCommand(preference, input[1], "'", true),
-			value: `help '${preference}'`,
-		}))
-	})(),
+	...mapKeys(modesKeys, ({ mode, letter }) => ({
+		command: `:h${opt('elp')} ${letter}`,
+		description: `Open a window and display the help of ${mode} mode.`,
+		id: `help-mode-${mode}`,
+		match: input => testCommands.help(input[0]) && testCommands.subCommand(letter, input[1]),
+		value: `help ${letter}`,
+	})),
+	...mapKeys(commandsKeys, cmd => ({
+		command: `:h${opt('elp')} <span class="text-secondary-600-300-token">:${cmd}</span>`,
+		description: `Open a window and display the help of ${cmd} command.`,
+		id: `help-command-${cmd}`,
+		match: input =>
+			testCommands.help(input[0]) && testCommands.subCommand(cmd, input[1], ':', true),
+		value: `help :${cmd}`,
+	})),
+	...mapKeys(allPreferencesKeys, ({ preference, name }) => ({
+		command: `:h${opt('elp')} ${text(`'${preference}'`)}`,
+		description: `Open a window and display the help of ${name} preference.`,
+		id: `help-preference-${preference}`,
+		match: input =>
+			testCommands.help(input[0]) && testCommands.subCommand(preference, input[1], "'", true),
+		value: `help '${preference}'`,
+	})),
 ]
 
 export const setSuggestions: SuggestionOption[] = [
@@ -141,94 +133,76 @@ export const setSuggestions: SuggestionOption[] = [
 		match: input => testCommands.set(input[0]) && testCommands.subCommand('all&', input[1]),
 		value: 'set all&',
 	},
-	...(function () {
-		return allPreferencesKeys.map<SuggestionOption>(({ preference, name }) => ({
-			command: `:se${opt('t')} ${pref(preference)}?`,
-			description: `Show value of ${name}.`,
-			id: `set-show-preference-${preference}`,
-			match: input =>
-				testCommands.set(input[0]) && testCommands.subCommand(preference, input[1], '?'),
-			value: `set ${preference}?`,
-		}))
-	})(),
-	...(function () {
-		return toggleKeys.map<SuggestionOption>(({ preference, name }) => ({
-			command: `:se${opt('t')} ${pref(preference)}`,
-			description: `Set, ${name} switch it on.`,
-			id: `set-switch-on-toggle-${preference}`,
-			match: input => testCommands.set(input[0]) && testCommands.subCommand(preference, input[1]),
-			value: `set ${preference}`,
-		}))
-	})(),
-	...(function () {
-		return nonToggleKeys.map<SuggestionOption>(({ preference, name }) => ({
-			command: `:se${opt('t')} ${pref(preference)}`,
-			description: `Show value of ${name}.`,
-			id: `set-show-number-string-${preference}`,
-			match: input => testCommands.set(input[0]) && testCommands.subCommand(preference, input[1]),
-			value: `set ${preference}`,
-		}))
-	})(),
-	...(function () {
-		return toggleKeys.map<SuggestionOption>(({ preference, name }) => ({
-			command: `:se${opt('t')} no${pref(preference)}`,
-			description: `Reset, ${name} switch it off.`,
-			id: `set-switch-off-toggle-${preference}`,
-			match: input =>
-				testCommands.set(input[0]) && testCommands.subCommand(`no${preference}`, input[1]),
-			value: `set no${preference}`,
-		}))
-	})(),
-	...(function () {
-		return toggleKeys.map<SuggestionOption>(({ preference, name }) => ({
-			command: `:se${opt('t')} ${pref(preference)}!`,
-			description: `Invert value of ${name}.`,
-			id: `set-excl-toggle-${preference}`,
-			match: input =>
-				testCommands.set(input[0]) && testCommands.subCommand(preference, input[1], '!'),
-			value: `set ${preference}!`,
-		}))
-	})(),
-	...(function () {
-		return toggleKeys.map<SuggestionOption>(({ preference, name }) => ({
-			command: `:se${opt('t')} inv${pref(preference)}`,
-			description: `Invert value of ${name}.`,
-			id: `set-invert-toggle-${preference}`,
-			match: input =>
-				testCommands.set(input[0]) && testCommands.subCommand(`inv${preference}`, input[1]),
-			value: `set inv${preference}`,
-		}))
-	})(),
-	...(function () {
-		return allPreferencesKeys.map<SuggestionOption>(({ preference, name }) => ({
-			command: `:se${opt('t')} ${pref(preference)}&`,
-			description: `Reset value of ${name}.`,
-			id: `set-reset-preference-${preference}`,
-			match: input =>
-				testCommands.set(input[0]) && testCommands.subCommand(preference, input[1], '&'),
-			value: `set ${preference}&`,
-		}))
-	})(),
-	...(function () {
-		return nonToggleKeys.map<SuggestionOption>(({ preference, name }) => ({
-			command: `:se${opt('t')} ${pref(preference)}=${holder('value')}`,
-			description: `Set ${name} to {value}.`,
-			id: `set-equals-number-string-${preference}`,
-			match: input =>
-				testCommands.set(input[0]) && testCommands.subCommand(preference, input[1], '='),
-			value: `set ${preference}=`,
-		}))
-	})(),
-	...(function () {
-		return nonToggleKeys.map<SuggestionOption>(({ preference, name }) => ({
-			command: `:se${opt('t')} ${pref(preference)}:${holder('value')}`,
-			description: `Set ${name} to {value}.`,
-			id: `set-colon-number-string-${preference}`,
-			match: input =>
-				testCommands.set(input[0]) && testCommands.subCommand(preference, input[1], ':'),
-			value: `set ${preference}:`,
-		}))
-	})(),
+	...mapKeys(allPreferencesKeys, ({ preference, name }) => ({
+		command: `:se${opt('t')} ${pref(preference)}?`,
+		description: `Show value of ${name}.`,
+		id: `set-show-preference-${preference}`,
+		match: input =>
+			testCommands.set(input[0]) && testCommands.subCommand(preference, input[1], '?'),
+		value: `set ${preference}?`,
+	})),
+	...mapKeys(toggleKeys, ({ preference, name }) => ({
+		command: `:se${opt('t')} ${pref(preference)}`,
+		description: `Set, ${name} switch it on.`,
+		id: `set-switch-on-toggle-${preference}`,
+		match: input => testCommands.set(input[0]) && testCommands.subCommand(preference, input[1]),
+		value: `set ${preference}`,
+	})),
+	...mapKeys(nonToggleKeys, ({ preference, name }) => ({
+		command: `:se${opt('t')} ${pref(preference)}`,
+		description: `Show value of ${name}.`,
+		id: `set-show-number-string-${preference}`,
+		match: input => testCommands.set(input[0]) && testCommands.subCommand(preference, input[1]),
+		value: `set ${preference}`,
+	})),
+	...mapKeys(toggleKeys, ({ preference, name }) => ({
+		command: `:se${opt('t')} no${pref(preference)}`,
+		description: `Reset, ${name} switch it off.`,
+		id: `set-switch-off-toggle-${preference}`,
+		match: input =>
+			testCommands.set(input[0]) && testCommands.subCommand(`no${preference}`, input[1]),
+		value: `set no${preference}`,
+	})),
+	...mapKeys(toggleKeys, ({ preference, name }) => ({
+		command: `:se${opt('t')} ${pref(preference)}!`,
+		description: `Invert value of ${name}.`,
+		id: `set-excl-toggle-${preference}`,
+		match: input =>
+			testCommands.set(input[0]) && testCommands.subCommand(preference, input[1], '!'),
+		value: `set ${preference}!`,
+	})),
+	...mapKeys(toggleKeys, ({ preference, name }) => ({
+		command: `:se${opt('t')} inv${pref(preference)}`,
+		description: `Invert value of ${name}.`,
+		id: `set-invert-toggle-${preference}`,
+		match: input =>
+			testCommands.set(input[0]) && testCommands.subCommand(`inv${preference}`, input[1]),
+		value: `set inv${preference}`,
+	})),
+	...mapKeys(allPreferencesKeys, ({ preference, name }) => ({
+		command: `:se${opt('t')} ${pref(preference)}&`,
+		description: `Reset value of ${name}.`,
+		id: `set-reset-preference-${preference}`,
+		match: input =>
+			testCommands.set(input[0]) && testCommands.subCommand(preference, input[1], '&'),
+		value: `set ${preference}&`,
+	})),
+	...mapKeys(nonToggleKeys, ({ preference, name }) => ({
+		command: `:se${opt('t')} ${pref(preference)}=${holder('value')}`,
+		description: `Set ${name} to {value}.`,
+		id: `set-equals-number-string-${preference}`,
+		match: input =>
+			testCommands.set(input[0]) && testCommands.subCommand(preference, input[1], '='),
+		value: `set ${preference}=`,
+	})),
+	...mapKeys(nonToggleKeys, ({ preference, name }) => ({
+		command: `:se${opt('t')} ${pref(preference)}:${holder('value')}`,
+		description: `Set ${name} to {value}.`,
+		id: `set-colon-number-string-${preference}`,
+		match: input =>
+			testCommands.set(input[0]) && testCommands.subCommand(preference, input[1], ':'),
+		value: `set ${preference}:`,
+	})),
 	{
 		command: `:se${opt('t')} ${holder('preference')}?`,
 		description: 'Show value of {preference}.',
