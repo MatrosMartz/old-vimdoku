@@ -3,56 +3,61 @@ import {
 	type ICommandsSuggestionsService,
 	type IHistoryService,
 	type SuggestionOption,
-	commandsKeys,
 } from '../models'
 import type { IHistoryRepo } from '../repositories'
+import { commandsPattern } from '../utils'
 
 export class CommandsSuggestionService implements ICommandsSuggestionsService {
 	#suggestions: SuggestionOption[]
 	constructor({ suggestions = initialSuggestions }: { suggestions?: SuggestionOption[] } = {}) {
 		this.#suggestions = suggestions
 	}
-	#getCommandsPattern() {
-		return new RegExp(`^(${commandsKeys.join('|')})$`)
-	}
 	getSuggestions(input: string) {
 		const commands = input.trimStart().toLowerCase().split(' ')
 		return this.#suggestions.filter(({ match }) => match(commands))
 	}
-	highlighting(input: string) {
-		// strings
-		input = input.replace(
-			/(('[^']*'?)|("[^"]*"?))/g,
-			'<span class="text-primary-500-400-token">$1</span>'
+	#highlighString(input: string) {
+		const replaceValue = '<span class="text-primary-500-400-token">$1</span>'
+
+		return input.replace(/(('[^']*'?)|("[^"]*"?))/g, replaceValue)
+	}
+	#highlightNumber(input: string) {
+		const replaceValue = '<span class="text-secondary-400-500-token">$1</span>'
+
+		input = input.replace(/(?<!\w-?)([1-9][\d_]*)\b(?![^<]*<\/span>)/g, replaceValue)
+		return input.replace(
+			/(?<!\w-?)(0((x[a-fA-F\d_]*)|(o?[0-8_]*)|(b[01_]*)))\b(?![^<]*<\/span>)/g,
+			replaceValue
 		)
-		// numbers
-		input = input.replace(
-			/(?<!\w-?)(\d[_\d]*)\b(?![^<]*<\/span>)/g,
-			'<span class="text-secondary-400-500-token">$1</span>'
-		)
-		input = input.replace(
-			/(?<!\w-?)(0x[a-fA-F\d_]*)\b(?![^<]*<\/span>)/g,
-			'<span class="text-secondary-400-500-token">$1</span>'
-		)
-		// special chars
+	}
+	#highlightSpecialChars(input: string) {
+		const replaceValue = '<span class="text-tertiary-600-300-token">$1</span>'
+
 		input = input.replace(
 			/(?<!<span class=[^>]*['"])([=:!?&+\-\^])(?![^<]*<\/span>)/g,
-			'<span class="text-tertiary-600-300-token">$1</span>'
+			replaceValue
 		)
-		input = input.replace(
-			/(?<![^\s\t])(no|inv)(?![^<]*<\/span>)/g,
-			'<span class="text-tertiary-600-300-token">$1</span>'
-		)
+		return input.replace(/(?<![^\s\t])(no|inv)(?![^<]*<\/span>)/g, replaceValue)
+	}
+	#highlightCorrectCommand(input: string) {
+		return `<span class="text-success-500-400-token">${input}</span>`
+	}
+	#highlightInCorrectCommand(input: string) {
+		return `<span class="text-error-500-400-token font-semibold">${input}</span>`
+	}
+	highlighting(input: string) {
+		input = this.#highlighString(input)
+		input = this.#highlightNumber(input)
+		input = this.#highlightSpecialChars(input)
 
-		const cmdSeparator = input.search(/(?<!<span) /)
-		const a = cmdSeparator < 0 ? input.length : cmdSeparator
-		let command = input.trim().slice(0, a)
+		const commandEnd = input.search(/(?<!<span) /)
+		let command = input.trim().slice(0, commandEnd < 0 ? input.length : commandEnd)
 
-		if (this.#getCommandsPattern().test(command))
-			command = '<span class="text-success-500-400-token">' + command + '</span>'
-		else command = '<span class="text-error-500-400-token font-semibold">' + command + '</span>'
+		command = commandsPattern().test(command)
+			? this.#highlightCorrectCommand(command)
+			: this.#highlightInCorrectCommand(command)
 
-		return command + input.slice(a)
+		return command + input.slice(commandEnd < 0 ? input.length : commandEnd)
 	}
 }
 

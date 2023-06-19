@@ -55,3 +55,20 @@ export const pref = (str: string) => `<span class="text-secondary-600-300-token"
 export const text = (str: string) => `<span class="text-primary-500-400-token">${str}</span>`
 
 export const mapKeys = <T>(arr: T[], mapFn: (value: T) => SuggestionOption) => arr.map(mapFn)
+
+const commands = [
+	'(con(tinue)?)',
+	'(exit?)',
+	'(h(elp)?)',
+	'(pau(se)?)',
+	'(q(uit)?!)',
+	'(q(uit)?)',
+	'(res(et)?)',
+	'(s(et)?)',
+	'(st(art)?)',
+	'(wq(uit)?)',
+	'(w(rite)?)',
+	'(x(it)?)',
+].join('|')
+
+export const commandsPattern = () => new RegExp(`(${commands})$`)
