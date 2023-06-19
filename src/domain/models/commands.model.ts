@@ -19,7 +19,12 @@ export interface ICommandsSuggestionsService {
 
 const preferencesKeys = Object.keys(defaultPreferences).map(key => key.toLowerCase())
 const { numberKeys, stringKeys, toggleKeys } = getKeysByType(defaultPreferences)
-const modesKeys = Object.keys(Modes).map(mode => mode.toLowerCase())
+const modesKeys: Array<{ mode: Modes; letter: string }> = [
+	{ mode: Modes.Annotation, letter: 'n' },
+	{ mode: Modes.Command, letter: 'c' },
+	{ mode: Modes.Insert, letter: 'i' },
+	{ mode: Modes.Normal, letter: 'x' },
+]
 const difficultiesKeys = Object.keys(Difficulties)
 	.filter(difficulty => Number.isNaN(Number(difficulty)))
 	.map(difficulty => difficulty.toLowerCase())
@@ -58,7 +63,7 @@ export const gameSuggestions: SuggestionOption[] = [
 		return difficultiesKeys.map<SuggestionOption>(difficulty => ({
 			command: `:st${opt('art')} ${difficulty}`,
 			description: `start sudoku game in ${difficulty}`,
-			id: `start-difficulty.${difficulty}`,
+			id: `start-difficulty-${difficulty}`,
 			match: input => testCommands.start(input[0]) && testCommands.subCommand(difficulty, input[1]),
 			value: `start ${difficulty}`,
 		}))
@@ -81,6 +86,15 @@ export const helpSuggestions: SuggestionOption[] = [
 		value: 'help ',
 	},
 	...(function () {
+		return modesKeys.map<SuggestionOption>(({ mode, letter }) => ({
+			command: `:h${opt('elp')} ${letter}`,
+			description: `Open a window and display the help of ${mode} mode.`,
+			id: `help-mode-${mode}`,
+			match: input => testCommands.help(input[0]) && testCommands.subCommand(letter, input[1]),
+			value: `help ${letter}`,
+		}))
+	})(),
+	...(function () {
 		return commandsKeys.map<SuggestionOption>(cmd => ({
 			command: `:h${opt('elp')} <span class="text-secondary-600-300-token">:${cmd}</span>`,
 			description: `Open a window and display the help of ${cmd} command.`,
@@ -99,19 +113,6 @@ export const helpSuggestions: SuggestionOption[] = [
 				testCommands.help(input[0]) && testCommands.subCommand(preference, input[1], "'", true),
 			value: `help '${preference}'`,
 		}))
-	})(),
-	...(function () {
-		return modesKeys.map<SuggestionOption>(mode => {
-			const modeAbbreviator = mode[0]
-			return {
-				command: `:h${opt('elp')} ${modeAbbreviator}`,
-				description: `Open a window and display the help of ${mode} mode.`,
-				id: `help-mode-${mode}`,
-				match: input =>
-					testCommands.help(input[0]) && testCommands.subCommand(modeAbbreviator, input[1]),
-				value: `help ${modeAbbreviator}`,
-			}
-		})
 	})(),
 ]
 
