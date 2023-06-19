@@ -12,6 +12,7 @@
 		const btnAutocomplete = e.currentTarget
 		if ('value' in btnAutocomplete.dataset) {
 			const newValue = btnAutocomplete.dataset.value!
+			input.value = newValue
 			currentValue = newValue
 			input.focus()
 			if ('selection' in btnAutocomplete.dataset) {
@@ -38,11 +39,11 @@
 			/>
 		</div>
 		<ul class="autocomplete-list">
-			{#each suggestionsOptions as option, index (option.id)}
+			{#each suggestionsOptions as option (option.id)}
 				<li>
 					<button
 						class="autocomplete-option bg-surface-200-700-token"
-						tabindex={index + 1}
+						tabindex={0}
 						data-value={option.value}
 						data-selection={JSON.stringify(option.newSelection)}
 						on:click={autocompleteClickHandler}
@@ -75,7 +76,7 @@
 		@apply absolute top-[100%] overflow-hidden rounded-b-lg overflow-y-auto max-h-72 text-clip command-width;
 	}
 	.autocomplete-option {
-		@apply flex justify-between px-2 py-1 gap-4 w-full hover:brightness-90 focus:saturate-[1.3] rounded-none transition-[filter] outline-none border-none;
+		@apply flex justify-between px-2 py-1 gap-4 w-full hover:brightness-90 focus:contrast-[1.13] rounded-none transition-[filter] outline-none border-none;
 	}
 	:global(.dark) .autocomplete-option {
 		@apply hover:brightness-110;
