@@ -261,7 +261,7 @@ export const suggestions: SuggestionOption[] = [
 	...helpSuggestions,
 	...setSuggestions,
 	...gameSuggestions,
-]
+].sort(({ command: cmd1 }, { command: cmd2 }) => Number(cmd1 > cmd2) - 1)
 
 export interface IHistoryService {
 	/**
