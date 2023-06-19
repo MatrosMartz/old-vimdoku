@@ -31,6 +31,13 @@ export class CommandsSuggestionService implements ICommandsSuggestionsService {
 		)
 	}
 	#highlightSpecialChars(input: string) {
+		input = input.replace(
+			new RegExp(
+				`(?<=h(?:elp)? )(?<!<span class=[^>]*['"])(:(${commandsPattern}))$(?![^<]*<\/span>)`
+			),
+			'<span class="text-secondary-600-300-token">$1</span>'
+		)
+
 		const replaceValue = '<span class="text-tertiary-600-300-token">$1</span>'
 
 		input = input.replace(
@@ -53,7 +60,7 @@ export class CommandsSuggestionService implements ICommandsSuggestionsService {
 		const commandEnd = input.search(/(?<!<span) /)
 		let command = input.trim().slice(0, commandEnd < 0 ? input.length : commandEnd)
 
-		command = commandsPattern().test(command)
+		command = new RegExp(`(${commandsPattern})$`).test(command)
 			? this.#highlightCorrectCommand(command)
 			: this.#highlightInCorrectCommand(command)
 

@@ -56,7 +56,7 @@ export const text = (str: string) => `<span class="text-primary-500-400-token">$
 
 export const mapKeys = <T>(arr: T[], mapFn: (value: T) => SuggestionOption) => arr.map(mapFn)
 
-const commands = [
+export const commandsPattern = [
 	'(con(tinue)?)',
 	'(exit?)',
 	'(h(elp)?)',
@@ -70,5 +70,3 @@ const commands = [
 	'(w(rite)?)',
 	'(x(it)?)',
 ].join('|')
-
-export const commandsPattern = () => new RegExp(`(${commands})$`)
