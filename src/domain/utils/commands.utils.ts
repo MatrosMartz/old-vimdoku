@@ -40,16 +40,14 @@ export const testCommands = {
 	writeQuit: (input: string) => 'wquit'.includes(input),
 	write: (input: string) => 'write'.includes(input),
 	xit: (input: string) => 'xit'.includes(input),
-	subCommand: (subcommand: string, input?: string, separator?: string, remove: boolean = false) => {
+	subCommand: (subcommand: string, input?: string, separator: string = '') => {
 		if (input == null) return false
 		if (subcommand.length < 2) return true
-		if (separator == null) return false
-		if (remove) return subcommand.includes(input.replaceAll(separator, ''))
-		return subcommand.includes(input.split(separator)[0])
+		return subcommand.includes(input.replaceAll(separator, ''))
 	},
 }
 
-export const holder = (str: string) => `<span class="text-surface-500-400-token">{${str}}</span>`
+export const holder = (str: string) => `<span class=" text-surface-500-400-token">{${str}}</span>`
 export const opt = (str: string) => `<span class="text-tertiary-600-300-token">[${str}]</span>`
 export const pref = (str: string) => `<span class="text-secondary-600-300-token">${str}</span>`
 export const text = (str: string) => `<span class="text-primary-500-400-token">${str}</span>`
