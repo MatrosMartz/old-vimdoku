@@ -1,5 +1,9 @@
 <script lang="ts">
+	import { onMount } from 'svelte'
+	import { fade } from 'svelte/transition'
+
 	import { CommandsSuggestionService } from '~/domain/services'
+	import { history } from '../stores/commands.store'
 
 	const commandsSuggestion = new CommandsSuggestionService()
 
@@ -8,13 +12,15 @@
 	$: highlight = commandsSuggestion.highlighting(currentValue)
 	$: suggestionsOptions = commandsSuggestion.getSuggestions(currentValue)
 
-	function autocompleteClickHandler(e: Event & { currentTarget: HTMLButtonElement }) {
-		const btnAutocomplete = e.currentTarget
+	function autocompleteClickHandler({
+		currentTarget: btnAutocomplete,
+	}: Event & { currentTarget: HTMLButtonElement }) {
 		if ('value' in btnAutocomplete.dataset) {
 			const newValue = btnAutocomplete.dataset.value!
 			input.value = newValue
 			currentValue = newValue
 			input.focus()
+			history.updateAutocomplete(newValue)
 			if ('selection' in btnAutocomplete.dataset) {
 				const newSelection: [number, number] = JSON.parse(btnAutocomplete.dataset.selection!)
 
@@ -22,20 +28,45 @@
 			}
 		}
 	}
+
+	function keyHandler(ev: KeyboardEvent & { currentTarget: HTMLInputElement }) {
+		const { key } = ev
+		if (key === 'Enter') {
+			history.push(currentValue)
+			currentValue = ''
+		}
+		if (key === 'ArrowUp') {
+			ev.preventDefault()
+			history.undo()
+			currentValue = history.getCurrent()
+		}
+		if (key === 'ArrowDown') {
+			history.redo()
+			currentValue = history.getCurrent()
+		}
+	}
+
+	onMount(() => {
+		input.focus()
+	})
 </script>
 
 <section
 	class="absolute inset-0 h-full w-full badge-glass z-50 flex flex-col justify-center items-center pb-[60vh]"
+	transition:fade
 >
 	<div class="relative bg-surface-50-900-token command-width rounded-lg">
 		<div class="px-2 py-1 flex justify-start">
 			<span><span class="text-tertiary-600-300-token">:</span>{@html highlight}</span>
 			<input
-				maxlength="35"
-				type="text"
 				class="command-input"
-				bind:value={currentValue}
+				type="text"
+				maxlength="35"
+				placeholder="start easy"
 				bind:this={input}
+				bind:value={currentValue}
+				on:keydown={keyHandler}
+				on:input={({ currentTarget }) => history.updateAutocomplete(currentTarget.value)}
 			/>
 		</div>
 		<ul class="autocomplete-list">

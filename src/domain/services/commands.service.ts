@@ -69,14 +69,15 @@ export class CommandsSuggestionService implements ICommandsSuggestionsService {
 }
 
 export class HistoryService implements IHistoryService {
-	#AutocompleteHistory: string[]
+	#autocompleteHistory: string[]
 	#autocompleteTimeout?: ReturnType<typeof setTimeout>
 	#index: number | null = null
 	#repo: IHistoryRepo
+	#currentInput = ''
 
 	constructor(repo: IHistoryRepo) {
 		this.#repo = repo
-		this.#AutocompleteHistory = this.#repo.get()
+		this.#autocompleteHistory = this.#repo.get()
 	}
 
 	#getAutocomplete(input?: string) {
@@ -85,19 +86,20 @@ export class HistoryService implements IHistoryService {
 	}
 
 	getCurrent() {
-		if (this.#index == null) return ''
-		return this.#AutocompleteHistory[this.#index] ?? ''
+		if (this.#index == null) return this.#currentInput
+		return this.#autocompleteHistory[this.#index] ?? this.#currentInput
 	}
 	getHistory = () => this.#repo.get()
-	getAutocompleteHistory = () => this.#AutocompleteHistory
+	getAutocompleteHistory = () => this.#autocompleteHistory
 	push(cmd: string) {
 		this.#repo.update(history => [...history, cmd])
 		this.updateAutocomplete()
-		this.#index = this.#AutocompleteHistory.length
+		this.#index = this.#autocompleteHistory.length
+		this.#currentInput = ''
 	}
 
 	redo() {
-		if (this.#index != null && this.#index < this.#AutocompleteHistory.length - 1) this.#index += 1
+		if (this.#index != null && this.#index < this.#autocompleteHistory.length) this.#index += 1
 	}
 	undo() {
 		if (this.#index !== null && this.#index > 0) this.#index -= 1
@@ -106,10 +108,11 @@ export class HistoryService implements IHistoryService {
 
 	updateAutocomplete(input?: string) {
 		if (this.#autocompleteTimeout != null) clearTimeout(this.#autocompleteTimeout)
+		this.#currentInput = input ?? ''
 
 		this.#autocompleteTimeout = setTimeout(() => {
-			this.#AutocompleteHistory = this.#getAutocomplete(input)
-			this.#index = this.#AutocompleteHistory.length
-		}, 100)
+			this.#autocompleteHistory = this.#getAutocomplete(input)
+			this.#index = this.#autocompleteHistory.length
+		}, 500)
 	}
 }
