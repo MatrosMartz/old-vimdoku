@@ -2,15 +2,12 @@
 	import { onMount } from 'svelte'
 	import { fade } from 'svelte/transition'
 
-	import { CommandsSuggestionService } from '~/domain/services'
-	import { history } from '../stores/commands.store'
-
-	const commandsSuggestion = new CommandsSuggestionService()
+	import { cmdHighlight, cmdHistory, suggestionsStore } from '../stores/commands.store'
 
 	let currentValue = ''
 	let input: HTMLInputElement
-	$: highlight = commandsSuggestion.highlighting(currentValue)
-	$: suggestionsOptions = commandsSuggestion.getSuggestions(currentValue)
+	$: highlight = cmdHighlight.highlighting(currentValue)
+	$: suggestionsStore.updateSuggestions(currentValue)
 
 	function autocompleteClickHandler({
 		currentTarget: btnAutocomplete,
@@ -20,7 +17,7 @@
 			input.value = newValue
 			currentValue = newValue
 			input.focus()
-			history.updateAutocomplete(newValue)
+			cmdHistory.updateAutocomplete(newValue)
 			if ('selection' in btnAutocomplete.dataset) {
 				const newSelection: [number, number] = JSON.parse(btnAutocomplete.dataset.selection!)
 
@@ -32,17 +29,17 @@
 	function keyHandler(ev: KeyboardEvent & { currentTarget: HTMLInputElement }) {
 		const { key } = ev
 		if (key === 'Enter') {
-			history.push(currentValue)
+			cmdHistory.push(currentValue)
 			currentValue = ''
 		}
 		if (key === 'ArrowUp') {
 			ev.preventDefault()
-			history.undo()
-			currentValue = history.getCurrent()
+			cmdHistory.undo()
+			currentValue = cmdHistory.getCurrent()
 		}
 		if (key === 'ArrowDown') {
-			history.redo()
-			currentValue = history.getCurrent()
+			cmdHistory.redo()
+			currentValue = cmdHistory.getCurrent()
 		}
 	}
 
@@ -66,11 +63,11 @@
 				bind:this={input}
 				bind:value={currentValue}
 				on:keydown={keyHandler}
-				on:input={({ currentTarget }) => history.updateAutocomplete(currentTarget.value)}
+				on:input={({ currentTarget }) => cmdHistory.updateAutocomplete(currentTarget.value)}
 			/>
 		</div>
 		<ul class="autocomplete-list">
-			{#each suggestionsOptions as option (option.id)}
+			{#each $suggestionsStore as option (option.id)}
 				<li>
 					<button
 						class="autocomplete-option bg-surface-200-700-token"

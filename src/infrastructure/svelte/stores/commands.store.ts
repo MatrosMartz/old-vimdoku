@@ -1,29 +1,29 @@
 import { writable } from 'svelte/store'
-import { HistoryService } from '~/domain/services'
+
+import { CmdHighlightService, CmdSuggestionService, CmdHistoryService } from '~/domain/services'
 import { DataStorageBrowser } from '$infra/browser/repositories/local-storage.repo'
-import { HistoryRepo } from '~/infrastructure/repository/history.repo'
+import { HistoryRepo } from '$infra/repository/history.repo'
 
-const historyStorage = new DataStorageBrowser<string[]>({ keyName: 'history' })
-export const history = new HistoryService(new HistoryRepo({ storage: historyStorage }))
+export const cmdHighlight = new CmdHighlightService()
+export const cmdSuggestions = new CmdSuggestionService()
 
-function createHistoryStore() {
-	const { subscribe, set } = writable(history.getCurrent())
+function createSuggestionsStore() {
+	let timeoutID: ReturnType<typeof setTimeout> | null = null
+	const { subscribe, set } = writable(cmdSuggestions.getSuggestions())
 
-	const push = (cmd: string) => {
-		history.push(cmd)
-		set(history.getCurrent())
+	const updateSuggestions = (input: string) => {
+		if (timeoutID != null) clearTimeout(timeoutID)
+
+		timeoutID = setTimeout(() => {
+			cmdSuggestions.updateSuggestions(input)
+			set(cmdSuggestions.getSuggestions())
+		}, 200)
 	}
-	const redo = () => {
-		history.redo()
-		set(history.getCurrent())
-	}
-	const undo = () => {
-		history.undo()
-		set(history.getCurrent())
-	}
-	const updateAutocomplete = (cmd: string) => history.updateAutocomplete(cmd)
 
-	return { subscribe, push, redo, undo, updateAutocomplete }
+	return { subscribe, updateSuggestions }
 }
 
-export const historyStore = createHistoryStore()
+export const suggestionsStore = createSuggestionsStore()
+
+const historyStorage = new DataStorageBrowser<string[]>({ keyName: 'history' })
+export const cmdHistory = new CmdHistoryService(new HistoryRepo({ storage: historyStorage }))

@@ -1,21 +1,14 @@
 import {
 	suggestions as initialSuggestions,
-	type ICommandsSuggestionsService,
-	type IHistoryService,
+	type ICmdSuggestionsService,
+	type ICmdHistoryService,
 	type SuggestionOption,
+	type ICmdHighlightService,
 } from '../models'
 import type { IHistoryRepo } from '../repositories'
 import { commandsPattern } from '../utils'
 
-export class CommandsSuggestionService implements ICommandsSuggestionsService {
-	#suggestions: SuggestionOption[]
-	constructor({ suggestions = initialSuggestions }: { suggestions?: SuggestionOption[] } = {}) {
-		this.#suggestions = suggestions
-	}
-	getSuggestions(input: string) {
-		const commands = input.trimStart().toLowerCase().split(' ')
-		return this.#suggestions.filter(({ match }) => match(commands))
-	}
+export class CmdHighlightService implements ICmdHighlightService {
 	#highlighString(input: string) {
 		const replaceValue = '<span class="text-primary-500-400-token">$1</span>'
 
@@ -52,23 +45,46 @@ export class CommandsSuggestionService implements ICommandsSuggestionsService {
 	#highlightInCorrectCommand(input: string) {
 		return `<span class="text-error-500-400-token font-semibold">${input}</span>`
 	}
+	#getCommand(input: string) {
+		let commandEnd = input.search(/(?<!<span) /)
+		commandEnd = commandEnd < 0 ? input.length : commandEnd
+		const command = input.trim().slice(0, commandEnd)
+
+		return { command, commandEnd }
+	}
 	highlighting(input: string) {
 		input = this.#highlighString(input)
 		input = this.#highlightNumber(input)
 		input = this.#highlightSpecialChars(input)
 
-		const commandEnd = input.search(/(?<!<span) /)
-		let command = input.trim().slice(0, commandEnd < 0 ? input.length : commandEnd)
+		const { command, commandEnd } = this.#getCommand(input)
 
-		command = new RegExp(`(${commandsPattern})$`).test(command)
+		const newCommand = new RegExp(`(${commandsPattern})$`).test(command)
 			? this.#highlightCorrectCommand(command)
 			: this.#highlightInCorrectCommand(command)
 
-		return command + input.slice(commandEnd < 0 ? input.length : commandEnd)
+		return newCommand + input.slice(commandEnd)
 	}
 }
 
-export class HistoryService implements IHistoryService {
+export class CmdSuggestionService implements ICmdSuggestionsService {
+	#suggestions: SuggestionOption[]
+	#matchSuggestions: SuggestionOption[] = []
+
+	constructor({ suggestions = initialSuggestions }: { suggestions?: SuggestionOption[] } = {}) {
+		this.#suggestions = suggestions
+		this.updateSuggestions('')
+	}
+	updateSuggestions(input: string) {
+		const commands = input.trimStart().toLowerCase().split(' ')
+		this.#matchSuggestions = this.#suggestions.filter(({ match }) => match(commands))
+	}
+	getSuggestions() {
+		return this.#matchSuggestions
+	}
+}
+
+export class CmdHistoryService implements ICmdHistoryService {
 	#autocompleteHistory: string[]
 	#autocompleteTimeout?: ReturnType<typeof setTimeout>
 	#index: number | null = null

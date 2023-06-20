@@ -3,6 +3,10 @@ import { Modes } from './modes.model'
 import { defaultPreferences } from './preferences.model'
 import { Difficulties } from './sudoku.model'
 
+export interface ICmdHighlightService {
+	highlighting: (input: string) => string
+}
+
 export interface SuggestionOption {
 	command: string
 	description: string
@@ -12,9 +16,9 @@ export interface SuggestionOption {
 	value: string
 }
 
-export interface ICommandsSuggestionsService {
-	getSuggestions: (string: string) => SuggestionOption[]
-	highlighting: (input: string) => string
+export interface ICmdSuggestionsService {
+	updateSuggestions: (string: string) => void
+	getSuggestions: () => SuggestionOption[]
 }
 
 const { numberKeys, stringKeys, toggleKeys } = getKeysByType(defaultPreferences)
@@ -323,7 +327,7 @@ export const suggestions: SuggestionOption[] = [
 	...quitSuggestions,
 ].sort(({ id: id1 }, { id: id2 }) => Number(id1 > id2) - 1)
 
-export interface IHistoryService {
+export interface ICmdHistoryService {
 	/**
 	 * get Autocomplete History
 	 */

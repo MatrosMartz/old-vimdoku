@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, test } from 'vitest'
 import type { IHistoryRepo } from '../repositories'
 import { noop } from '../utils'
 
-import { HistoryService } from './commands.service'
+import { CmdHistoryService } from './commands.service'
 
 const initialHistoryData: IHistoryRepo = {
 	get: () => [
@@ -21,9 +21,9 @@ const initialHistoryData: IHistoryRepo = {
 }
 
 describe.concurrent('History Service', () => {
-	let history: HistoryService
+	let history: CmdHistoryService
 	beforeEach(() => {
-		history = new HistoryService(initialHistoryData)
+		history = new CmdHistoryService(initialHistoryData)
 	})
 	test('The current command should be are ""', () => {
 		expect(history.getCurrent()).toBe('')
