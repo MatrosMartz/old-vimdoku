@@ -41,7 +41,7 @@ export class CommandsSuggestionService implements ICommandsSuggestionsService {
 		const replaceValue = '<span class="text-tertiary-600-300-token">$1</span>'
 
 		input = input.replace(
-			/(?<!<span class=[^>]*['"])([=:!?&+\-\^])(?![^<]*<\/span>)/g,
+			/(?<!(?:<span class=[^>]*['"])|(?:^\w*))([=:!?&+\-\^])(?![^<]*<\/span>)/g,
 			replaceValue
 		)
 		return input.replace(/(?<![^\s\t])(no|inv)(?![^<]*<\/span>)/g, replaceValue)
