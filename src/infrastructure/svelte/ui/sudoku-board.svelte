@@ -4,9 +4,7 @@
 	import Box from './box.svelte'
 </script>
 
-<div
-	class="container rounded-lg overflow-hidden bg-surface-100-800-token text-secondary-500-400-token"
->
+<div class="board text-secondary-500-400-token">
 	<section>
 		{#each [1, 2, 3, 4, 5, 6, 7, 8, 9] as _, row}
 			{#each [1, 2, 3, 4, 5, 6, 7, 8, 9] as _, col}
@@ -27,10 +25,12 @@
 		position: relative;
 		display: grid;
 		grid-template-columns: repeat(9, 1fr);
-		padding: 0.5rem;
+	}
+	.board {
+		grid-area: b;
 	}
 	.separator {
-		--x: 95%;
+		--x: 100%;
 		--y: 3px;
 		inset: 0;
 		position: absolute;
@@ -69,10 +69,10 @@
 	}
 
 	.line-highlight {
-		--x: calc(100% - 1rem);
+		--x: 100%;
 		--y: 2.5rem;
-		top: 0.5rem;
-		left: 0.5rem;
+		top: 0;
+		left: 0;
 		position: absolute;
 		display: block;
 		z-index: 0;

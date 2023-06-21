@@ -3,6 +3,7 @@
 	import { fade } from 'svelte/transition'
 
 	import { cmdHighlight, cmdHistory, suggestionsStore } from '../stores/commands.store'
+	import { preferencesStore } from '../stores/preferences.store'
 
 	let currentValue = ''
 	let input: HTMLInputElement
@@ -49,7 +50,7 @@
 </script>
 
 <section
-	class="absolute inset-0 h-full w-full badge-glass z-20 flex flex-col justify-center items-center pb-[60vh]"
+	class="absolute inset-0 h-full w-full glass-command backdrop-blur-lg backdrop-opacity-90 z-20 flex flex-col justify-center items-center pb-[60vh]"
 	transition:fade
 >
 	<div class="relative bg-surface-50-900-token command-width rounded-lg">
@@ -114,5 +115,12 @@
 	}
 	.command-option :global(span) {
 		@apply text-base;
+	}
+
+	.glass-command {
+		background-color: rgb(var(--color-surface-50) / 0.2);
+	}
+	:global(.dark) .glass-command {
+		background-color: rgb(var(--color-surface-900) / 0.2);
 	}
 </style>
