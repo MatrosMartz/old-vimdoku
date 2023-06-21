@@ -7,21 +7,28 @@
 	export let row: number
 	export let col: number
 
+	let boxBtn: HTMLButtonElement
 	$: box = $boardStore[row][col]
 	$: value = box.value > 0 ? box.value : ''
 	$: selected = $selectionStore.col === col && $selectionStore.row === row
+	$: if (selected && boxBtn != null) boxBtn.focus()
 
 	const InputHandler = () => selectionStore.moveTo({ row, col })
 
-	const KeyHandler = (e: KeyboardEvent) => {
-		if (selected || box.kind !== BoxKinds.Initial) {
-			const insertNum = Number(e.key)
-			if (e.code === 'Backspace' || insertNum === 0) boardStore.write(BoardService.EMPTY_BOX_VALUE)
+	const KeyHandler = ({ key }: KeyboardEvent) => {
+		if (selected && box.kind !== BoxKinds.Initial) {
+			const insertNum = Number(key)
+			if (key === 'Backspace' || insertNum === 0) boardStore.write(BoardService.EMPTY_BOX_VALUE)
 			else if (!Number.isNaN(insertNum)) {
 				if ($modesStore === Modes.Insert) boardStore.write(insertNum)
 				else if ($modesStore === Modes.Annotation) boardStore.addNote(insertNum)
 			}
-			selectionStore.moveUp()
+
+			if (
+				key === 'Backspace' ||
+				(!Number.isNaN(insertNum) && [Modes.Insert, Modes.Annotation].includes($modesStore))
+			)
+				selectionStore.moveToNext()
 		}
 	}
 </script>
@@ -30,8 +37,9 @@
 	data-testid="{row}-{col}"
 	class:initial={box.kind === BoxKinds.Initial}
 	class:selected
-	class="rounded-lg border-2 border-transparent box-border z-10 relative father"
+	class="rounded-lg border-2 border-transparent box-border z-10 relative father hover:border-transparent"
 	id="{row}-{col}"
+	bind:this={boxBtn}
 	on:click={InputHandler}
 	on:keydown={KeyHandler}
 >

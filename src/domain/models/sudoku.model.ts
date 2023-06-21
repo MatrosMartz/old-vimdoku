@@ -31,9 +31,10 @@ export interface IBoardService {
 	addNote: (value: number) => void
 	getBoard: () => readonly BoxSchema[][]
 	getBox: (pos: Position) => Readonly<BoxSchema>
+	getEmptyBoxesPos: () => readonly Position[]
 	getSudokuValue: (pos: Position) => number
-	writeNumber: (value: number) => void
 	isSelected: (pos: Position) => boolean
+	writeNumber: (value: number) => void
 }
 
 export interface ISelectionService {
@@ -41,6 +42,7 @@ export interface ISelectionService {
 	moveLeft: (times?: number) => void
 	moveRight: (times?: number) => void
 	moveTo: (pos: Position) => void
+	moveToNextEmpty: (emptiesPos: readonly Position[]) => void
 	moveUp: (times?: number) => void
 	getSelectionPosition: () => Position
 }

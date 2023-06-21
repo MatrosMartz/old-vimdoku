@@ -29,6 +29,7 @@ export const boardStore = createBoardStore()
 
 function createSelectionStore() {
 	const { subscribe, set } = writable(selection.getSelectionPosition())
+	const emptiesPos = board.getEmptyBoxesPos()
 
 	const moveTo = (pos: Position) => {
 		selection.moveTo(pos)
@@ -50,8 +51,12 @@ function createSelectionStore() {
 		selection.moveUp(times)
 		set(selection.getSelectionPosition())
 	}
+	const moveToNext = () => {
+		selection.moveToNextEmpty(emptiesPos)
+		set(selection.getSelectionPosition())
+	}
 
-	return { subscribe, moveDown, moveLeft, moveRight, moveTo, moveUp }
+	return { subscribe, moveDown, moveLeft, moveRight, moveTo, moveToNext, moveUp }
 }
 
 export const selectionStore = createSelectionStore()

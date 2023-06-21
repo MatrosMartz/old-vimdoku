@@ -23,7 +23,7 @@ export class SelectionService implements ISelectionService {
 	#isEndPosition = () => this.#position.row === 8 && this.#position.col === 8
 	#isStartPosition = () => this.#position.row === 0 && this.#position.col === 0
 
-	constructor(initialPosition: Position = { col: 0, row: 0 }) {
+	constructor({ initialPosition = { col: 0, row: 0 } }: { initialPosition?: Position } = {}) {
 		this.#position = initialPosition
 	}
 
@@ -67,6 +67,12 @@ export class SelectionService implements ISelectionService {
 	}
 	moveTo(newPosition: Position) {
 		this.#position = newPosition
+	}
+	moveToNextEmpty(emptiesPos: readonly Position[]) {
+		const { row, col } = this.#position
+		const actualIndex = emptiesPos.findIndex(box => row === box.row && col === box.col)
+		const nextEmptyIndex = actualIndex + 1 < emptiesPos.length ? actualIndex + 1 : 0
+		this.#position = { ...emptiesPos[nextEmptyIndex] }
 	}
 	getSelectionPosition = () => this.#position
 }
@@ -226,6 +232,17 @@ export class BoardService implements IBoardService {
 	getBoard = (): readonly BoxSchema[][] => this.#board
 	getBox = ({ col, row }: Position) => Object.freeze(this.#board[row][col])
 	getSudokuValue = ({ col, row }: Position) => this.#sudoku[row][col]
+
+	getEmptyBoxesPos() {
+		const emptyBoxesPos: Position[] = []
+		for (let row = 0; row < 9; row++) {
+			for (let col = 0; col < 9; col++) {
+				if (this.#board[row][col].kind !== BoxKinds.Initial) emptyBoxesPos.push({ row, col })
+			}
+		}
+
+		return Object.freeze(emptyBoxesPos)
+	}
 
 	writeNumber(value: number) {
 		this.#updateSelected(({ box, ...pos }) => {
