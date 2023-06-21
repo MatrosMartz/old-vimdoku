@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store'
+import { derived, writable } from 'svelte/store'
 
 import { type Position } from '~/domain/models'
 import { BoardService, SelectionService } from '~/domain/services'
@@ -60,3 +60,16 @@ function createSelectionStore() {
 }
 
 export const selectionStore = createSelectionStore()
+export const formattedSelection = derived(selectionStore, ({ col, row }) => `${row + 1}:${col + 1}`)
+
+function createMistakeStore() {
+	const { subscribe, update } = writable(0)
+
+	const addMistake = () => {
+		update(m => m + 1)
+	}
+
+	return { subscribe, addMistake }
+}
+
+export const mistakeStore = createMistakeStore()

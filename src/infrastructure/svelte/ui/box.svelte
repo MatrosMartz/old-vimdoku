@@ -37,7 +37,7 @@
 	data-testid="{row}-{col}"
 	class:initial={box.kind === BoxKinds.Initial}
 	class:selected
-	class="rounded-lg border-2 border-transparent box-border z-10 relative father hover:border-transparent"
+	class="rounded-lg border-2 border-transparent box-border z-10 relative father"
 	id="{row}-{col}"
 	bind:this={boxBtn}
 	on:click={InputHandler}
