@@ -12,7 +12,7 @@ export class PreferencesRepo implements IPreferencesRepo {
 	get() {
 		this.#preferences = { ...(this.#storage.get() ?? this.#preferences) }
 
-		return this.#preferences
+		return Object.freeze(this.#preferences)
 	}
 	update(updater: (preferences: Preferences) => Preferences) {
 		this.#storage.set(updater(this.#preferences))

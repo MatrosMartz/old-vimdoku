@@ -1,4 +1,4 @@
 export interface IHistoryRepo {
-	get: () => string[]
+	get: () => readonly string[]
 	update: (updater: (history: string[]) => string[]) => void
 }

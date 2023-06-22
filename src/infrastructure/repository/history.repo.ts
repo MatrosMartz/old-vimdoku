@@ -10,7 +10,7 @@ export class HistoryRepo implements IHistoryRepo {
 	get() {
 		this.#history = [...(this.#storage.get() ?? this.#history)]
 
-		return this.#history
+		return Object.freeze(this.#history)
 	}
 	update(updater: (history: string[]) => string[]) {
 		this.#storage.set(updater(this.#history))

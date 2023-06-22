@@ -339,7 +339,7 @@ export interface ICmdHistoryService {
 	/**
 	 * get All History
 	 */
-	getHistory: () => string[]
+	getHistory: () => readonly string[]
 	push: (cmd: string) => void
 	redo: () => void
 	updateAutocomplete: (input?: string) => void

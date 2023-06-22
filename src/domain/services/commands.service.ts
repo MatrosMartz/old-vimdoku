@@ -93,7 +93,7 @@ export class CmdHistoryService implements ICmdHistoryService {
 
 	constructor(repo: IHistoryRepo) {
 		this.#repo = repo
-		this.#autocompleteHistory = this.#repo.get()
+		this.#autocompleteHistory = [...this.#repo.get()]
 	}
 
 	#getAutocomplete(input?: string) {
@@ -127,7 +127,7 @@ export class CmdHistoryService implements ICmdHistoryService {
 		this.#currentInput = input ?? ''
 
 		this.#autocompleteTimeout = setTimeout(() => {
-			this.#autocompleteHistory = this.#getAutocomplete(input)
+			this.#autocompleteHistory = [...this.#getAutocomplete(input)]
 			this.#index = this.#autocompleteHistory.length
 		}, 500)
 	}
