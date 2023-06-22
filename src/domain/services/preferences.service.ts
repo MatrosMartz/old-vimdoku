@@ -5,8 +5,7 @@ import {
 	type PreferenceUpdater,
 	type ToggleKeys,
 } from '../models'
-import type { DataStorageRepo, IPreferencesRepo } from '../repositories'
-import { noop } from '../utils'
+import type { IPreferencesRepo } from '../repositories'
 
 export class PreferencesService implements IPreferencesService {
 	static toggle: PreferenceUpdater<ToggleKeys> = ({ value }) => !value

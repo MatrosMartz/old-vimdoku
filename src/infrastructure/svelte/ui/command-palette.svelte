@@ -3,7 +3,6 @@
 	import { fade } from 'svelte/transition'
 
 	import { cmdHighlight, cmdHistory, suggestionsStore } from '../stores/commands.store'
-	import { preferencesStore } from '../stores/preferences.store'
 
 	let currentValue = ''
 	let input: HTMLInputElement
