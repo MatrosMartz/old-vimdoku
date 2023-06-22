@@ -2,9 +2,9 @@
 	import { selectionStore } from '../stores'
 	import { preferencesStore } from '../stores/preferences.store'
 
-	export let direction: 'vertical' | 'horizontal'
+	export let direction: 'col' | 'row'
 
-	$: current = direction === 'vertical' ? $selectionStore.col : $selectionStore.row
+	$: current = direction === 'row' ? $selectionStore.row : $selectionStore.col
 	let [numbers, relativeNumbers] = [false, false]
 	$: {
 		numbers = $preferencesStore.numbers
@@ -32,12 +32,12 @@
 </ul>
 
 <style lang="postcss">
-	.vertical {
-		grid-area: v;
+	.row {
+		grid-area: r;
 		@apply flex-col;
 	}
-	.horizontal {
-		grid-area: h;
+	.col {
+		grid-area: c;
 	}
 	.current {
 		@apply opacity-100;
