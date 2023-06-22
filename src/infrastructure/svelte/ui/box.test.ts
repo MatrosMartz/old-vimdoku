@@ -128,7 +128,7 @@ describe('Box Component in Insert Mode', () => {
 			await fireEvent.click(button)
 			await fireEvent.keyDown(button, { key: '3' })
 
-			expect(button).not.toHaveClass('selected')
+			expect(button).toHaveClass('selected')
 		})
 	})
 })
