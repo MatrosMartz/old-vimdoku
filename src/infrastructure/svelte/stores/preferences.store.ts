@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store'
 
 import { PreferencesService } from '~/domain/services/preferences.service'
-import type { Preferences } from '~/domain/models'
+import type { PreferenceUpdater, Preferences } from '~/domain/models'
 
 import { DataStorageBrowser } from '$infra/browser/repositories/local-storage.repo'
 
@@ -11,12 +11,15 @@ export const preferences = new PreferencesService(preferencesRepo)
 function createPreferencesStore() {
 	const { subscribe, set } = writable(preferences.getPreferences())
 
-	const setPreference = <T extends keyof Preferences>(preference: T, value: Preferences[T]) => {
-		preferences.setPreference(preference, value)
+	const updatePreference = <T extends keyof Preferences>(
+		preferenceKey: T,
+		updater: PreferenceUpdater<T>
+	) => {
+		preferences.updatePreference(preferenceKey, updater)
 		set(preferences.getPreferences())
 	}
 
-	return { subscribe, setPreference }
+	return { subscribe, updatePreference }
 }
 
 export const preferencesStore = createPreferencesStore()

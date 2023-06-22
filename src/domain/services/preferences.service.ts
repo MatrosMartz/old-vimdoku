@@ -1,22 +1,30 @@
-import { type Preferences, type IPreferencesService, defaultPreferences } from '../models'
-import type { DataStorageRepo } from '../repositories'
+import {
+	type Preferences,
+	type IPreferencesService,
+	defaultPreferences,
+	type PreferenceUpdater,
+	type ToggleKeys,
+} from '../models'
+import type { DataStorageRepo, IPreferencesRepo } from '../repositories'
 import { noop } from '../utils'
 
 export class PreferencesService implements IPreferencesService {
-	#preferences = defaultPreferences
-	#updateData = noop
+	static toggle: PreferenceUpdater<ToggleKeys> = ({ value }) => !value
+	static on: PreferenceUpdater<ToggleKeys> = () => true
+	static off: PreferenceUpdater<ToggleKeys> = () => false
+	static reset: PreferenceUpdater = ({ key }) => defaultPreferences[key]
+	static resetAll = () => ({ ...defaultPreferences })
 
-	constructor(repo?: DataStorageRepo<Preferences>) {
-		if (repo) {
-			const newPreferences = repo.get()
-			if (newPreferences != null) this.#preferences = newPreferences
+	#repo: IPreferencesRepo
 
-			this.#updateData = () => repo.set(this.#preferences)
-		}
+	constructor(repo: IPreferencesRepo) {
+		this.#repo = repo
 	}
-	getPreferences = () => this.#preferences
-	setPreference = <T extends keyof Preferences>(preference: T, newValue: Preferences[T]) => {
-		this.#preferences[preference] = newValue
-		this.#updateData()
+	getPreferences = () => this.#repo.get()
+	updateAll(updater: (preferences: Preferences) => Preferences) {
+		this.#repo.update(oldPref => updater(oldPref))
+	}
+	updatePreference = <K extends keyof Preferences>(key: K, updater: PreferenceUpdater<K>) => {
+		this.#repo.update(oldPref => ({ ...oldPref, [key]: updater({ key, value: oldPref[key] }) }))
 	}
 }

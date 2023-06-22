@@ -23,6 +23,7 @@ export interface VimPreferences {
 
 export interface SudokuPreferences {
 	automaticNoteDeletion: boolean
+	automaticValidation: boolean
 	highlightNumber: boolean
 	remainingNumbers: boolean
 }
@@ -36,21 +37,36 @@ export interface UserPreferences {
 
 export interface Preferences extends VimPreferences, SudokuPreferences, UserPreferences {}
 
+export type PreferenceUpdater<K extends keyof Preferences = keyof Preferences> = (args: {
+	value: Preferences[K]
+	key: K
+}) => Preferences[K]
+
+type KeysByType<O, T> = {
+	[K in keyof O]: O[K] extends T ? K : never
+}[keyof O]
+
+export type ToggleKeys = KeysByType<Preferences, boolean>
+export type NumberKeys = KeysByType<Preferences, number>
+export type StringKeys = KeysByType<Preferences, string>
+
 export interface IPreferencesService {
 	getPreferences: () => Preferences
-	setPreference: <T extends keyof Preferences>(key: T, newValue: Preferences[T]) => void
+	updateAll: (updater: (preferences: Preferences) => Preferences) => void
+	updatePreference: <K extends keyof Preferences>(key: K, updater: PreferenceUpdater<K>) => void
 }
 
 export const defaultPreferences: Preferences = {
 	animations: true,
 	automaticNoteDeletion: true,
+	automaticValidation: false,
 	fontSize: 16,
 	highlightNumber: true,
 	history: 100,
 	language: Langs.EN,
 	mouse: MouseEnable.All,
 	numbers: true,
-	relativeNumbers: true,
+	relativeNumbers: false,
 	remainingNumbers: true,
 	theme: Themes.Default,
 	timer: true,
