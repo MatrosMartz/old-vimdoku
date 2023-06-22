@@ -19,8 +19,8 @@
 	.game {
 		display: grid;
 		grid-template-areas:
-			'. v'
-			'h b';
+			'. h'
+			'v b';
 
 		grid-template-columns: var(--numbers) 1fr;
 		grid-template-rows: var(--numbers) 1fr;

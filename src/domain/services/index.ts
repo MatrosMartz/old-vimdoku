@@ -1,4 +1,5 @@
 export * from './commands.service'
 export * from './modes.service'
+export * from './preferences.service'
 export * from './sudoku.service'
 export * from './timer.service'

@@ -15,11 +15,15 @@
 
 <ul class="{direction} flex justify-around items-center">
 	{#each lines as line}
-		<li class="text-primary-600-300-token opacity-30" class:current={current === line}>
-			{#if relativeNumbers && line === current}
+		<li
+			class="text-primary-600-300-token opacity-30"
+			class:current={current === line}
+			data-testid="{direction}-{line}"
+		>
+			{#if current === line && relativeNumbers && !numbers}
 				~
-			{:else if relativeNumbers && !numbers}
-				{Math.abs(line - current)}
+			{:else if current !== line && relativeNumbers}
+				{Math.abs(current - line)}
 			{:else if numbers}
 				{line + 1}
 			{/if}
@@ -30,10 +34,10 @@
 <style lang="postcss">
 	.vertical {
 		grid-area: v;
+		@apply flex-col;
 	}
 	.horizontal {
 		grid-area: h;
-		@apply flex-col;
 	}
 	.current {
 		@apply opacity-100;
