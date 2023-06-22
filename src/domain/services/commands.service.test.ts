@@ -1,29 +1,39 @@
-import { beforeEach, describe, expect, test } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import type { IHistoryRepo } from '../repositories'
-import { noop } from '../utils'
 
 import { CmdHistoryService } from './commands.service'
 
-const initialHistoryData: IHistoryRepo = {
-	get: () => [
-		'help',
-		'help :start',
-		'start',
-		"help 'nu'",
-		'set nu',
-		"help 'rnu'",
-		'pause',
-		'quit',
-		'help :set',
-	],
-	update: noop,
+const defaultCommands = [
+	'help',
+	'help :start',
+	'start',
+	"help 'nu'",
+	'set nu',
+	"help 'rnu'",
+	'pause',
+	'quit',
+	'help :set',
+]
+
+const mockHistoryRepo = (): IHistoryRepo => {
+	let commands = [...defaultCommands]
+	return {
+		get: () => Object.freeze(commands),
+		update: updater => {
+			commands = updater(commands)
+		},
+	}
 }
 
 describe.concurrent('History Service', () => {
 	let history: CmdHistoryService
+	beforeAll(() => {
+		vi.useFakeTimers()
+		return () => vi.useRealTimers()
+	})
 	beforeEach(() => {
-		history = new CmdHistoryService(initialHistoryData)
+		history = new CmdHistoryService(mockHistoryRepo())
 	})
 	test('The current command should be are ""', () => {
 		expect(history.getCurrent()).toBe('')
@@ -31,7 +41,7 @@ describe.concurrent('History Service', () => {
 	test('The command "help :start" should be added at the end', () => {
 		history.push('help :start')
 
-		expect(history.getHistory().at(-1)).toBe('help :start')
+		expect(history.getHistory()).toEqual([...defaultCommands, 'help :start'])
 	})
 	test('The current command after undo Should be "help :set"', () => {
 		history.undo()
@@ -78,6 +88,7 @@ describe.concurrent('History Service', () => {
 	})
 	test('The autocomplete history should contains only the history commands start with help', () => {
 		history.updateAutocomplete('help')
+		vi.advanceTimersByTime(500)
 
 		expect(history.getAutocompleteHistory()).toEqual([
 			'help',
@@ -87,11 +98,21 @@ describe.concurrent('History Service', () => {
 			'help :set',
 		])
 	})
-	test('', () => {
+	test('The current should be "help :set" undo after timeout', () => {
 		history.updateAutocomplete('help')
-		history.undo()
+		vi.advanceTimersByTime(500)
 		history.undo()
 
-		expect(history.getCurrent()).toBe("help 'rnu'")
+		expect(history.getCurrent()).toBe('help :set')
+	})
+	test('should remember what the input was', () => {
+		history.updateAutocomplete('help')
+		vi.advanceTimersByTime(500)
+		history.undo()
+		history.undo()
+		history.redo()
+		history.redo()
+
+		expect(history.getCurrent()).toBe('help')
 	})
 })

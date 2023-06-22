@@ -87,18 +87,24 @@ export class CmdSuggestionService implements ICmdSuggestionsService {
 export class CmdHistoryService implements ICmdHistoryService {
 	#autocompleteHistory: string[]
 	#autocompleteTimeout?: ReturnType<typeof setTimeout>
-	#index: number | null = null
+	#index: number
 	#repo: IHistoryRepo
 	#currentInput = ''
 
 	constructor(repo: IHistoryRepo) {
 		this.#repo = repo
 		this.#autocompleteHistory = [...this.#repo.get()]
+		this.#index = this.#autocompleteHistory.length
 	}
 
 	#getAutocomplete(input?: string) {
 		const history = this.#repo.get()
 		return input ? history.filter(cmd => cmd.startsWith(input)) : history
+	}
+	#updateAutocomplete(input?: string) {
+		this.#currentInput = input ?? ''
+		this.#autocompleteHistory = [...this.#getAutocomplete(input)]
+		this.#index = this.#autocompleteHistory.length
 	}
 
 	getCurrent() {
@@ -109,9 +115,8 @@ export class CmdHistoryService implements ICmdHistoryService {
 	getAutocompleteHistory = () => this.#autocompleteHistory
 	push(cmd: string) {
 		this.#repo.update(history => [...history, cmd])
-		this.updateAutocomplete()
 		this.#index = this.#autocompleteHistory.length
-		this.#currentInput = ''
+		this.#updateAutocomplete()
 	}
 
 	redo() {
@@ -124,11 +129,6 @@ export class CmdHistoryService implements ICmdHistoryService {
 
 	updateAutocomplete(input?: string) {
 		if (this.#autocompleteTimeout != null) clearTimeout(this.#autocompleteTimeout)
-		this.#currentInput = input ?? ''
-
-		this.#autocompleteTimeout = setTimeout(() => {
-			this.#autocompleteHistory = [...this.#getAutocomplete(input)]
-			this.#index = this.#autocompleteHistory.length
-		}, 500)
+		this.#autocompleteTimeout = setTimeout(() => this.#updateAutocomplete(input), 500)
 	}
 }
