@@ -13,7 +13,7 @@ export class PreferencesService implements IPreferencesService {
 	static on: PreferenceUpdater<ToggleKeys> = () => true
 	static off: PreferenceUpdater<ToggleKeys> = () => false
 	static reset: PreferenceUpdater = ({ key }) => defaultPreferences[key]
-	static resetAll = () => ({ ...defaultPreferences })
+	static resetAll = (): Preferences => ({ ...defaultPreferences })
 
 	#repo: IPreferencesRepo
 	#observers: Observer<Preferences>[] = []
