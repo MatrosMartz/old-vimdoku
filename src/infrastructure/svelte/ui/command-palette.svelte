@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte'
 	import { fade } from 'svelte/transition'
 
-	import { cmdHighlight, cmdHistory, suggestionsStore } from '../stores/commands.store'
+	import { cmdHighlight, cmdHistory, executor, suggestionsStore } from '../stores'
 
 	let currentValue = ''
 	let input: HTMLInputElement
@@ -30,6 +30,7 @@
 		const { key } = ev
 		if (key === 'Enter') {
 			cmdHistory.push(currentValue)
+			executor.exec(currentValue)
 			currentValue = ''
 		}
 		if (key === 'ArrowUp') {

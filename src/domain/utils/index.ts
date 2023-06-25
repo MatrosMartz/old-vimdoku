@@ -1,6 +1,7 @@
 export * from './array.utils'
 export * from './commands.utils'
 export * from './common.utils'
+export * from './errors.utils'
 export * from './format.utils'
 export * from './observer.utils'
 export * from './sudoku.utils'

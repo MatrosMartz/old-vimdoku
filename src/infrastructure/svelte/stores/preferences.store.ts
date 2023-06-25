@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store'
 
-import { PreferencesService } from '~/domain/services'
+import { CmdExecutorService, PreferencesService } from '~/domain/services'
 import type { PreferenceUpdater, Preferences } from '~/domain/models'
 import type { CustomSubscribe, Observer } from '~/domain/utils'
 
@@ -11,6 +11,8 @@ const preferencesStorage = new DataStorageBrowser<Preferences>({ keyName: 'prefe
 export const preferences = new PreferencesService(
 	new PreferencesRepo({ storage: preferencesStorage })
 )
+
+export const executor = new CmdExecutorService({ preferences })
 
 function createPreferencesStore() {
 	const { subscribe: storeSubscribe, set } = writable(preferences.getValue())

@@ -10,9 +10,9 @@ export class CmdHighlightService implements ICmdHighlightService {
 	#highlightNumber(input: string) {
 		const replaceValue = '<span class="text-secondary-400-500-token">$1</span>'
 
-		input = input.replace(/(?<!\w-?)([1-9][\d_]*)\b(?![^<]*<\/span>)/g, replaceValue)
+		input = input.replace(/(?<!\w-?)(-?[1-9][\d_]*)\b(?![^<]*<\/span>)/g, replaceValue)
 		return input.replace(
-			/(?<!\w-?)(0((x[a-fA-F\d_]*)|(o?[0-8_]*)|(b[01_]*)))\b(?![^<]*<\/span>)/g,
+			/(?<!\w-?)(-?0((x[a-fA-F\d_]*)|(o?[0-7_]*)|(b[01_]*)))\b(?![^<]*<\/span>)/g,
 			replaceValue
 		)
 	}
