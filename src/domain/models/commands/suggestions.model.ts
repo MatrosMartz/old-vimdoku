@@ -1,11 +1,12 @@
-import { getKeysByType, holder, mapKeys, opt, pref, testCommands, text } from '../utils'
-import { Modes } from './modes.model'
-import { defaultPreferences } from './preferences.model'
-import { Difficulties } from './sudoku.model'
-
-export interface ICmdHighlightService {
-	highlighting: (input: string) => string
-}
+import { holder, mapKeys, opt, pref, testCommands, text } from '~/domain/utils'
+import {
+	allPreferencesKeys,
+	commandsKeys,
+	difficultiesKeys,
+	modesKeys,
+	nonToggleKeys,
+	toggleKeys,
+} from './commands.model'
 
 export interface SuggestionOption {
 	command: string
@@ -15,38 +16,6 @@ export interface SuggestionOption {
 	newSelection?: [number, number]
 	value: string
 }
-
-export interface ICmdSuggestionsService {
-	updateSuggestions: (string: string) => void
-	getSuggestions: () => SuggestionOption[]
-}
-
-const { numberKeys, stringKeys, toggleKeys } = getKeysByType(defaultPreferences)
-const allPreferencesKeys = [...numberKeys, ...stringKeys, ...toggleKeys]
-const nonToggleKeys = [...numberKeys, ...stringKeys]
-const modesKeys: Array<{ mode: Modes; letter: string }> = [
-	{ mode: Modes.Annotation, letter: 'n' },
-	{ mode: Modes.Command, letter: 'c' },
-	{ mode: Modes.Insert, letter: 'i' },
-	{ mode: Modes.Normal, letter: 'x' },
-]
-const difficultiesKeys = Object.entries(Difficulties).filter(([key]) =>
-	Number.isNaN(Number(key))
-) as [keyof typeof Difficulties, Difficulties][]
-const commandsKeys = [
-	'continue',
-	'exit',
-	'help',
-	'pause',
-	'quit!',
-	'quit',
-	'reset',
-	'set',
-	'start',
-	'wquit',
-	'write',
-	'xit',
-]
 
 export const gameSuggestions: SuggestionOption[] = [
 	{
@@ -144,7 +113,6 @@ export const setSuggestions: SuggestionOption[] = [
 		value: 'set all',
 	},
 	{
-		// show all preferences
 		command: `:se${opt('t')} all&`,
 		description: 'Reset all preferences.',
 		id: 'set-sel-all-reset',
@@ -327,21 +295,7 @@ export const suggestions: SuggestionOption[] = [
 	...quitSuggestions,
 ].sort(({ id: id1 }, { id: id2 }) => Number(id1 > id2) - 1)
 
-export interface ICmdHistoryService {
-	/**
-	 * get Autocomplete History
-	 */
-	getAutocompleteHistory: () => string[]
-	/**
-	 * get current value
-	 */
-	getCurrent: () => string | null
-	/**
-	 * get All History
-	 */
-	getHistory: () => readonly string[]
-	push: (cmd: string) => void
-	redo: () => void
-	updateAutocomplete: (input?: string) => void
-	undo: () => void
+export interface ICmdSuggestionsService {
+	updateSuggestions: (string: string) => void
+	getSuggestions: () => SuggestionOption[]
 }

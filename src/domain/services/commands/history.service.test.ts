@@ -1,8 +1,8 @@
 import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
-import type { IHistoryRepo } from '../repositories'
+import type { IHistoryRepo } from '~/domain/repositories'
 
-import { CmdHistoryService } from './commands.service'
+import { CmdHistoryService } from './history.service'
 
 const defaultCommands = [
 	'help',

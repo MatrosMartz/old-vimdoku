@@ -1,4 +1,4 @@
-export * from './commands.service'
+export * from './commands'
 export * from './modes.service'
 export * from './preferences.service'
 export * from './sudoku.service'
