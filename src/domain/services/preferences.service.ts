@@ -6,6 +6,7 @@ import {
 	type ToggleKeys,
 } from '../models'
 import type { IPreferencesRepo } from '../repositories'
+import type { Observer } from '../utils'
 
 export class PreferencesService implements IPreferencesService {
 	static toggle: PreferenceUpdater<ToggleKeys> = ({ value }) => !value
@@ -15,15 +16,28 @@ export class PreferencesService implements IPreferencesService {
 	static resetAll = () => ({ ...defaultPreferences })
 
 	#repo: IPreferencesRepo
+	#observers: Observer<Preferences>[] = []
 
 	constructor(repo: IPreferencesRepo) {
 		this.#repo = repo
 	}
-	getPreferences = () => this.#repo.get()
+	#notifyObservers() {
+		const newValue = this.#repo.get()
+		this.#observers.forEach(obs => obs.update({ ...newValue }))
+	}
+	addObserver(observer: Observer<Preferences>) {
+		this.#observers.push(observer)
+	}
+	removeObserver(observer: Observer<Preferences>) {
+		this.#observers = this.#observers.filter(obs => obs === observer)
+	}
+	getValue = () => this.#repo.get()
 	updateAll(updater: (preferences: Preferences) => Preferences) {
 		this.#repo.update(oldPref => updater(oldPref))
+		this.#notifyObservers()
 	}
-	updatePreference = <K extends keyof Preferences>(key: K, updater: PreferenceUpdater<K>) => {
+	updateByKey = <K extends keyof Preferences>(key: K, updater: PreferenceUpdater<K>) => {
 		this.#repo.update(oldPref => ({ ...oldPref, [key]: updater({ key, value: oldPref[key] }) }))
+		this.#notifyObservers()
 	}
 }

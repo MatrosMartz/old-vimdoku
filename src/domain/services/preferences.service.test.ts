@@ -24,25 +24,25 @@ describe.concurrent('Preferences Service', () => {
 	})
 
 	test('Only numbers preference should change to false', () => {
-		preferences.updatePreference('numbers', PreferencesService.off)
+		preferences.updateByKey('numbers', PreferencesService.off)
 
-		expect(preferences.getPreferences()).toEqual<Preferences>({
+		expect(preferences.getValue()).toEqual<Preferences>({
 			...defaultPreferences,
 			numbers: false,
 		})
 	})
 	test('Only toggle automaticValidation preference should change to true', () => {
-		preferences.updatePreference('automaticValidation', PreferencesService.on)
+		preferences.updateByKey('automaticValidation', PreferencesService.on)
 
-		expect(preferences.getPreferences()).toEqual<Preferences>({
+		expect(preferences.getValue()).toEqual<Preferences>({
 			...defaultPreferences,
 			automaticValidation: !defaultPreferences.automaticValidation,
 		})
 	})
 	test('Only toggle timer preference should toggle', () => {
-		preferences.updatePreference('timer', PreferencesService.toggle)
+		preferences.updateByKey('timer', PreferencesService.toggle)
 
-		expect(preferences.getPreferences()).toEqual<Preferences>({
+		expect(preferences.getValue()).toEqual<Preferences>({
 			...defaultPreferences,
 			timer: !defaultPreferences.timer,
 		})

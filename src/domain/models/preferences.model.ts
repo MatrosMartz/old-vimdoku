@@ -1,3 +1,5 @@
+import type { Observable } from '../utils'
+
 export const enum Themes {
 	Default = 'default',
 }
@@ -50,10 +52,10 @@ export type ToggleKeys = KeysByType<Preferences, boolean>
 export type NumberKeys = KeysByType<Preferences, number>
 export type StringKeys = KeysByType<Preferences, string>
 
-export interface IPreferencesService {
-	getPreferences: () => Preferences
+export interface IPreferencesService extends Observable<Preferences> {
+	getValue: () => Preferences
 	updateAll: (updater: (preferences: Preferences) => Preferences) => void
-	updatePreference: <K extends keyof Preferences>(key: K, updater: PreferenceUpdater<K>) => void
+	updateByKey: <K extends keyof Preferences>(key: K, updater: PreferenceUpdater<K>) => void
 }
 
 export const defaultPreferences: Preferences = {
