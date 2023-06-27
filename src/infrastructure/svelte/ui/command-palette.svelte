@@ -2,12 +2,18 @@
 	import { onMount } from 'svelte'
 	import { fade } from 'svelte/transition'
 
-	import { cmdHighlight, cmdHistory, executor, suggestionsStore } from '../stores'
+	import {
+		cmdAutocomplete,
+		cmdHighlight,
+		cmdSuggestions,
+		executor,
+		suggestionsStore,
+	} from '../stores'
 
 	let currentValue = ''
 	let input: HTMLInputElement
 	$: highlight = cmdHighlight.highlighting(currentValue)
-	$: suggestionsStore.updateSuggestions(currentValue)
+	$: cmdSuggestions.update(currentValue)
 
 	function autocompleteClickHandler({
 		currentTarget: btnAutocomplete,
@@ -17,7 +23,7 @@
 			input.value = newValue
 			currentValue = newValue
 			input.focus()
-			cmdHistory.updateAutocomplete(newValue)
+			cmdAutocomplete.search(newValue)
 			if ('selection' in btnAutocomplete.dataset) {
 				const newSelection: [number, number] = JSON.parse(btnAutocomplete.dataset.selection!)
 
@@ -29,18 +35,18 @@
 	function keyHandler(ev: KeyboardEvent & { currentTarget: HTMLInputElement }) {
 		const { key } = ev
 		if (key === 'Enter') {
-			cmdHistory.push(currentValue)
+			cmdAutocomplete.push(currentValue)
 			executor.exec(currentValue)
 			currentValue = ''
 		}
 		if (key === 'ArrowUp') {
 			ev.preventDefault()
-			cmdHistory.undo()
-			currentValue = cmdHistory.getCurrent()
+			cmdAutocomplete.undo()
+			currentValue = cmdAutocomplete.getValue()
 		}
 		if (key === 'ArrowDown') {
-			cmdHistory.redo()
-			currentValue = cmdHistory.getCurrent()
+			cmdAutocomplete.redo()
+			currentValue = cmdAutocomplete.getValue()
 		}
 	}
 
@@ -64,7 +70,7 @@
 				bind:this={input}
 				bind:value={currentValue}
 				on:keydown={keyHandler}
-				on:input={({ currentTarget }) => cmdHistory.updateAutocomplete(currentTarget.value)}
+				on:input={({ currentTarget }) => cmdAutocomplete.search(currentTarget.value)}
 			/>
 		</div>
 		<ul class="autocomplete-list">

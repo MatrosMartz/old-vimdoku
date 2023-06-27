@@ -1,19 +1,39 @@
-import type { TimerSchema, ITimerService, Updater } from '~/domain/models'
+import type { TimerSchema, ITimerService } from '~/domain/models'
 
-import { formatNumber } from '../utils'
+import { formatNumber, type Observer } from '../utils'
 
 export class TimerService implements ITimerService {
 	#interval: number | string | NodeJS.Timeout = 0
+	#value: TimerSchema = { isPause: true, seconds: 0 }
+	#observers: Observer<TimerSchema>[] = []
 
-	initialTimer = () => ({ isPause: true, seconds: 0 })
-	stop = (timer: TimerSchema) => {
-		if (this.#interval) clearInterval(this.#interval)
-		return { ...timer, isPause: true }
+	#notifyObservers() {
+		this.#observers.forEach(obs => {
+			obs.update({ ...this.#value })
+		})
 	}
-	reset = ({ isPause }: TimerSchema) => ({ isPause, seconds: 0 })
-	start = (callback: (updater: Updater) => void) => {
+	addObserver(observer: Observer<TimerSchema>) {
+		this.#observers = [...this.#observers, observer]
+	}
+	removeObserver(observer: Observer<TimerSchema>) {
+		this.#observers = this.#observers.filter(obs => obs !== observer)
+	}
+	getValue = () => Object.freeze(this.#value)
+
+	stop = () => {
+		if (this.#interval) clearInterval(this.#interval)
+		this.#value = { ...this.#value, isPause: true }
+		this.#notifyObservers()
+	}
+	reset() {
+		this.#value = { ...this.#value, seconds: 0 }
+		this.#notifyObservers()
+	}
+	start() {
+		this.#value = { ...this.#value, isPause: false }
 		this.#interval = setInterval(() => {
-			callback(({ seconds }) => ({ isPause: false, seconds: seconds + 1 }))
+			this.#value = { ...this.#value, seconds: this.#value.seconds + 1 }
+			this.#notifyObservers()
 		}, 1000)
 	}
 

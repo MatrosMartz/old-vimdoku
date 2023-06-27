@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/svelte'
 
 import { BoxKinds } from '~/domain/models'
 import { getBoxAndPosByKind } from '~/tests/utils'
-import { modesStore, boardStore } from '../stores'
+import { boardStore, modes } from '../stores'
 
 import Box from './box.svelte'
 
@@ -11,8 +11,8 @@ afterEach(() => cleanup())
 
 describe('Box Component in Insert Mode', () => {
 	beforeAll(() => {
-		modesStore.setInsert()
-		return () => modesStore.setNormal()
+		modes.setInsert()
+		return () => modes.setNormal()
 	})
 
 	describe('Box Component Empty', () => {
@@ -135,9 +135,10 @@ describe('Box Component in Insert Mode', () => {
 
 describe('Box Component in Annotation Mode', () => {
 	beforeAll(() => {
-		modesStore.setAnnotation()
-		return () => modesStore.setNormal()
+		modes.setAnnotation()
+		return () => modes.setNormal()
 	})
+
 	test('should be add note', async () => {
 		const { pos, box } = getBoxAndPosByKind(boardStore, BoxKinds.Empty)!
 

@@ -1,3 +1,5 @@
+import type { Observable } from '../utils'
+
 export const enum BoxKinds {
 	Correct = 'correct',
 	Incorrect = 'incorrect',
@@ -27,9 +29,9 @@ export interface Position {
 	row: number
 }
 
-export interface IBoardService {
+export interface IBoardService extends Observable<BoxSchema[][]> {
 	addNote: (value: number) => void
-	getBoard: () => readonly BoxSchema[][]
+	erase: () => void
 	getBox: (pos: Position) => Readonly<BoxSchema>
 	getEmptyBoxesPos: () => readonly Position[]
 	getSudokuValue: (pos: Position) => number
@@ -37,12 +39,11 @@ export interface IBoardService {
 	writeNumber: (value: number) => void
 }
 
-export interface ISelectionService {
+export interface ISelectionService extends Observable<Position> {
 	moveDown: (times?: number) => void
 	moveLeft: (times?: number) => void
 	moveRight: (times?: number) => void
 	moveTo: (pos: Position) => void
 	moveToNextEmpty: (emptiesPos: readonly Position[]) => void
 	moveUp: (times?: number) => void
-	getSelectionPosition: () => Position
 }

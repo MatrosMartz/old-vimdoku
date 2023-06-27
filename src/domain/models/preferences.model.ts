@@ -53,7 +53,6 @@ export type NumberKeys = KeysByType<Preferences, number>
 export type StringKeys = KeysByType<Preferences, string>
 
 export interface IPreferencesService extends Observable<Preferences> {
-	getValue: () => Preferences
 	updateAll: (updater: (preferences: Preferences) => Preferences) => void
 	updateByKey: <K extends keyof Preferences>(key: K, updater: PreferenceUpdater<K>) => void
 }

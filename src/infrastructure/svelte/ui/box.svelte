@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { BoxKinds, Modes } from '~/domain/models'
-	import { BoardService } from '~/domain/services'
 
-	import { modesStore, boardStore, selectionStore } from '../stores'
+	import { boardStore, selectionStore, selection, board, modes } from '../stores'
 
 	export let row: number
 	export let col: number
@@ -13,22 +12,22 @@
 	$: selected = $selectionStore.col === col && $selectionStore.row === row
 	$: if (selected && boxBtn != null) boxBtn.focus()
 
-	const InputHandler = () => selectionStore.moveTo({ row, col })
+	const InputHandler = () => selection.moveTo({ row, col })
 
 	const KeyHandler = ({ key }: KeyboardEvent) => {
 		if (selected && box.kind !== BoxKinds.Initial) {
 			const insertNum = Number(key)
-			if (key === 'Backspace' || insertNum === 0) boardStore.write(BoardService.EMPTY_BOX_VALUE)
+			if (key === 'Backspace' || insertNum === 0) board.erase()
 			else if (!Number.isNaN(insertNum)) {
-				if ($modesStore === Modes.Insert) boardStore.write(insertNum)
-				else if ($modesStore === Modes.Annotation) boardStore.addNote(insertNum)
+				if (modes.getValue() === Modes.Insert) board.writeNumber(insertNum)
+				else if (modes.getValue() === Modes.Annotation) board.addNote(insertNum)
 			}
 
 			if (
 				key === 'Backspace' ||
-				(!Number.isNaN(insertNum) && [Modes.Insert, Modes.Annotation].includes($modesStore))
+				(!Number.isNaN(insertNum) && [Modes.Insert, Modes.Annotation].includes(modes.getValue()))
 			)
-				selectionStore.moveToNext()
+				selection.moveToNextEmpty(board.getEmptyBoxesPos())
 		}
 	}
 </script>

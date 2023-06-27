@@ -2,7 +2,7 @@ import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import type { IHistoryRepo } from '~/domain/repositories'
 
-import { CmdHistoryService } from './history.service'
+import { CmdAutocompleteService, CmdHistoryService } from './history.service'
 
 const defaultCommands = [
 	'help',
@@ -27,70 +27,72 @@ const mockHistoryRepo = (): IHistoryRepo => {
 }
 
 describe.concurrent('History Service', () => {
-	let history: CmdHistoryService
+	let cmdHistory: CmdHistoryService
+	let cmdAutocomplete: CmdAutocompleteService
 	beforeAll(() => {
 		vi.useFakeTimers()
 		return () => vi.useRealTimers()
 	})
 	beforeEach(() => {
-		history = new CmdHistoryService(mockHistoryRepo())
+		cmdHistory = new CmdHistoryService(mockHistoryRepo())
+		cmdAutocomplete = new CmdAutocompleteService({ cmdHistory })
 	})
 	test('The current command should be are ""', () => {
-		expect(history.getCurrent()).toBe('')
+		expect(cmdAutocomplete.getValue()).toBe('')
 	})
 	test('The command "help :start" should be added at the end', () => {
-		history.push('help :start')
+		cmdAutocomplete.push('help :start')
 
-		expect(history.getHistory()).toEqual([...defaultCommands, 'help :start'])
+		expect(cmdHistory.getValue()).toEqual([...defaultCommands, 'help :start'])
 	})
 	test('The current command after undo Should be "help :set"', () => {
-		history.undo()
+		cmdAutocomplete.undo()
 
-		expect(history.getCurrent()).toBe('help :set')
+		expect(cmdAutocomplete.getValue()).toBe('help :set')
 	})
 	test('The current command after undo two Should be "se nu"', () => {
-		history.undo()
-		history.undo()
+		cmdAutocomplete.undo()
+		cmdAutocomplete.undo()
 
-		expect(history.getCurrent()).toBe('quit')
+		expect(cmdAutocomplete.getValue()).toBe('quit')
 	})
 	test('The current command after undo four times Should be "help \'rnu\'"', () => {
-		history.undo()
-		history.undo()
-		history.undo()
-		history.undo()
+		cmdAutocomplete.undo()
+		cmdAutocomplete.undo()
+		cmdAutocomplete.undo()
+		cmdAutocomplete.undo()
 
-		expect(history.getCurrent()).toBe("help 'rnu'")
+		expect(cmdAutocomplete.getValue()).toBe("help 'rnu'")
 	})
 	test('The current command after redo Should be ""', () => {
-		history.redo()
+		cmdAutocomplete.redo()
 
-		expect(history.getCurrent()).toBe('')
+		expect(cmdAutocomplete.getValue()).toBe('')
 	})
 	test('The current command after undo five times and redo two times Should be "pause"', () => {
-		history.undo()
-		history.undo()
-		history.undo()
-		history.undo()
-		history.undo()
-		history.redo()
-		history.redo()
+		cmdAutocomplete.undo()
+		cmdAutocomplete.undo()
+		cmdAutocomplete.undo()
+		cmdAutocomplete.undo()
+		cmdAutocomplete.undo()
+		cmdAutocomplete.redo()
+		cmdAutocomplete.redo()
 
-		expect(history.getCurrent()).toBe('pause')
+		expect(cmdAutocomplete.getValue()).toBe('pause')
 	})
 	test('The current command after add "start easy" undo three times Should be "quit"', () => {
-		history.push('start easy')
-		history.undo()
-		history.undo()
-		history.undo()
+		cmdAutocomplete.push('start easy')
+		cmdAutocomplete.undo()
+		cmdAutocomplete.undo()
+		cmdAutocomplete.undo()
 
-		expect(history.getCurrent()).toBe('quit')
+		expect(cmdAutocomplete.getValue()).toBe('quit')
 	})
 	test('The autocomplete history should contains only the history commands start with help', () => {
-		history.updateAutocomplete('help')
+		cmdAutocomplete.search('help')
 		vi.advanceTimersByTime(500)
 
-		expect(history.getAutocompleteHistory()).toEqual([
+		expect(cmdAutocomplete.getCmdAutocomplete()).toEqual([
 			'help',
 			'help :start',
 			"help 'nu'",
@@ -99,20 +101,20 @@ describe.concurrent('History Service', () => {
 		])
 	})
 	test('The current should be "help :set" undo after timeout', () => {
-		history.updateAutocomplete('help')
+		cmdAutocomplete.search('help')
 		vi.advanceTimersByTime(500)
-		history.undo()
+		cmdAutocomplete.undo()
 
-		expect(history.getCurrent()).toBe('help :set')
+		expect(cmdAutocomplete.getValue()).toBe('help :set')
 	})
 	test('should remember what the input was', () => {
-		history.updateAutocomplete('help')
+		cmdAutocomplete.search('help')
 		vi.advanceTimersByTime(500)
-		history.undo()
-		history.undo()
-		history.redo()
-		history.redo()
+		cmdAutocomplete.undo()
+		cmdAutocomplete.undo()
+		cmdAutocomplete.redo()
+		cmdAutocomplete.redo()
 
-		expect(history.getCurrent()).toBe('help')
+		expect(cmdAutocomplete.getValue()).toBe('help')
 	})
 })

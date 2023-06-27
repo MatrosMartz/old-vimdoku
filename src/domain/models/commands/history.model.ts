@@ -1,18 +1,14 @@
 export interface ICmdHistoryService {
-	/**
-	 * get Autocomplete History
-	 */
-	getAutocompleteHistory: () => string[]
-	/**
-	 * get current value
-	 */
-	getCurrent: () => string | null
-	/**
-	 * get All History
-	 */
-	getHistory: () => readonly string[]
+	getValue: () => readonly string[]
+	add: (cmd: string) => void
+	clear: () => void
+}
+
+export interface ICmdAutocompleteService {
+	getCmdAutocomplete: () => readonly string[]
+	getValue: () => string
 	push: (cmd: string) => void
 	redo: () => void
-	updateAutocomplete: (input?: string) => void
+	search: (input?: string) => void
 	undo: () => void
 }

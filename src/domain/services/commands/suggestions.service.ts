@@ -1,22 +1,32 @@
-import {
-	suggestions as initialSuggestions,
-	type ICmdSuggestionsService,
-	type SuggestionOption,
-} from '~/domain/models'
+import { suggestions, type ICmdSuggestionsService, type SuggestionOption } from '~/domain/models'
+import type { Observer } from '~/domain/utils'
 
 export class CmdSuggestionService implements ICmdSuggestionsService {
-	#suggestions: SuggestionOption[]
-	#matchSuggestions: SuggestionOption[] = []
+	#initialSuggestions: SuggestionOption[]
+	#value: SuggestionOption[] = []
+	#observers: Observer<SuggestionOption[]>[] = []
 
-	constructor({ suggestions = initialSuggestions }: { suggestions?: SuggestionOption[] } = {}) {
-		this.#suggestions = suggestions
-		this.updateSuggestions('')
+	constructor({
+		initialSuggestions = suggestions,
+	}: { initialSuggestions?: SuggestionOption[] } = {}) {
+		this.#initialSuggestions = initialSuggestions
+		this.update('')
 	}
-	updateSuggestions(input: string) {
+
+	#notifyObservers() {
+		this.#observers.forEach(obs => obs.update(this.#value.map(sub => ({ ...sub }))))
+	}
+	addObserver(observer: Observer<SuggestionOption[]>) {
+		this.#observers = [...this.#observers, observer]
+	}
+	removeObserver(observer: Observer<SuggestionOption[]>) {
+		this.#observers = this.#observers.filter(obs => obs !== observer) ?? []
+	}
+	getValue = () => Object.freeze(this.#value.map(sub => ({ ...sub })))
+
+	update(input: string) {
 		const commands = input.trimStart().toLowerCase().split(' ')
-		this.#matchSuggestions = this.#suggestions.filter(({ match }) => match(commands))
-	}
-	getSuggestions() {
-		return this.#matchSuggestions
+		this.#value = this.#initialSuggestions.filter(({ match }) => match(commands))
+		this.#notifyObservers()
 	}
 }

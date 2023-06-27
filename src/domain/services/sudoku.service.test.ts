@@ -48,14 +48,14 @@ describe('Sudoku Board', () => {
 	})
 
 	test.concurrent('Not all box should be initials', () => {
-		expect(board.getBoard().every(col => col.every(box => box.kind === BoxKinds.Initial))).toBe(
+		expect(board.getValue().every(col => col.every(box => box.kind === BoxKinds.Initial))).toBe(
 			false
 		)
 	})
 
 	describe('Write Number', () => {
 		test.concurrent('Should change the status to incorrect', () => {
-			const initialBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Initial)!
+			const initialBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Initial)!
 			const correctValue = board.getSudokuValue(initialBoxPos)
 			const incorrectValue = correctValue > 9 ? 1 : correctValue + 1
 
@@ -70,7 +70,7 @@ describe('Sudoku Board', () => {
 			})
 		})
 		test.concurrent('Should change the status to incorrect', () => {
-			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 			const incorrectValue = correctValue > 9 ? 1 : correctValue + 1
 
@@ -85,7 +85,7 @@ describe('Sudoku Board', () => {
 			})
 		})
 		test.concurrent('Should change the status to correct', () => {
-			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 
 			selection.moveTo(voidBoxPos)
@@ -99,7 +99,7 @@ describe('Sudoku Board', () => {
 			})
 		})
 		test.concurrent('should reset notes', () => {
-			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 
 			selection.moveTo(voidBoxPos)
@@ -117,7 +117,7 @@ describe('Sudoku Board', () => {
 
 	describe('Add Notes', () => {
 		test.concurrent('Should change the status to notes', () => {
-			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
 
 			selection.moveTo(voidBoxPos)
 			board.addNote(1)
@@ -131,7 +131,7 @@ describe('Sudoku Board', () => {
 		})
 	})
 	test.concurrent('should arrange the notes correctly', () => {
-		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
 
 		selection.moveTo(voidBoxPos)
 		board.addNote(3)
@@ -147,7 +147,7 @@ describe('Sudoku Board', () => {
 		})
 	})
 	test.concurrent('should not repeat notes', () => {
-		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
 
 		selection.moveTo(voidBoxPos)
 		board.addNote(1)
@@ -161,7 +161,7 @@ describe('Sudoku Board', () => {
 		})
 	})
 	test.concurrent('should reset value', () => {
-		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
+		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
 
 		selection.moveTo(voidBoxPos)
 		board.writeNumber(9)
@@ -189,7 +189,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 8, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveLeft()
-			const actualPosition = selection.getSelectionPosition()
+			const actualPosition = selection.getValue()
 
 			expect(actualPosition).toEqual<Position>({ col: 7, row: 0 })
 		})
@@ -197,7 +197,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 0, row: 8 }
 			selection.moveTo(initialPosition)
 			selection.moveLeft()
-			const actualPosition = selection.getSelectionPosition()
+			const actualPosition = selection.getValue()
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 7 })
 		})
@@ -205,7 +205,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 0, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveLeft()
-			const actualPosition = selection.getSelectionPosition()
+			const actualPosition = selection.getValue()
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 0 })
 		})
@@ -216,7 +216,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 0, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveRight()
-			const actualPosition = selection.getSelectionPosition()
+			const actualPosition = selection.getValue()
 
 			expect(actualPosition).toEqual<Position>({ col: 1, row: 0 })
 		})
@@ -224,7 +224,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 8, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveRight()
-			const actualPosition = selection.getSelectionPosition()
+			const actualPosition = selection.getValue()
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 1 })
 		})
@@ -233,7 +233,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 8, row: 8 }
 			selection.moveTo(initialPosition)
 			selection.moveRight()
-			const actualPosition = selection.getSelectionPosition()
+			const actualPosition = selection.getValue()
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 8 })
 		})
@@ -244,7 +244,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 0, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveDown()
-			const actualPosition = selection.getSelectionPosition()
+			const actualPosition = selection.getValue()
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 1 })
 		})
@@ -252,7 +252,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 0, row: 8 }
 			selection.moveTo(initialPosition)
 			selection.moveDown()
-			const actualPosition = selection.getSelectionPosition()
+			const actualPosition = selection.getValue()
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 8 })
 		})
@@ -261,7 +261,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 8, row: 8 }
 			selection.moveTo(initialPosition)
 			selection.moveDown()
-			const actualPosition = selection.getSelectionPosition()
+			const actualPosition = selection.getValue()
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 8 })
 		})
@@ -272,7 +272,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 8, row: 8 }
 			selection.moveTo(initialPosition)
 			selection.moveUp()
-			const actualPosition = selection.getSelectionPosition()
+			const actualPosition = selection.getValue()
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 7 })
 		})
@@ -280,7 +280,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 8, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveUp()
-			const actualPosition = selection.getSelectionPosition()
+			const actualPosition = selection.getValue()
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 0 })
 		})
@@ -289,7 +289,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 0, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveUp()
-			const actualPosition = selection.getSelectionPosition()
+			const actualPosition = selection.getValue()
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 0 })
 		})

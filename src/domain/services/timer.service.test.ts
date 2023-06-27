@@ -4,16 +4,15 @@ import { seconds } from '~/tests/utils'
 
 import type { TimerSchema } from '../models'
 import { TimerService } from './timer.service'
-import { TimerMock } from '$infra/mocks/stores'
 
 describe('Time Service', () => {
-	let timer: TimerMock
+	let timer: TimerService
 
 	beforeAll(() => {
 		vi.useFakeTimers()
 	})
 	beforeEach(() => {
-		timer = new TimerMock(new TimerService())
+		timer = new TimerService()
 	})
 	afterEach(() => {
 		timer.stop()
@@ -24,30 +23,30 @@ describe('Time Service', () => {
 	})
 
 	test.concurrent('At startup the timer, seconds should be zero, and if isPause true', () => {
-		expect(timer.getTimer()).toEqual<TimerSchema>({ isPause: true, seconds: 0 })
+		expect(timer.getValue()).toEqual<TimerSchema>({ isPause: true, seconds: 0 })
 	})
 	test.concurrent('The seconds should be 10 after start timer', () => {
 		timer.start()
 		vi.advanceTimersByTime(seconds(10))
-		expect(timer.getTimer()).toEqual<TimerSchema>({ isPause: false, seconds: 10 })
+		expect(timer.getValue()).toEqual<TimerSchema>({ isPause: false, seconds: 10 })
 	})
 	test.concurrent('The seconds should not advance after pause timer', () => {
 		timer.start()
 		vi.advanceTimersByTime(seconds(5))
-		expect(timer.getTimer()).toEqual<TimerSchema>({ isPause: false, seconds: 5 })
+		expect(timer.getValue()).toEqual<TimerSchema>({ isPause: false, seconds: 5 })
 
 		timer.stop()
 		vi.advanceTimersByTime(seconds(5))
-		expect(timer.getTimer()).toEqual<TimerSchema>({ isPause: true, seconds: 5 })
+		expect(timer.getValue()).toEqual<TimerSchema>({ isPause: true, seconds: 5 })
 	})
 	test.concurrent('The seconds should be 5 after reset timer', () => {
 		timer.start()
 		vi.advanceTimersByTime(seconds(10))
-		expect(timer.getTimer()).toEqual<TimerSchema>({ isPause: false, seconds: 10 })
+		expect(timer.getValue()).toEqual<TimerSchema>({ isPause: false, seconds: 10 })
 
 		timer.reset()
 		vi.advanceTimersByTime(seconds(5))
-		expect(timer.getTimer()).toEqual<TimerSchema>({ isPause: false, seconds: 5 })
+		expect(timer.getValue()).toEqual<TimerSchema>({ isPause: false, seconds: 5 })
 	})
 })
 

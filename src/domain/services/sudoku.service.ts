@@ -13,68 +13,81 @@ import {
 	createEmptyBoard,
 	randomNumbers,
 	isSafe,
+	type Observer,
 } from '../utils'
 
 export class SelectionService implements ISelectionService {
 	static MAX_BOX_POS = 8
 	static MIN_BOX_POS = 0
-	#position: Position
+	#value: Position
+	#observers: Observer<Position>[] = []
 
-	#isEndPosition = () => this.#position.row === 8 && this.#position.col === 8
-	#isStartPosition = () => this.#position.row === 0 && this.#position.col === 0
+	#isEndPosition = () => this.#value.row === 8 && this.#value.col === 8
+	#isStartPosition = () => this.#value.row === 0 && this.#value.col === 0
 
 	constructor({ initialPosition = { col: 0, row: 0 } }: { initialPosition?: Position } = {}) {
-		this.#position = initialPosition
+		this.#value = initialPosition
 	}
 
+	#notifyObservers() {
+		this.#observers.forEach(obs => obs.update({ ...this.#value }))
+	}
+	addObserver(observer: Observer<Position>) {
+		this.#observers = [...this.#observers, observer]
+	}
+	removeObserver(observer: Observer<Position>) {
+		this.#observers = this.#observers.filter(obs => obs !== observer)
+	}
+	getValue = () => Object.freeze(this.#value)
+
+	moveTo(newPosition: Position) {
+		this.#value = newPosition
+		this.#notifyObservers()
+	}
 	moveDown(times = 1) {
 		if (this.#isEndPosition()) return
 
-		const row = this.#position.row + times
+		const row = this.#value.row + times
 		const rowIsMax = row > SelectionService.MAX_BOX_POS
-		const col = rowIsMax ? SelectionService.MAX_BOX_POS : this.#position.col
+		const col = rowIsMax ? SelectionService.MAX_BOX_POS : this.#value.col
 
-		this.#position = { row: rowIsMax ? SelectionService.MAX_BOX_POS : row, col }
+		this.moveTo({ row: rowIsMax ? SelectionService.MAX_BOX_POS : row, col })
 	}
 	moveLeft(times = 1) {
 		if (this.#isStartPosition()) return
 
-		const col = this.#position.col - times
+		const col = this.#value.col - times
 		const colIxMin = col < SelectionService.MIN_BOX_POS
-		const row = this.#position.row + (colIxMin ? col : SelectionService.MIN_BOX_POS)
+		const row = this.#value.row + (colIxMin ? col : SelectionService.MIN_BOX_POS)
 
-		this.#position = {
+		this.moveTo({
 			row,
 			col: colIxMin ? col + 9 : col,
-		}
+		})
 	}
 	moveRight(times = 1) {
 		if (this.#isEndPosition()) return
 
-		const col = this.#position.col + times
-		const row = this.#position.row + Math.trunc(col / 9)
+		const col = this.#value.col + times
+		const row = this.#value.row + Math.trunc(col / 9)
 
-		this.#position = { row, col: col % 9 }
+		this.moveTo({ row, col: col % 9 })
 	}
 	moveUp(times = 1) {
 		if (this.#isStartPosition()) return
 
-		const row = this.#position.row - times
+		const row = this.#value.row - times
 		const rowISMin = row < SelectionService.MIN_BOX_POS
-		const col = rowISMin ? SelectionService.MIN_BOX_POS : this.#position.col
+		const col = rowISMin ? SelectionService.MIN_BOX_POS : this.#value.col
 
-		this.#position = { row: rowISMin ? SelectionService.MIN_BOX_POS : row, col }
-	}
-	moveTo(newPosition: Position) {
-		this.#position = newPosition
+		this.#value = { row: rowISMin ? SelectionService.MIN_BOX_POS : row, col }
 	}
 	moveToNextEmpty(emptiesPos: readonly Position[]) {
-		const { row, col } = this.#position
+		const { row, col } = this.#value
 		const actualIndex = emptiesPos.findIndex(box => row === box.row && col === box.col)
 		const nextEmptyIndex = actualIndex + 1 < emptiesPos.length ? actualIndex + 1 : 0
-		this.#position = { ...emptiesPos[nextEmptyIndex] }
+		this.moveTo({ ...emptiesPos[nextEmptyIndex] })
 	}
-	getSelectionPosition = () => this.#position
 }
 
 export class BoardService implements IBoardService {
@@ -171,10 +184,11 @@ export class BoardService implements IBoardService {
 		}
 	}
 
-	#board: BoxSchema[][]
 	#difficulty: Difficulties
 	#sudoku: readonly number[][]
 	#selectionService: SelectionService
+	#value: BoxSchema[][]
+	#observers: Observer<BoxSchema[][]>[] = []
 
 	constructor({
 		sudoku = BoardService.createSolution(),
@@ -187,37 +201,51 @@ export class BoardService implements IBoardService {
 	} = {}) {
 		this.#sudoku = sudoku
 		this.#difficulty = difficulty
-		this.#board = this.#createBoard()
+		this.#value = this.#createBoard()
 		this.#selectionService = selectionService
 	}
 
+	#notifyObservers() {
+		this.#observers.forEach(obs =>
+			obs.update(this.#value.map(boxes => boxes.map(box => ({ ...box }))))
+		)
+	}
+	addObserver(observer: Observer<BoxSchema[][]>) {
+		this.#observers = [...this.#observers, observer]
+	}
+	removeObserver(observer: Observer<BoxSchema[][]>) {
+		this.#observers = this.#observers.filter(obs => obs !== observer)
+	}
+	getValue = () => Object.freeze(this.#value)
+
 	#createBoard() {
-		const board: BoxSchema[][] = []
+		const value: BoxSchema[][] = []
 		for (let row = 0; row < 9; row++) {
-			board[row] = []
+			value[row] = []
 			for (let col = 0; col < 9; col++) {
 				const isInitial = probabilityToBeInitial(this.#difficulty)
-				board[row][col] = {
+				value[row][col] = {
 					notes: [],
 					kind: isInitial ? BoxKinds.Initial : BoxKinds.Empty,
 					value: isInitial ? this.#sudoku[row][col] : BoardService.EMPTY_BOX_VALUE,
 				}
 			}
 		}
-		return board
+		return value
 	}
 	#updateSelected(update: (args: { box: BoxSchema } & Position) => BoxSchema) {
 		for (let row = 0; row < 9; row++) {
 			for (let col = 0; col < 9; col++) {
 				const box = this.getBox({ col, row })
 				if (this.isSelected({ row, col }) && box.kind !== BoxKinds.Initial)
-					this.#board[row][col] = update({ box, col, row })
+					this.#value[row][col] = update({ box, col, row })
 			}
 		}
+		this.#notifyObservers()
 	}
 
 	isSelected({ col, row }: Position) {
-		const { col: selectedCol, row: selectedRow } = this.#selectionService.getSelectionPosition()
+		const { col: selectedCol, row: selectedRow } = this.#selectionService.getValue()
 		return col === selectedCol && row === selectedRow
 	}
 	addNote(value: number) {
@@ -228,16 +256,18 @@ export class BoardService implements IBoardService {
 			kind: BoxKinds.WhitNotes,
 		}))
 	}
+	erase() {
+		this.writeNumber(BoardService.EMPTY_BOX_VALUE)
+	}
 
-	getBoard = (): readonly BoxSchema[][] => this.#board
-	getBox = ({ col, row }: Position) => Object.freeze(this.#board[row][col])
+	getBox = ({ col, row }: Position) => Object.freeze(this.#value[row][col])
 	getSudokuValue = ({ col, row }: Position) => this.#sudoku[row][col]
 
 	getEmptyBoxesPos() {
 		const emptyBoxesPos: Position[] = []
 		for (let row = 0; row < 9; row++) {
 			for (let col = 0; col < 9; col++) {
-				if (this.#board[row][col].kind !== BoxKinds.Initial) emptyBoxesPos.push({ row, col })
+				if (this.#value[row][col].kind !== BoxKinds.Initial) emptyBoxesPos.push({ row, col })
 			}
 		}
 

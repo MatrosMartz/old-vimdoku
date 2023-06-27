@@ -1,4 +1,4 @@
-import { holder, mapKeys, opt, pref, testCommands, text } from '~/domain/utils'
+import { holder, mapKeys, opt, pref, testCommands, text, type Observable } from '~/domain/utils'
 import {
 	allPreferencesKeys,
 	commandsKeys,
@@ -9,12 +9,12 @@ import {
 } from './commands.model'
 
 export interface SuggestionOption {
-	command: string
-	description: string
-	id: string
-	match: (input: string[]) => boolean
-	newSelection?: [number, number]
-	value: string
+	readonly command: string
+	readonly description: string
+	readonly id: string
+	readonly match: (input: string[]) => boolean
+	readonly newSelection?: [number, number]
+	readonly value: string
 }
 
 export const gameSuggestions: SuggestionOption[] = [
@@ -293,9 +293,10 @@ export const suggestions: SuggestionOption[] = [
 	...setSuggestions,
 	...gameSuggestions,
 	...quitSuggestions,
-].sort(({ id: id1 }, { id: id2 }) => Number(id1 > id2) - 1)
+]
+	.sort(({ id: id1 }, { id: id2 }) => Number(id1 > id2) - 1)
+	.map(sub => Object.freeze(sub))
 
-export interface ICmdSuggestionsService {
-	updateSuggestions: (string: string) => void
-	getSuggestions: () => SuggestionOption[]
+export interface ICmdSuggestionsService extends Observable<SuggestionOption[]> {
+	update: (string: string) => void
 }

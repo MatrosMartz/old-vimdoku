@@ -1,19 +1,25 @@
-import { derived, writable } from 'svelte/store'
+import { readable } from 'svelte/store'
+import type { TimerSchema } from '~/domain/models'
 
 import { TimerService } from '~/domain/services'
+import type { Observer } from '~/domain/utils'
 
 export const timer = new TimerService()
 
-function createTimerStore() {
-	const { subscribe, update } = writable(timer.initialTimer())
+export const timerStore = readable(timer.getValue(), set => {
+	const observer: Observer<TimerSchema> = {
+		update: value => set(value),
+	}
+	timer.addObserver(observer)
 
-	const stop = () => update(timer.stop)
-	const reset = () => update(timer.reset)
-	const start = () => timer.start(update)
+	return () => timer.removeObserver(observer)
+})
 
-	return { subscribe, stop, reset, start }
-}
+export const formattedTimer = readable(TimerService.formatter(timer.getValue().seconds), set => {
+	const observer: Observer<TimerSchema> = {
+		update: ({ seconds }) => set(TimerService.formatter(seconds)),
+	}
+	timer.addObserver(observer)
 
-export const timerStore = createTimerStore()
-
-export const formattedTimer = derived(timerStore, ({ seconds }) => TimerService.formatter(seconds))
+	return () => timer.removeObserver(observer)
+})

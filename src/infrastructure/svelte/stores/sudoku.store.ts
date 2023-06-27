@@ -1,65 +1,29 @@
-import { derived, writable } from 'svelte/store'
+import { derived, readable, writable } from 'svelte/store'
 
-import { type Position } from '~/domain/models'
+import { type BoxSchema, type Position } from '~/domain/models'
 import { BoardService, SelectionService } from '~/domain/services'
+import type { Observer } from '~/domain/utils'
 
 export const selection = new SelectionService()
 export const board = new BoardService({ selectionService: selection })
 
-function createBoardStore() {
-	const { subscribe, set } = writable(board.getBoard())
+export const boardStore = readable(board.getValue(), set => {
+	const observer: Observer<BoxSchema[][]> = {
+		update: value => set(value),
+	}
+	board.addObserver(observer)
 
-	const addNote = (note: number) => {
-		board.addNote(note)
-		set(board.getBoard())
-	}
-	const erase = () => {
-		board.writeNumber(BoardService.EMPTY_BOX_VALUE)
-		set(board.getBoard())
-	}
-	const write = (value: number) => {
-		board.writeNumber(value)
-		set(board.getBoard())
-	}
+	return () => board.removeObserver(observer)
+})
 
-	return { subscribe, addNote, erase, write }
-}
+export const selectionStore = readable(selection.getValue(), set => {
+	const observer: Observer<Position> = {
+		update: value => set(value),
+	}
+	selection.addObserver(observer)
 
-export const boardStore = createBoardStore()
-
-function createSelectionStore() {
-	const { subscribe, set } = writable(selection.getSelectionPosition())
-	const emptiesPos = board.getEmptyBoxesPos()
-
-	const moveTo = (pos: Position) => {
-		selection.moveTo(pos)
-		set(selection.getSelectionPosition())
-	}
-	const moveDown = (times?: number) => {
-		selection.moveDown(times)
-		set(selection.getSelectionPosition())
-	}
-	const moveLeft = (times?: number) => {
-		selection.moveLeft(times)
-		set(selection.getSelectionPosition())
-	}
-	const moveRight = (times?: number) => {
-		selection.moveRight(times)
-		set(selection.getSelectionPosition())
-	}
-	const moveUp = (times?: number) => {
-		selection.moveUp(times)
-		set(selection.getSelectionPosition())
-	}
-	const moveToNext = () => {
-		selection.moveToNextEmpty(emptiesPos)
-		set(selection.getSelectionPosition())
-	}
-
-	return { subscribe, moveDown, moveLeft, moveRight, moveTo, moveToNext, moveUp }
-}
-
-export const selectionStore = createSelectionStore()
+	return () => selection.removeObserver(observer)
+})
 export const formattedSelection = derived(selectionStore, ({ col, row }) => `${row + 1}:${col + 1}`)
 
 function createMistakeStore() {

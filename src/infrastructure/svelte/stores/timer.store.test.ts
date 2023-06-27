@@ -1,68 +1,73 @@
-import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from 'vitest'
-import { get } from 'svelte/store'
+import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { hours, minutes, seconds } from '~/tests/utils'
 
-import { timerStore, formattedTimer } from './timer.store'
+import { formattedTimer, timer } from './timer.store'
+
+let formattedTimerValue = ''
 
 const clearTimer = () => {
-	timerStore.stop()
-	timerStore.reset()
+	timer.stop()
+	timer.reset()
 	vi.clearAllTimers()
 }
 
 beforeAll(() => {
 	vi.useFakeTimers()
+	return () => vi.useRealTimers()
 })
 
-afterAll(() => {
-	vi.useRealTimers()
-})
+beforeEach(() => {
+	const unsubscribed = formattedTimer.subscribe(ft => (formattedTimerValue = ft))
 
-afterEach(() => clearTimer())
+	return () => {
+		clearTimer()
+		unsubscribed()
+	}
+})
 
 describe('Formatted Timer', () => {
 	test.concurrent('Should be 00:00:05 after 5 seconds', () => {
-		expect(get(formattedTimer)).toBe('00:00:00')
-		timerStore.start()
+		expect(formattedTimerValue).toBe('00:00:00')
+		timer.start()
 
 		vi.advanceTimersByTime(seconds(5))
-		expect(get(formattedTimer)).toBe('00:00:05')
+		expect(formattedTimerValue).toBe('00:00:05')
 	})
 	test.concurrent('Should be 00:00:10 after 10 seconds', () => {
-		timerStore.start()
+		timer.start()
 
 		vi.advanceTimersByTime(seconds(10))
-		expect(get(formattedTimer)).toBe('00:00:10')
+		expect(formattedTimerValue).toBe('00:00:10')
 	})
-	test.concurrent('Should be 00:01:00 after 1 minute', () => {
-		timerStore.start()
+	test('Should be 00:01:00 after 1 minute', () => {
+		timer.start()
 
 		vi.advanceTimersByTime(minutes(1))
-		expect(get(formattedTimer)).toBe('00:01:00')
+		expect(formattedTimerValue).toBe('00:01:00')
 	})
-	test.concurrent('Should be 00:03:30 after 3 minutes and 30 seconds', () => {
-		timerStore.start()
+	test('Should be 00:03:30 after 3 minutes and 30 seconds', () => {
+		timer.start()
 
 		vi.advanceTimersByTime(minutes(3) + seconds(30))
-		expect(get(formattedTimer)).toBe('00:03:30')
+		expect(formattedTimerValue).toBe('00:03:30')
 	})
-	test.concurrent('Should be 00:10:00 after 10 minutes', () => {
-		timerStore.start()
+	test('Should be 00:10:00 after 10 minutes', () => {
+		timer.start()
 
 		vi.advanceTimersByTime(minutes(10))
-		expect(get(formattedTimer)).toBe('00:10:00')
+		expect(formattedTimerValue).toBe('00:10:00')
 	})
-	test.concurrent('Should be 01:00:00 after 1 hour', () => {
-		timerStore.start()
+	test('Should be 01:00:00 after 1 hour', () => {
+		timer.start()
 
 		vi.advanceTimersByTime(hours(1))
-		expect(get(formattedTimer)).toBe('01:00:00')
+		expect(formattedTimerValue).toBe('01:00:00')
 	})
-	test.concurrent('Should be 10:00:00 after 10 hours', () => {
-		timerStore.start()
+	test('Should be 10:00:00 after 10 hours', () => {
+		timer.start()
 
 		vi.advanceTimersByTime(hours(10))
-		expect(get(formattedTimer)).toBe('10:00:00')
+		expect(formattedTimerValue).toBe('10:00:00')
 	})
 })
