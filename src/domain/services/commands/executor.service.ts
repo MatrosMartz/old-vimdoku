@@ -1,10 +1,18 @@
-import { executorOptions, type ICmdExecutorService } from '~/domain/models'
+import { executorOptions, type ICmdExecutorService, type IVimScreenService } from '~/domain/models'
 import { PreferencesService } from '../preferences.service'
 
 export class CmdExecutorService implements ICmdExecutorService {
 	#preferences: PreferencesService
-	constructor({ preferences }: { preferences: PreferencesService }) {
+	#vimScreen: IVimScreenService
+	constructor({
+		preferences,
+		vimScreen,
+	}: {
+		preferences: PreferencesService
+		vimScreen: IVimScreenService
+	}) {
 		this.#preferences = preferences
+		this.#vimScreen = vimScreen
 	}
 
 	exec(input: string) {
@@ -16,7 +24,7 @@ export class CmdExecutorService implements ICmdExecutorService {
 			for (const { fn, subPattern } of subcommandOption) {
 				if (!subPattern(subcommand)) continue
 
-				fn({ subcommand, preferences: this.#preferences })
+				fn({ subcommand, preferences: this.#preferences, vimScreen: this.#vimScreen })
 				break
 			}
 			break

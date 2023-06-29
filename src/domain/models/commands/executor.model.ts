@@ -18,6 +18,7 @@ import {
 	toggleKeys,
 } from './commands.model'
 import { PreferencesService } from '~/domain/services'
+import { WindowKinds, type IVimScreenService, SplitKinds } from '../vim-screen.model'
 
 export const allPreferences = allPreferencesKeys.map(({ preference }) => preference).join('|')
 export const togglePreferences = toggleKeys.map(({ preference }) => preference).join('|')
@@ -30,9 +31,11 @@ interface SubcommandOption {
 	fn: ({
 		preferences,
 		subcommand,
+		vimScreen,
 	}: {
 		preferences: IPreferencesService
 		subcommand: string
+		vimScreen: IVimScreenService
 	}) => void
 }
 
@@ -49,18 +52,20 @@ export const executorOptions: ExecutorOption[] = [
 		subcommandOption: [
 			{
 				subPattern: subcommand => subcommand == null,
-				fn({ preferences }) {
+				fn({ preferences, vimScreen }) {
 					const changedPreferences = (
 						Object.entries(preferences.getValue()) as PreferencesEntries[]
-					).filter(([key, value]) => value === defaultPreferences[key])
+					).filter(([key, value]) => value !== defaultPreferences[key])
 
 					console.log(changedPreferences)
+					vimScreen.addSplit({ kind: SplitKinds.Opts, position: 'full' })
 				},
 			},
 			{
 				subPattern: subcommand => /^all$/.test(subcommand),
-				fn({ preferences }) {
+				fn({ preferences, vimScreen }) {
 					console.log(Object.entries(preferences.getValue()))
+					vimScreen.addSplit({ kind: SplitKinds.Opts, position: 'full' })
 				},
 			},
 			{
@@ -163,6 +168,108 @@ export const executorOptions: ExecutorOption[] = [
 					else {
 						preferences.updateByKey(preference as ToggleKeys, PreferencesService.on)
 					}
+				},
+			},
+		],
+	},
+	{
+		pattern: command => /^st(art)?$/.test(command),
+		subcommandOption: [
+			{
+				subPattern: subcommand => /^beginner$/.test(subcommand),
+				fn({ vimScreen }) {
+					vimScreen.setWindow(WindowKinds.Game)
+				},
+			},
+			{
+				subPattern: subcommand => /^basic$/.test(subcommand),
+				fn({ vimScreen }) {
+					vimScreen.setWindow(WindowKinds.Game)
+				},
+			},
+			{
+				subPattern: subcommand => /^easy$/.test(subcommand),
+				fn({ vimScreen }) {
+					vimScreen.setWindow(WindowKinds.Game)
+				},
+			},
+			{
+				subPattern: subcommand => /^medium$/.test(subcommand),
+				fn({ vimScreen }) {
+					vimScreen.setWindow(WindowKinds.Game)
+				},
+			},
+			{
+				subPattern: subcommand => /^advanced$/.test(subcommand),
+				fn({ vimScreen }) {
+					vimScreen.setWindow(WindowKinds.Game)
+				},
+			},
+			{
+				subPattern: subcommand => /^hard$/.test(subcommand),
+				fn({ vimScreen }) {
+					vimScreen.setWindow(WindowKinds.Game)
+				},
+			},
+			{
+				subPattern: subcommand => /^expert$/.test(subcommand),
+				fn({ vimScreen }) {
+					vimScreen.setWindow(WindowKinds.Game)
+				},
+			},
+		],
+	},
+	{
+		pattern: command => /^q(uit)?$/.test(command),
+		subcommandOption: [
+			{
+				subPattern: subcommand => subcommand == null,
+				fn({ vimScreen }) {
+					vimScreen.undo()
+				},
+			},
+		],
+	},
+	{
+		pattern: command => /^wq(uit)?$/.test(command),
+		subcommandOption: [
+			{
+				subPattern: subcommand => subcommand == null,
+				fn({ vimScreen }) {
+					vimScreen.undo()
+				},
+			},
+		],
+	},
+	{
+		pattern: command => /^q(uit)?!$/.test(command),
+		subcommandOption: [
+			{
+				subPattern: subcommand => subcommand == null,
+				fn({ vimScreen }) {
+					vimScreen.undo()
+				},
+			},
+		],
+	},
+	{
+		pattern: command => /^x(it)?$/.test(command),
+		subcommandOption: [
+			{
+				subPattern: subcommand => subcommand == null,
+				fn({ vimScreen }) {
+					vimScreen.undo()
+				},
+			},
+		],
+	},
+	{
+		pattern: command => /^exi(t)?$/.test(command),
+		subcommandOption: [
+			{
+				subPattern: subcommand => subcommand == null,
+				fn({ vimScreen }) {
+					vimScreen.undo()
 				},
 			},
 		],
