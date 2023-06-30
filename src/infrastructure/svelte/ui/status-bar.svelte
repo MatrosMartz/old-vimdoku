@@ -1,6 +1,14 @@
 <script lang="ts">
 	import { MistakeIcon } from '$infra/assets'
-	import { formattedSelection, formattedTimer, mistakeStore, modesStore } from '../stores'
+	import {
+		formattedSelection,
+		formattedTimer,
+		mistakeStore,
+		modesStore,
+		vimScreenStore,
+	} from '../stores'
+
+	$: screen = $vimScreenStore.split != null ? $vimScreenStore.split.kind : $vimScreenStore.window
 </script>
 
 <footer
@@ -12,7 +20,7 @@
 	</section>
 	<section class="status-part">
 		<span>{$formattedSelection}</span>
-		<span>Sudoku</span>
+		<span>{screen}</span>
 		<span>{$formattedTimer}</span>
 	</section>
 </footer>
