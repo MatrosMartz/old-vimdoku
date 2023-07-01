@@ -8,7 +8,7 @@
 		cmdSuggestions,
 		executor,
 		suggestionsStore,
-	} from '../stores'
+	} from '$infra/svelte/stores'
 
 	let currentValue = ''
 	let input: HTMLInputElement

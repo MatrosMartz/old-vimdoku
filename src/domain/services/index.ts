@@ -1,6 +1,6 @@
 export * from './commands'
 export * from './modes.service'
-export * from './preferences.service'
+export * from './settings.service'
 export * from './sudoku.service'
 export * from './timer.service'
 export * from './vim-screen.service'

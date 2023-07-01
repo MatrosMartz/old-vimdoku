@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { BoxKinds, Modes } from '~/domain/models'
 
-	import { boardStore, selectionStore, selection, board, modes } from '../stores'
+	import { boardStore, selectionStore, selection, board, modes } from '$infra/svelte/stores'
 
 	export let row: number
 	export let col: number

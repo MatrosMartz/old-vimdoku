@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { selectionStore } from '../stores'
+	import { selectionStore } from '$infra/svelte/stores'
 
 	import Box from './box.svelte'
 </script>

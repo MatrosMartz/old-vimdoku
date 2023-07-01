@@ -1,9 +1,9 @@
 <script>
-	import { preferencesStore } from '../stores/preferences.store'
+	import { settingsStore } from '$infra/svelte/stores'
 	import NumberBar from './number-bar.svelte'
 	import SudokuBoard from './sudoku-board.svelte'
 
-	$: numbersBars = $preferencesStore.numbers || $preferencesStore.relativeNumbers ? '3ch' : '0'
+	$: numbersBars = $settingsStore.numbers || $settingsStore.relativeNumbers ? '3ch' : '0'
 </script>
 
 <section

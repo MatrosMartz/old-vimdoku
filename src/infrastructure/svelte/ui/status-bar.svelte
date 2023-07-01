@@ -6,7 +6,7 @@
 		mistakeStore,
 		modesStore,
 		vimScreenStore,
-	} from '../stores'
+	} from '$infra/svelte/stores'
 
 	$: screen = $vimScreenStore.split != null ? $vimScreenStore.split.kind : $vimScreenStore.window
 </script>

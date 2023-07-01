@@ -15,7 +15,7 @@ export const enum MouseEnable {
 	Visual = 'v',
 }
 
-export interface VimPreferences {
+export interface VimSettings {
 	fontSize: number
 	history: number
 	mouse: MouseEnable
@@ -23,41 +23,41 @@ export interface VimPreferences {
 	relativeNumbers: boolean
 }
 
-export interface SudokuPreferences {
+export interface SudokuSettings {
 	automaticNoteDeletion: boolean
 	automaticValidation: boolean
 	highlightNumber: boolean
 	remainingNumbers: boolean
 }
 
-export interface UserPreferences {
+export interface UserSettings {
 	animations: boolean
 	language: Langs
 	theme: Themes
 	timer: boolean
 }
 
-export interface Preferences extends VimPreferences, SudokuPreferences, UserPreferences {}
+export interface Settings extends VimSettings, SudokuSettings, UserSettings {}
 
-export type PreferenceUpdater<K extends keyof Preferences = keyof Preferences> = (args: {
-	value: Preferences[K]
+export type SettingUpdater<K extends keyof Settings = keyof Settings> = (args: {
+	value: Settings[K]
 	key: K
-}) => Preferences[K]
+}) => Settings[K]
 
 type KeysByType<O, T> = {
 	[K in keyof O]: O[K] extends T ? K : never
 }[keyof O]
 
-export type ToggleKeys = KeysByType<Preferences, boolean>
-export type NumberKeys = KeysByType<Preferences, number>
-export type StringKeys = KeysByType<Preferences, string>
+export type ToggleKeys = KeysByType<Settings, boolean>
+export type NumberKeys = KeysByType<Settings, number>
+export type StringKeys = KeysByType<Settings, string>
 
-export interface IPreferencesService extends Observable<Preferences> {
-	updateAll: (updater: (preferences: Preferences) => Preferences) => void
-	updateByKey: <K extends keyof Preferences>(key: K, updater: PreferenceUpdater<K>) => void
+export interface ISettingsService extends Observable<Settings> {
+	updateAll: (updater: (settings: Settings) => Settings) => void
+	updateByKey: <K extends keyof Settings>(key: K, updater: SettingUpdater<K>) => void
 }
 
-export const defaultPreferences: Preferences = {
+export const defaultSettings: Settings = {
 	animations: true,
 	automaticNoteDeletion: true,
 	automaticValidation: false,

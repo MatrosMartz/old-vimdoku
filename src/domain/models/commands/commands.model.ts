@@ -1,9 +1,9 @@
 import { getKeysByType } from '~/domain/utils'
 import { Modes } from '../modes.model'
-import { defaultPreferences } from '../preferences.model'
+import { defaultSettings } from '../settings.model'
 import { Difficulties } from '../sudoku.model'
 
-export const { numberKeys, stringKeys, toggleKeys } = getKeysByType(defaultPreferences)
+export const { numberKeys, stringKeys, toggleKeys } = getKeysByType(defaultSettings)
 export const allPreferencesKeys = [...numberKeys, ...stringKeys, ...toggleKeys]
 export const nonToggleKeys = [...numberKeys, ...stringKeys]
 export const modesKeys: Array<{ mode: Modes; letter: string }> = [

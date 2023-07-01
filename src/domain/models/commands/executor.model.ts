@@ -1,15 +1,15 @@
 import { PreferenceError } from '~/domain/utils'
 import {
-	defaultPreferences,
+	defaultSettings,
 	MouseEnable,
-	type IPreferencesService,
-	type Preferences,
+	type ISettingsService,
+	type Settings,
 	type StringKeys,
 	type ToggleKeys,
 	Langs,
 	Themes,
 	type NumberKeys,
-} from '../preferences.model'
+} from '../settings.model'
 import {
 	allPreferencesKeys,
 	nonToggleKeys,
@@ -17,7 +17,7 @@ import {
 	stringKeys,
 	toggleKeys,
 } from './commands.model'
-import { PreferencesService } from '~/domain/services'
+import { SettingsService } from '~/domain/services'
 import { WindowKinds, type IVimScreenService, SplitKinds } from '../vim-screen.model'
 
 export const allPreferences = allPreferencesKeys.map(({ preference }) => preference).join('|')
@@ -33,7 +33,7 @@ interface SubcommandOption {
 		subcommand,
 		vimScreen,
 	}: {
-		preferences: IPreferencesService
+		preferences: ISettingsService
 		subcommand: string
 		vimScreen: IVimScreenService
 	}) => void
@@ -44,7 +44,7 @@ interface ExecutorOption {
 	subcommandOption: SubcommandOption[]
 }
 
-type PreferencesEntries<T extends keyof Preferences = keyof Preferences> = [T, Preferences[T]]
+type settingsEntries<T extends keyof Settings = keyof Settings> = [T, Settings[T]]
 
 export const executorOptions: ExecutorOption[] = [
 	{
@@ -54,8 +54,8 @@ export const executorOptions: ExecutorOption[] = [
 				subPattern: subcommand => subcommand == null,
 				fn({ preferences, vimScreen }) {
 					const changedPreferences = (
-						Object.entries(preferences.getValue()) as PreferencesEntries[]
-					).filter(([key, value]) => value !== defaultPreferences[key])
+						Object.entries(preferences.getValue()) as settingsEntries[]
+					).filter(([key, value]) => value !== defaultSettings[key])
 
 					console.log(changedPreferences)
 					vimScreen.addSplit({ kind: SplitKinds.Opts, position: 'full' })
@@ -72,7 +72,7 @@ export const executorOptions: ExecutorOption[] = [
 				subPattern: subcommand => /^\w+\?$/.test(subcommand),
 				fn({ preferences, subcommand }) {
 					const preference = new RegExp(`^(${allPreferences})\\?$`).exec(subcommand)?.[1] as
-						| keyof Preferences
+						| keyof Settings
 						| undefined
 					if (preference == null) throw new PreferenceError()
 
@@ -87,7 +87,7 @@ export const executorOptions: ExecutorOption[] = [
 						| undefined
 					if (preference == null) throw new PreferenceError()
 
-					preferences.updateByKey(preference, PreferencesService.off)
+					preferences.updateByKey(preference, SettingsService.off)
 				},
 			},
 			{
@@ -101,18 +101,18 @@ export const executorOptions: ExecutorOption[] = [
 					const preference = (result[1] ?? result[2]) as ToggleKeys | undefined
 					if (preference == null) throw new PreferenceError()
 
-					preferences.updateByKey(preference, PreferencesService.toggle)
+					preferences.updateByKey(preference, SettingsService.toggle)
 				},
 			},
 			{
 				subPattern: subcommand => /^\w+&$/.test(subcommand),
 				fn({ preferences, subcommand }) {
 					const preference = new RegExp(`^(${togglePreferences})&$`).exec(subcommand)?.[1] as
-						| keyof Preferences
+						| keyof Settings
 						| undefined
 					if (preference == null) throw new PreferenceError()
 
-					preferences.updateByKey(preference, PreferencesService.reset)
+					preferences.updateByKey(preference, SettingsService.reset)
 				},
 			},
 			{
@@ -159,14 +159,14 @@ export const executorOptions: ExecutorOption[] = [
 				subPattern: subcommand => /^\w+$/.test(subcommand),
 				fn({ preferences, subcommand }) {
 					const preference = new RegExp(`^(${allPreferences})$`).exec(subcommand)?.[0] as
-						| keyof Preferences
+						| keyof Settings
 						| undefined
 					if (preference == null) throw new PreferenceError()
 
 					if (nonTogglePreferences.includes(preference))
 						console.log([preference, preferences.getValue()[preference]])
 					else {
-						preferences.updateByKey(preference as ToggleKeys, PreferencesService.on)
+						preferences.updateByKey(preference as ToggleKeys, SettingsService.on)
 					}
 				},
 			},

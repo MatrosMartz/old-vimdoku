@@ -1,6 +1,6 @@
 export * from './commands'
 export * from './modes.model'
-export * from './preferences.model'
+export * from './settings.model'
 export * from './sudoku.model'
 export * from './timer.model'
 export * from './vim-screen.model'

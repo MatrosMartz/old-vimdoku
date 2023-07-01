@@ -1,14 +1,13 @@
 <script lang="ts">
-	import { selectionStore } from '../stores'
-	import { preferencesStore } from '../stores/preferences.store'
+	import { selectionStore, settingsStore } from '$infra/svelte/stores'
 
 	export let direction: 'col' | 'row'
 
 	$: current = direction === 'row' ? $selectionStore.row : $selectionStore.col
 	let [numbers, relativeNumbers] = [false, false]
 	$: {
-		numbers = $preferencesStore.numbers
-		relativeNumbers = $preferencesStore.relativeNumbers
+		numbers = $settingsStore.numbers
+		relativeNumbers = $settingsStore.relativeNumbers
 	}
 	const lines = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 </script>

@@ -1,14 +1,14 @@
 import { executorOptions, type ICmdExecutorService, type IVimScreenService } from '~/domain/models'
-import { PreferencesService } from '../preferences.service'
+import { SettingsService } from '../settings.service'
 
 export class CmdExecutorService implements ICmdExecutorService {
-	#preferences: PreferencesService
+	#preferences: SettingsService
 	#vimScreen: IVimScreenService
 	constructor({
 		preferences,
 		vimScreen,
 	}: {
-		preferences: PreferencesService
+		preferences: SettingsService
 		vimScreen: IVimScreenService
 	}) {
 		this.#preferences = preferences

@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/svelte'
 
 import { BoxKinds } from '~/domain/models'
 import { getBoxAndPosByKind } from '~/tests/utils'
-import { boardStore, modes } from '../stores'
+import { boardStore, modes } from '$infra/svelte/stores'
 
 import Box from './box.svelte'
 
