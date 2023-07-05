@@ -18,7 +18,7 @@ import {
 	toggleKeys,
 } from './commands.model'
 import { SettingsService } from '~/domain/services'
-import { WindowKinds, type IVimScreenService, SplitKinds } from '../vim-screen.model'
+import { WindowKinds, type IVimScreenService } from '../vim-screen.model'
 
 export const allPreferences = allPreferencesKeys.map(({ preference }) => preference).join('|')
 export const togglePreferences = toggleKeys.map(({ preference }) => preference).join('|')
@@ -58,14 +58,14 @@ export const executorOptions: ExecutorOption[] = [
 					).filter(([key, value]) => value !== defaultSettings[key])
 
 					console.log(changedPreferences)
-					vimScreen.addSplit({ kind: SplitKinds.Sets, position: 'full' })
+					vimScreen.setSetsSplit()
 				},
 			},
 			{
 				subPattern: subcommand => /^all$/.test(subcommand),
 				fn({ preferences, vimScreen }) {
 					console.log(Object.entries(preferences.getValue()))
-					vimScreen.addSplit({ kind: SplitKinds.Sets, position: 'full' })
+					vimScreen.setSetsSplit()
 				},
 			},
 			{

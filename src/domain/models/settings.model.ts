@@ -76,9 +76,9 @@ type FormField<T extends number | boolean | string> = T extends number
 	? { type: 'number' }
 	: T extends boolean
 	? { type: 'boolean' }
-	: { type: 'option'; enum: string[] }
+	: { type: 'option'; options: string[] }
 
-type GroupFields<K extends keyof Settings> = [K, FormField<Settings[K]>][]
+type GroupFields<K extends keyof Settings> = (FormField<Settings[K]> & { key: K })[]
 
 type SettingsForm = [
 	['sudoku', GroupFields<keyof SudokuSettings>],
@@ -90,29 +90,29 @@ export const settingsForm = [
 	[
 		'sudoku',
 		[
-			['automaticNoteDeletion', { type: 'boolean' }],
-			['automaticValidation', { type: 'boolean' }],
-			['highlightNumber', { type: 'boolean' }],
-			['remainingNumbers', { type: 'boolean' }],
+			{ key: 'automaticNoteDeletion', type: 'boolean' },
+			{ key: 'automaticValidation', type: 'boolean' },
+			{ key: 'highlightNumber', type: 'boolean' },
+			{ key: 'remainingNumbers', type: 'boolean' },
 		],
 	],
 	[
 		'user',
 		[
-			['animations', { type: 'boolean' }],
-			['language', { type: 'option', enum: Object.values(Langs) }],
-			['theme', { type: 'option', enum: Object.values(Themes) }],
-			['timer', { type: 'boolean' }],
+			{ key: 'animations', type: 'boolean' },
+			{ key: 'language', type: 'option', options: Object.values(Langs) },
+			{ key: 'theme', type: 'option', options: Object.values(Themes) },
+			{ key: 'timer', type: 'boolean' },
 		],
 	],
 	[
 		'vim',
 		[
-			['fontSize', { type: 'number' }],
-			['history', { type: 'number' }],
-			['mouse', { type: 'option', enum: Object.values(MouseEnable) }],
-			['numbers', { type: 'boolean' }],
-			['relativeNumbers', { type: 'boolean' }],
+			{ key: 'fontSize', type: 'number' },
+			{ key: 'history', type: 'number' },
+			{ key: 'mouse', type: 'option', options: Object.values(MouseEnable) },
+			{ key: 'numbers', type: 'boolean' },
+			{ key: 'relativeNumbers', type: 'boolean' },
 		],
 	],
 ] satisfies SettingsForm

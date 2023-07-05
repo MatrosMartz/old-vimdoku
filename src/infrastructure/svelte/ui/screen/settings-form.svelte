@@ -1,18 +1,13 @@
 <script lang="ts">
 	import { settingsForm } from '~/domain/models'
-	import { settings } from '../../stores'
+	import { settings } from '$infra/svelte/stores'
+
 	import SettingsCheckbox from './settings-checkbox.svelte'
 	import SettingsNumber from './settings-number.svelte'
 	import SettingsSelection from './settings-selection.svelte'
-	import { SettingsService } from '~/domain/services'
+	import BtnReset from './btn-reset.svelte'
 
 	let initialSettings = settings.getValue()
-
-	function clickHandler() {
-		settings.updateAll(SettingsService.resetAll)
-
-		initialSettings = settings.getValue()
-	}
 </script>
 
 <form
@@ -24,29 +19,24 @@
 			<h6 class="col-span-4 unstyled font-semibold">
 				{group}
 			</h6>
-			{#each settingsEntries as [key, value] (key)}
-				{#if value.type === 'boolean'}
-					<SettingsCheckbox {key} bind:initialSettings />
-				{:else if value.type === 'number'}
-					<SettingsNumber {key} bind:initialSettings />
-				{:else if value.type === 'option'}
-					<SettingsSelection {key} bind:initialSettings options={value.enum} />
+			{#each settingsEntries as setting (setting.key)}
+				{#if setting.type === 'boolean'}
+					<SettingsCheckbox key={setting.key} bind:initialSettings />
+				{:else if setting.type === 'number'}
+					<SettingsNumber key={setting.key} bind:initialSettings />
+				{:else if setting.type === 'option'}
+					<SettingsSelection key={setting.key} options={setting.options} bind:initialSettings />
 				{/if}
 			{/each}
 		</section>
 	{/each}
 	<section class="flex items-center justify-center">
-		<button class="btn-reset variant-glass-tertiary" type="button" on:click={clickHandler}
-			>reset settings</button
-		>
+		<BtnReset on:click={() => (initialSettings = settings.getValue())} />
 	</section>
 </form>
 
 <style lang="postcss">
 	.form-group:not(:last-of-type) {
 		@apply pb-3 mb-3 border-b-2 border-surface-300 dark:border-surface-600;
-	}
-	.btn-reset {
-		@apply h-[48px] px-2 py-1 hover:brightness-90 dark:hover:brightness-110;
 	}
 </style>
