@@ -58,14 +58,14 @@ export const executorOptions: ExecutorOption[] = [
 					).filter(([key, value]) => value !== defaultSettings[key])
 
 					console.log(changedPreferences)
-					vimScreen.addSplit({ kind: SplitKinds.Opts, position: 'full' })
+					vimScreen.addSplit({ kind: SplitKinds.Sets, position: 'full' })
 				},
 			},
 			{
 				subPattern: subcommand => /^all$/.test(subcommand),
 				fn({ preferences, vimScreen }) {
 					console.log(Object.entries(preferences.getValue()))
-					vimScreen.addSplit({ kind: SplitKinds.Opts, position: 'full' })
+					vimScreen.addSplit({ kind: SplitKinds.Sets, position: 'full' })
 				},
 			},
 			{

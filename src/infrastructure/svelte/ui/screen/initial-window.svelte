@@ -29,8 +29,8 @@
 		</tr>
 	</table>
 
-	<div>
-		<button class="btn-start bg-tertiary-100-800-token mt-2">Start game</button>
+	<div class="mt-2">
+		<button class="btn-start variant-glass-tertiary">Start game</button>
 	</div>
 </section>
 
@@ -43,7 +43,7 @@
 	}
 
 	.btn-start {
-		@apply px-2 py-1 hover:brightness-90;
+		@apply h-[48px] px-2 py-1 hover:brightness-90;
 	}
 	:global(.dark) .btn-start {
 		@apply hover:brightness-110;

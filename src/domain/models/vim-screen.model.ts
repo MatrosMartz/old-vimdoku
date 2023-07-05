@@ -6,12 +6,14 @@ export enum WindowKinds {
 }
 export enum SplitKinds {
 	Help = 'help',
-	Opts = 'options',
+	Sets = 'settings',
 }
 
-export interface WindowSplit<T extends SplitKinds = SplitKinds> {
-	kind: T
-	position: 'left' | 'right' | 'top' | 'bottom' | 'full'
+export type SplitPosition = 'left' | 'right' | 'top' | 'bottom' | 'full'
+
+export interface WindowSplit {
+	kind: SplitKinds
+	position: SplitPosition
 }
 
 export interface VimScreen {
@@ -22,7 +24,10 @@ export interface VimScreen {
 export const defaultScreen: VimScreen = { window: WindowKinds.Init }
 
 export interface IVimScreenService extends Observable<VimScreen> {
+	getSplit: () => SplitKinds | undefined
+	removeSplit: () => void
+	setHelpSplit: (position?: SplitPosition) => void
+	setSetsSplit: (position?: SplitPosition) => void
 	setWindow: (newWindow: WindowKinds) => void
-	addSplit: (newSplit: WindowSplit) => void
 	undo: () => void
 }

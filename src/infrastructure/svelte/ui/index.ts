@@ -1,5 +1,3 @@
-export { default as CommandPalette } from './command-palette.svelte'
-export { default as InitialWindow } from './initial-window.svelte'
-export { default as StatusBar } from './status-bar.svelte'
-export { default as SudokuGame } from './sudoku-game.svelte'
-export { default as Timer } from './timer.svelte'
+export * as Screen from './screen'
+export * as Sudoku from './sudoku'
+export * as Vim from './vim'

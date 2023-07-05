@@ -1,7 +1,7 @@
 <script>
 	import { settingsStore } from '$infra/svelte/stores'
 	import NumberBar from './number-bar.svelte'
-	import SudokuBoard from './sudoku-board.svelte'
+	import Board from './board.svelte'
 
 	$: numbersBars = $settingsStore.numbers || $settingsStore.relativeNumbers ? '3ch' : '0'
 </script>
@@ -12,7 +12,7 @@
 >
 	<NumberBar direction="col" />
 	<NumberBar direction="row" />
-	<SudokuBoard />
+	<Board />
 </section>
 
 <style lang="postcss">

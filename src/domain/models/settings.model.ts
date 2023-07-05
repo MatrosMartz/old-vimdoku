@@ -1,13 +1,13 @@
 import type { Observable } from '../utils'
 
-export const enum Themes {
+export enum Themes {
 	Default = 'default',
 }
-export const enum Langs {
+export enum Langs {
 	EN = 'en',
 	ES = 'es',
 }
-export const enum MouseEnable {
+export enum MouseEnable {
 	All = 'a',
 	CommandLine = 'c',
 	Insert = 'i',
@@ -72,3 +72,47 @@ export const defaultSettings: Settings = {
 	theme: Themes.Default,
 	timer: true,
 }
+type FormField<T extends number | boolean | string> = T extends number
+	? { type: 'number' }
+	: T extends boolean
+	? { type: 'boolean' }
+	: { type: 'option'; enum: string[] }
+
+type GroupFields<K extends keyof Settings> = [K, FormField<Settings[K]>][]
+
+type SettingsForm = [
+	['sudoku', GroupFields<keyof SudokuSettings>],
+	['user', GroupFields<keyof UserSettings>],
+	['vim', GroupFields<keyof VimSettings>]
+]
+
+export const settingsForm = [
+	[
+		'sudoku',
+		[
+			['automaticNoteDeletion', { type: 'boolean' }],
+			['automaticValidation', { type: 'boolean' }],
+			['highlightNumber', { type: 'boolean' }],
+			['remainingNumbers', { type: 'boolean' }],
+		],
+	],
+	[
+		'user',
+		[
+			['animations', { type: 'boolean' }],
+			['language', { type: 'option', enum: Object.values(Langs) }],
+			['theme', { type: 'option', enum: Object.values(Themes) }],
+			['timer', { type: 'boolean' }],
+		],
+	],
+	[
+		'vim',
+		[
+			['fontSize', { type: 'number' }],
+			['history', { type: 'number' }],
+			['mouse', { type: 'option', enum: Object.values(MouseEnable) }],
+			['numbers', { type: 'boolean' }],
+			['relativeNumbers', { type: 'boolean' }],
+		],
+	],
+] satisfies SettingsForm

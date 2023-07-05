@@ -1,4 +1,5 @@
 import type { SuggestionOption } from '../models'
+import { normalCase } from './normal-case'
 
 const initialPreferencesKeys: {
 	toggleKeys: { name: string; preference: string }[]
@@ -15,8 +16,7 @@ export function getKeysByType(preferences: Record<string, any>) {
 
 	return entries.reduce((keys, [entryKey, entryValue]) => {
 		const newKey = {
-			name:
-				entryKey[0].toUpperCase() + entryKey.substring(1).replace(/[A-Z]/g, match => ' ' + match),
+			name: normalCase(entryKey),
 			preference: entryKey.toLowerCase(),
 		}
 		if (typeof entryValue === 'boolean') keys.toggleKeys.push(newKey)
