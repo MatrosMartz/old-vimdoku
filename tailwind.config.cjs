@@ -10,6 +10,10 @@ const config = {
 
 	theme: {
 		extend: {},
+		screens: {
+			'xs': '475px',
+			...require('tailwindcss/defaultTheme').screens
+		}
 	},
 
 	plugins: [...require('@skeletonlabs/skeleton/tailwind/skeleton.cjs')()],

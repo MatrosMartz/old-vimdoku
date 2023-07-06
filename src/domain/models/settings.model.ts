@@ -81,14 +81,14 @@ type FormField<T extends number | boolean | string> = T extends number
 type GroupFields<K extends keyof Settings> = (FormField<Settings[K]> & { key: K })[]
 
 type SettingsForm = [
-	['sudoku', GroupFields<keyof SudokuSettings>],
-	['user', GroupFields<keyof UserSettings>],
-	['vim', GroupFields<keyof VimSettings>]
+	['Sudoku', GroupFields<keyof SudokuSettings>],
+	['User', GroupFields<keyof UserSettings>],
+	['Vim', GroupFields<keyof VimSettings>]
 ]
 
 export const settingsForm = [
 	[
-		'sudoku',
+		'Sudoku',
 		[
 			{ key: 'automaticNoteDeletion', type: 'boolean' },
 			{ key: 'automaticValidation', type: 'boolean' },
@@ -97,7 +97,7 @@ export const settingsForm = [
 		],
 	],
 	[
-		'user',
+		'User',
 		[
 			{ key: 'animations', type: 'boolean' },
 			{ key: 'language', type: 'option', options: Object.values(Langs) },
@@ -106,7 +106,7 @@ export const settingsForm = [
 		],
 	],
 	[
-		'vim',
+		'Vim',
 		[
 			{ key: 'fontSize', type: 'number' },
 			{ key: 'history', type: 'number' },

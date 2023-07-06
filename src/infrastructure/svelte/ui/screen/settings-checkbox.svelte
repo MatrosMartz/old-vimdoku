@@ -19,20 +19,22 @@
 	}
 </script>
 
-<label class="text-ellipsis" for="{key}-checkbox">{normalCase(key)}:</label>
-<input
-	class="settings-checkbox"
-	type="checkbox"
-	name="{key}-checkbox"
-	id="{key}-checkbox"
-	{checked}
-	on:input={changeHandler}
-	bind:this={input}
-/>
+<div class="flex justify-between">
+	<label class="text-ellipsis text-start" for="{key}-checkbox">{normalCase(key)}:</label>
+	<input
+		class="settings-checkbox"
+		type="checkbox"
+		name="{key}-checkbox"
+		id="{key}-checkbox"
+		{checked}
+		on:input={changeHandler}
+		bind:this={input}
+	/>
+</div>
 
 <style lang="postcss">
 	.settings-checkbox {
-		@apply appearance-none box-content w-14 h-7 relative mx-auto rounded-2xl bg-surface-50 border-2 border-surface-400 focus:border-tertiary-200 transition-[background];
+		@apply appearance-none box-content w-14 h-7 relative rounded-2xl bg-surface-50 border-2 border-surface-400 focus:border-tertiary-200 transition-[background];
 	}
 	:global(.dark) .settings-checkbox {
 		@apply bg-surface-900 border-surface-500 focus:border-tertiary-700;

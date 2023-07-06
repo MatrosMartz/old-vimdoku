@@ -12,7 +12,7 @@
 </script>
 
 <button class="btn-reset variant-glass-tertiary" type="button" on:click={clickHandler}>
-	reset settings
+	Reset All Settings
 </button>
 
 <style lang="postcss">
