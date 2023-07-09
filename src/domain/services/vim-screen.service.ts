@@ -1,16 +1,19 @@
 import {
-	SplitKinds,
 	type IVimScreenService,
-	WindowKinds,
 	defaultScreen,
 	type VimScreen,
-	type WindowSplit,
-	type SplitPosition,
+	type WindowSecondaryOpts,
+	WindowPrimaryKinds,
+	type WindowSecondaryOptsAll,
+	type HelpWindowOpts,
+	WindowSecondaryKinds,
+	type SetsWindowOpts,
+	SetType,
 } from '../models'
 import type { Observer } from '../utils'
 
 export class VimScreenService implements IVimScreenService {
-	#prevSplit?: SplitKinds | null
+	#prevSplit?: WindowSecondaryOpts | null
 	#value: VimScreen
 	#observers: Observer<VimScreen>[] = []
 
@@ -28,33 +31,44 @@ export class VimScreenService implements IVimScreenService {
 		this.#observers = this.#observers.filter(obs => obs !== observer)
 	}
 	getValue = () => this.#value
-	getSplit = () => this.#value.split?.kind
-
-	removeSplit() {
-		this.setWindow(this.#value.window)
-	}
-	setWindow(newWindow: WindowKinds) {
+	#setPrimaryWindow(newWindow: WindowPrimaryKinds) {
 		this.#prevSplit = null
-		this.#value = { window: newWindow }
+		this.#value = { primary: newWindow }
 		this.#notifyObservers()
 	}
-	#updateSplit(newSplit: WindowSplit) {
-		this.#prevSplit = newSplit.kind === this.#prevSplit ? null : this.#value.split?.kind
-		this.#value = { ...this.#value, split: { ...(this.#value.split ?? {}), ...newSplit } }
+	getOptForKey<K extends keyof WindowSecondaryOptsAll>(key: K) {
+		const secondary = (this.#value.secondary ?? {}) as WindowSecondaryOptsAll
+		if (key in secondary) return secondary[key]
+		throw new Error(`not exist "${key}" option in secondary window`)
+	}
+
+	removeSecondary() {
+		this.#setPrimaryWindow(this.#value.primary)
+	}
+	setGameWindow() {
+		this.#setPrimaryWindow(WindowPrimaryKinds.Game)
+	}
+	setInitWindow() {
+		this.#setPrimaryWindow(WindowPrimaryKinds.Init)
+	}
+	#updateSplit(newSplit: WindowSecondaryOpts) {
+		this.#prevSplit = newSplit.kind === this.#prevSplit?.kind ? null : this.#value.secondary
+		this.#value = { ...this.#value, secondary: { ...(this.#value.secondary ?? {}), ...newSplit } }
 		this.#notifyObservers()
 	}
-	setHelpSplit(position: SplitPosition = 'full') {
-		this.#updateSplit({ kind: SplitKinds.Help, position })
+	setHelpSecondary({}: Partial<HelpWindowOpts> = {}) {
+		this.#updateSplit({ kind: WindowSecondaryKinds.Help })
 	}
-	setSetsSplit(position: SplitPosition = 'full') {
-		this.#updateSplit({ kind: SplitKinds.Sets, position })
+	setSetsSecondary({ setType = SetType.edit }: Partial<SetsWindowOpts> = {}) {
+		this.#updateSplit({ kind: WindowSecondaryKinds.Sets, setType })
 	}
 	undo() {
-		if (this.#value.split == null) {
-			if (this.#value.window != WindowKinds.Init) this.setWindow(WindowKinds.Init)
+		if (this.#value.secondary == null) {
+			if (this.#value.primary != WindowPrimaryKinds.Init)
+				this.#setPrimaryWindow(WindowPrimaryKinds.Init)
 		} else {
-			if (this.#prevSplit == null) this.removeSplit()
-			else this.#updateSplit({ kind: this.#prevSplit, position: 'full' })
+			if (this.#prevSplit == null) this.removeSecondary()
+			else this.#updateSplit({ ...this.#prevSplit })
 		}
 	}
 }

@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { SplitKinds } from '~/domain/models'
+	import { WindowSecondaryKinds } from '~/domain/models'
 	import { SettingsIcon } from '$infra/assets'
 	import { settingsStore, vimScreen, vimScreenStore } from '$infra/svelte/stores'
 
 	function ClickHandler() {
-		if (vimScreen.getSplit() === SplitKinds.Sets) vimScreen.removeSplit()
-		else vimScreen.setSetsSplit()
+		if (vimScreen.getValue().secondary?.kind === WindowSecondaryKinds.Sets)
+			vimScreen.removeSecondary()
+		else vimScreen.setSetsSecondary()
 	}
 
-	$: isActive = $vimScreenStore.split?.kind === SplitKinds.Sets
+	$: isActive = $vimScreenStore.secondary?.kind === WindowSecondaryKinds.Sets
 </script>
 
 <button class="settings-btn variant-glass-tertiary" on:click={ClickHandler}>

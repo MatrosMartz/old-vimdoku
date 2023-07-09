@@ -10,9 +10,7 @@
 
 	const value = initialSettings[key]
 
-	$: if (select != null) {
-		select.value = initialSettings[key]
-	}
+	$: if (select != null) select.value = initialSettings[key]
 
 	let timerID: ReturnType<typeof setTimeout>
 

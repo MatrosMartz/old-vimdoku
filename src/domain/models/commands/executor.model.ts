@@ -18,7 +18,7 @@ import {
 	toggleKeys,
 } from './commands.model'
 import { SettingsService } from '~/domain/services'
-import { WindowKinds, type IVimScreenService } from '../vim-screen.model'
+import { SetType, type IVimScreenService } from '../vim-screen.model'
 
 export const allPreferences = allPreferencesKeys.map(({ preference }) => preference).join('|')
 export const togglePreferences = toggleKeys.map(({ preference }) => preference).join('|')
@@ -58,14 +58,14 @@ export const executorOptions: ExecutorOption[] = [
 					).filter(([key, value]) => value !== defaultSettings[key])
 
 					console.log(changedPreferences)
-					vimScreen.setSetsSplit()
+					vimScreen.setSetsSecondary({ setType: SetType.diff })
 				},
 			},
 			{
 				subPattern: subcommand => /^all$/.test(subcommand),
 				fn({ preferences, vimScreen }) {
 					console.log(Object.entries(preferences.getValue()))
-					vimScreen.setSetsSplit()
+					vimScreen.setSetsSecondary({ setType: SetType.all })
 				},
 			},
 			{
@@ -178,43 +178,43 @@ export const executorOptions: ExecutorOption[] = [
 			{
 				subPattern: subcommand => /^beginner$/.test(subcommand),
 				fn({ vimScreen }) {
-					vimScreen.setWindow(WindowKinds.Game)
+					vimScreen.setGameWindow()
 				},
 			},
 			{
 				subPattern: subcommand => /^basic$/.test(subcommand),
 				fn({ vimScreen }) {
-					vimScreen.setWindow(WindowKinds.Game)
+					vimScreen.setGameWindow()
 				},
 			},
 			{
 				subPattern: subcommand => /^easy$/.test(subcommand),
 				fn({ vimScreen }) {
-					vimScreen.setWindow(WindowKinds.Game)
+					vimScreen.setGameWindow()
 				},
 			},
 			{
 				subPattern: subcommand => /^medium$/.test(subcommand),
 				fn({ vimScreen }) {
-					vimScreen.setWindow(WindowKinds.Game)
+					vimScreen.setGameWindow()
 				},
 			},
 			{
 				subPattern: subcommand => /^advanced$/.test(subcommand),
 				fn({ vimScreen }) {
-					vimScreen.setWindow(WindowKinds.Game)
+					vimScreen.setGameWindow()
 				},
 			},
 			{
 				subPattern: subcommand => /^hard$/.test(subcommand),
 				fn({ vimScreen }) {
-					vimScreen.setWindow(WindowKinds.Game)
+					vimScreen.setGameWindow()
 				},
 			},
 			{
 				subPattern: subcommand => /^expert$/.test(subcommand),
 				fn({ vimScreen }) {
-					vimScreen.setWindow(WindowKinds.Game)
+					vimScreen.setGameWindow()
 				},
 			},
 		],

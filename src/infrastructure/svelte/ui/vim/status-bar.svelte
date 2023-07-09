@@ -8,7 +8,8 @@
 		vimScreenStore,
 	} from '$infra/svelte/stores'
 
-	$: screen = $vimScreenStore.split != null ? $vimScreenStore.split.kind : $vimScreenStore.window
+	$: screen =
+		$vimScreenStore.secondary != null ? $vimScreenStore.secondary.kind : $vimScreenStore.primary
 </script>
 
 <footer

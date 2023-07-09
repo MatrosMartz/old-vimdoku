@@ -57,20 +57,34 @@ export interface ISettingsService extends Observable<Settings> {
 	updateByKey: <K extends keyof Settings>(key: K, updater: SettingUpdater<K>) => void
 }
 
-export const defaultSettings: Settings = {
-	animations: true,
+const defaultSudokuSettings: SudokuSettings = {
 	automaticNoteDeletion: true,
 	automaticValidation: false,
-	fontSize: 16,
 	highlightNumber: true,
-	history: 100,
+	remainingNumbers: true,
+}
+const defaultUserSettings: UserSettings = {
+	animations: true,
 	language: Langs.EN,
+	theme: Themes.Default,
+	timer: true,
+}
+const defaultVimSettings: VimSettings = {
+	fontSize: 16,
+	history: 100,
 	mouse: MouseEnable.All,
 	numbers: true,
 	relativeNumbers: false,
-	remainingNumbers: true,
-	theme: Themes.Default,
-	timer: true,
+}
+
+export const sudokuSettingsKeys = Object.keys(defaultSudokuSettings)
+export const userSettingsKeys = Object.keys(defaultUserSettings)
+export const vimSettingsKeys = Object.keys(defaultVimSettings)
+
+export const defaultSettings: Settings = {
+	...defaultSudokuSettings,
+	...defaultUserSettings,
+	...defaultVimSettings,
 }
 type FormField<T extends number | boolean | string> = T extends number
 	? { type: 'number' }

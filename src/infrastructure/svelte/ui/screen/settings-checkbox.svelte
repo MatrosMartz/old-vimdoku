@@ -10,9 +10,7 @@
 
 	const checked = initialSettings[key]
 
-	$: if (input != null) {
-		input.checked = initialSettings[key]
-	}
+	$: if (input != null) input.checked = initialSettings[key]
 
 	function changeHandler() {
 		settings.updateByKey(key, SettingsService.toggle)

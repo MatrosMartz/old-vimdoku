@@ -9,9 +9,7 @@
 
 	const value = initialSettings[key]
 
-	$: if (input != null) {
-		input.value = String(initialSettings[key])
-	}
+	$: if (input != null) input.value = String(initialSettings[key])
 
 	let timerID: ReturnType<typeof setTimeout>
 
