@@ -3,15 +3,19 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/svelte'
 
 import { BoxKinds } from '~/domain/models'
 import { getBoxAndPosByKind } from '~/tests/utils'
-import { boardStore, modes } from '$infra/svelte/stores'
+import { board, boardStore, modes } from '$infra/svelte/stores'
 
 import Box from './box.svelte'
+import { Solution } from '~/domain/entities'
+
+const solution = new Solution()
 
 afterEach(() => cleanup())
 
 describe('Box Component in Insert Mode', () => {
 	beforeAll(() => {
 		modes.setInsert()
+		board.initBoard({ solution })
 		return () => modes.setNormal()
 	})
 

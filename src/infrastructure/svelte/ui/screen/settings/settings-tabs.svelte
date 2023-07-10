@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { SetType } from '~/domain/models'
-	import { vimScreen } from '../../stores'
+	import { vimScreen } from '$infra/svelte/stores'
 
 	export let initialSelected: SetType = SetType.edit
 

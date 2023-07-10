@@ -1,3 +1,7 @@
+<script>
+	import StartGame from './start-game.svelte'
+</script>
+
 <section class="flex flex-col gap-4">
 	<h2 class="text-base unstyled font-medium">VIMDOKU - VIM suDOKU</h2>
 
@@ -29,9 +33,7 @@
 		</tr>
 	</table>
 
-	<div class="mt-2">
-		<button class="btn-start variant-glass-tertiary">Start game</button>
-	</div>
+	<StartGame />
 </section>
 
 <style lang="postcss">
@@ -40,12 +42,5 @@
 	}
 	.commands td:nth-child(3n + 2) {
 		@apply px-[3ch];
-	}
-
-	.btn-start {
-		@apply h-[48px] px-2 py-1 hover:brightness-90;
-	}
-	:global(.dark) .btn-start {
-		@apply hover:brightness-110;
 	}
 </style>
