@@ -10,7 +10,7 @@
 	let initialSettings = settings.getValue()
 </script>
 
-<form action="" class="h-[calc(100%-4rem)] overflow-y-auto px-6 py-4">
+<form action="" class="h-[calc(100%-4rem)] overflow-y-auto px-6 py-4" data-testid="settings-form">
 	{#each settingsForm as [group, settingsEntries] (group)}
 		<section
 			class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-3 gap-x-12 w-full form-group"

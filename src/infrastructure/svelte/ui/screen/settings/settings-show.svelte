@@ -43,7 +43,7 @@
 			: 'text-primary-500-400-token'
 </script>
 
-<section class="h-[calc(100%-4rem)] overflow-y-auto px-6 py-4">
+<section class="h-[calc(100%-4rem)] overflow-y-auto px-6 py-4" data-testid="settings-show">
 	{#each groupSettings as { group, entries } (group)}
 		<section class="setting-group inline-block w-max">
 			<h6 class="sm:col-span-2 lg:col-span-3 unstyled font-semibold leading-8">{group} Settings</h6>

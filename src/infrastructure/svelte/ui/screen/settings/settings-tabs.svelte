@@ -2,7 +2,7 @@
 	import { SetType } from '~/domain/models'
 	import { vimScreen } from '$infra/svelte/stores'
 
-	export let initialSelected: SetType = SetType.edit
+	const initialSelected = vimScreen.getOptForKey('setType')
 
 	const Messages: Record<SetType, String> = {
 		all: 'Show All',
@@ -11,7 +11,7 @@
 	}
 </script>
 
-<fieldset class=" flex gap-6 justify-center pt-4">
+<fieldset class=" flex gap-6 justify-center pt-4" data-testid="settings-tabs">
 	{#each Object.values(SetType) as setTab (setTab)}
 		<input
 			type="radio"
@@ -21,6 +21,7 @@
 			checked={initialSelected === setTab}
 			on:click={() => vimScreen.setSetsSecondary({ setType: setTab })}
 			class="hidden"
+			data-testid="{setTab}-tab"
 		/>
 		<label for={setTab} class="bg-surface-200-700-token text-black dark:text-white"
 			>{Messages[setTab]}</label

@@ -2,9 +2,9 @@
 	import { fly } from 'svelte/transition'
 
 	import { SetType, WindowSecondaryKinds } from '~/domain/models'
-	import { vimScreen, vimScreenStore } from '$infra/svelte/stores'
+	import { vimScreenStore } from '$infra/svelte/stores'
 
-	import SettingsForm from './settings-form.svelte'
+	import SettingsForm from './edit/settings-form.svelte'
 	import SettingsTabs from './settings-tabs.svelte'
 	import SettingsShowAll from './settings-show.svelte'
 </script>
@@ -14,7 +14,7 @@
 		transition:fly={{ x: 100 }}
 		class="fixed top-[60px] left-0 right-0 mx-auto w-[85vw] h-[calc(100%-6.5rem)] overflow-hidden bg-surface-100-800-token rounded-xl z-20 text-surface-600-300-token"
 	>
-		<SettingsTabs initialSelected={vimScreen.getOptForKey('setType')} />
+		<SettingsTabs />
 		{#if $vimScreenStore.secondary.setType === SetType.edit}
 			<SettingsForm />
 		{:else if $vimScreenStore.secondary.setType === SetType.all}

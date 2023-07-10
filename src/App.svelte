@@ -25,7 +25,7 @@
 </script>
 
 <Vim.SettingsBtn />
-<Screen.SettingsSplit />
+<Screen.SettingsWindow />
 {#if $vimScreenStore.primary === WindowPrimaryKinds.Init}
 	<Screen.InitialWindow />
 {:else}
