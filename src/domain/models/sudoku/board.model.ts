@@ -1,4 +1,6 @@
-import type { Observable } from '../utils'
+import type { Observable } from '~/domain/utils'
+import type { Position } from './selection.model'
+import type { Solution } from '~/domain/entities'
 
 export const enum BoxKinds {
 	Correct = 'correct',
@@ -24,26 +26,14 @@ export interface BoxSchema {
 	value: number
 }
 
-export interface Position {
-	col: number
-	row: number
-}
-
 export interface IBoardService extends Observable<BoxSchema[][]> {
 	addNote: (value: number) => void
 	erase: () => void
 	getBox: (pos: Position) => Readonly<BoxSchema>
+	getDifficulty: () => Difficulties
 	getEmptyBoxesPos: () => readonly Position[]
 	getSudokuValue: (pos: Position) => number
+	initBoard: (args: { difficulty?: Difficulties; solution?: Solution }) => void
 	isSelected: (pos: Position) => boolean
 	writeNumber: (value: number) => void
-}
-
-export interface ISelectionService extends Observable<Position> {
-	moveDown: (times?: number) => void
-	moveLeft: (times?: number) => void
-	moveRight: (times?: number) => void
-	moveTo: (pos: Position) => void
-	moveToNextEmpty: (emptiesPos: readonly Position[]) => void
-	moveUp: (times?: number) => void
 }
