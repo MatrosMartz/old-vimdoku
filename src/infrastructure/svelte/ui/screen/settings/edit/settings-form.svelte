@@ -12,10 +12,8 @@
 
 <form action="" class="h-[calc(100%-4rem)] overflow-y-auto px-6 py-4" data-testid="settings-form">
 	{#each settingsForm as [group, settingsEntries] (group)}
-		<section
-			class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-3 gap-x-12 w-full form-group"
-		>
-			<h6 class="sm:col-span-2 lg:col-span-3 unstyled font-semibold leading-8">
+		<section class="grid grid-cols-1 gap-y-3 gap-x-12 max-w-[60ch] form-group mx-auto">
+			<h6 class="unstyled font-semibold leading-8">
 				{group} Settings
 			</h6>
 			{#each settingsEntries as setting (setting.key)}

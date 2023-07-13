@@ -45,11 +45,11 @@
 
 <section class="h-[calc(100%-4rem)] overflow-y-auto px-6 py-4" data-testid="settings-show">
 	{#each groupSettings as { group, entries } (group)}
-		<section class="setting-group inline-block w-max">
-			<h6 class="sm:col-span-2 lg:col-span-3 unstyled font-semibold leading-8">{group} Settings</h6>
+		<section class="setting-group max-w-[60ch] mx-auto">
+			<h6 class="unstyled font-semibold leading-8">{group} Settings</h6>
 			<ul class="flex flex-col gap-2">
 				{#each entries as [key, value] (key)}
-					<li class="flex justify-between w-[40ch] mx-auto">
+					<li class="flex justify-between w-full mx-auto">
 						<strong>{normalCase(key)}:</strong>
 						<span class={valueClass(value)}>
 							{typeof value === 'string' ? `"${value}"` : value}
