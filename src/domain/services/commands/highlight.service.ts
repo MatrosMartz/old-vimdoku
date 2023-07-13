@@ -52,7 +52,7 @@ export class CmdHighlightService implements ICmdHighlightService {
 
 		const { command, commandEnd } = this.#getCommand(input)
 
-		const newCommand = new RegExp(`(${commandsPattern})$`).test(command)
+		const newCommand = new RegExp(`^(${commandsPattern})$`).test(command)
 			? this.#highlightCorrectCommand(command)
 			: this.#highlightInCorrectCommand(command)
 

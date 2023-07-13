@@ -55,16 +55,16 @@ export const text = (str: string) => `<span class="text-primary-500-400-token">$
 export const mapKeys = <T>(arr: T[], mapFn: (value: T) => SuggestionOption) => arr.map(mapFn)
 
 export const commandsPattern = [
-	'(con(tinue)?)',
+	'(con(?:tinue)?)',
 	'(exit?)',
-	'(h(elp)?)',
-	'(pau(se)?)',
-	'(q(uit)?!)',
-	'(q(uit)?)',
-	'(res(et)?)',
-	'(s(et)?)',
-	'(st(art)?)',
-	'(wq(uit)?)',
-	'(w(rite)?)',
-	'(x(it)?)',
+	'(h(?:elp)?)',
+	'(pau(?:se)?)',
+	'(q(?:uit)?!)',
+	'(q(?:uit)?)',
+	'(res(?:et)?)',
+	'(set?)',
+	'(st(?:art)?)',
+	'(wq(?:uit)?)',
+	'(w(?:rite)?)',
+	'(x(?:it)?)',
 ].join('|')
