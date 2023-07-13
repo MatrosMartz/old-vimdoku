@@ -19,6 +19,7 @@ import {
 } from './commands.model'
 import { SettingsService } from '~/domain/services'
 import { SetType, type IVimScreenService } from '../vim-screen.model'
+import { Difficulties, type IBoardService } from '../sudoku'
 
 export const allPreferences = allPreferencesKeys.map(({ preference }) => preference).join('|')
 export const togglePreferences = toggleKeys.map(({ preference }) => preference).join('|')
@@ -32,10 +33,12 @@ interface SubcommandOption {
 		preferences,
 		subcommand,
 		vimScreen,
+		board,
 	}: {
 		preferences: ISettingsService
 		subcommand: string
 		vimScreen: IVimScreenService
+		board: IBoardService
 	}) => void
 }
 
@@ -177,44 +180,51 @@ export const executorOptions: ExecutorOption[] = [
 		subcommandOption: [
 			{
 				subPattern: subcommand => /^beginner$/.test(subcommand),
-				fn({ vimScreen }) {
+				fn({ board, vimScreen }) {
 					vimScreen.setGameWindow()
+					board.initBoard({ difficulty: Difficulties.Beginner })
 				},
 			},
 			{
 				subPattern: subcommand => /^basic$/.test(subcommand),
-				fn({ vimScreen }) {
+				fn({ board, vimScreen }) {
 					vimScreen.setGameWindow()
+					board.initBoard({ difficulty: Difficulties.Basic })
 				},
 			},
 			{
 				subPattern: subcommand => /^easy$/.test(subcommand),
-				fn({ vimScreen }) {
+				fn({ board, vimScreen }) {
 					vimScreen.setGameWindow()
+					board.initBoard({ difficulty: Difficulties.Easy })
 				},
 			},
 			{
 				subPattern: subcommand => /^medium$/.test(subcommand),
-				fn({ vimScreen }) {
+				fn({ board, vimScreen }) {
 					vimScreen.setGameWindow()
+					board.initBoard({ difficulty: Difficulties.Medium })
 				},
 			},
 			{
 				subPattern: subcommand => /^advanced$/.test(subcommand),
-				fn({ vimScreen }) {
+				fn({ board, vimScreen }) {
 					vimScreen.setGameWindow()
+					board.initBoard({ difficulty: Difficulties.Advanced })
 				},
 			},
 			{
 				subPattern: subcommand => /^hard$/.test(subcommand),
-				fn({ vimScreen }) {
+				fn({ board, vimScreen }) {
 					vimScreen.setGameWindow()
+					board.initBoard({ difficulty: Difficulties.Hard })
 				},
 			},
 			{
 				subPattern: subcommand => /^expert$/.test(subcommand),
-				fn({ vimScreen }) {
+				fn({ board, vimScreen }) {
 					vimScreen.setGameWindow()
+					board.initBoard({ difficulty: Difficulties.Expert })
 				},
 			},
 		],

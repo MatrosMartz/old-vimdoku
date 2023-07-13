@@ -26,7 +26,11 @@ export interface BoxSchema {
 	value: number
 }
 
-export interface IBoardService extends Observable<BoxSchema[][]> {
+export type BoardSchema = readonly (readonly BoxSchema[])[]
+
+export type BoardValue = { isActive: true; board: BoxSchema[][] } | { isActive: false }
+
+export interface IBoardService extends Observable<BoardSchema> {
 	addNote: (value: number) => void
 	erase: () => void
 	getBox: (pos: Position) => Readonly<BoxSchema>
@@ -34,6 +38,7 @@ export interface IBoardService extends Observable<BoxSchema[][]> {
 	getEmptyBoxesPos: () => readonly Position[]
 	getSudokuValue: (pos: Position) => number
 	initBoard: (args: { difficulty?: Difficulties; solution?: Solution }) => void
+	hasBoard: () => boolean
 	isSelected: (pos: Position) => boolean
 	writeNumber: (value: number) => void
 }

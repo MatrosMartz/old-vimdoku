@@ -1,15 +1,15 @@
 import { derived, readable, writable } from 'svelte/store'
 
-import { type BoxSchema, type Position } from '~/domain/models'
+import { type BoardSchema, type Position } from '~/domain/models'
 import { BoardService, SelectionService } from '~/domain/services'
 import type { Observer } from '~/domain/utils'
 
 export const selection = new SelectionService()
 export const board = new BoardService({ selectionService: selection })
 
-export const boardStore = readable(board.getValue(), set => {
-	const observer: Observer<BoxSchema[][]> = {
-		update: value => set(value),
+export const boardStore = readable(board.hasBoard() && board.getValue(), set => {
+	const observer: Observer<BoardSchema> = {
+		update: value => set(board.hasBoard() && value),
 	}
 	board.addObserver(observer)
 

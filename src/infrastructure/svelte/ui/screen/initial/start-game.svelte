@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Difficulties } from '~/domain/models'
+	import { Difficulties, difficultiesKeys } from '~/domain/models'
 	import { board, vimScreen } from '$infra/svelte/stores'
 
-	let difficultySelected: Difficulties
+	let difficultySelected: Difficulties = Difficulties.Easy
 
 	function submitHandler() {
 		vimScreen.setGameWindow()
-		board
+		board.initBoard({ difficulty: difficultySelected })
 	}
 </script>
 
@@ -18,7 +18,7 @@
 		id="select-difficulty"
 		bind:value={difficultySelected}
 	>
-		{#each Object.entries(Difficulties) as [key, value] (value)}
+		{#each difficultiesKeys as [key, value] (value)}
 			<option {value}>{key}</option>
 		{/each}
 	</select>

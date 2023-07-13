@@ -1,17 +1,26 @@
-import { executorOptions, type ICmdExecutorService, type IVimScreenService } from '~/domain/models'
-import { SettingsService } from '../settings.service'
+import {
+	executorOptions,
+	type IBoardService,
+	type ICmdExecutorService,
+	type ISettingsService,
+	type IVimScreenService,
+} from '~/domain/models'
 
 export class CmdExecutorService implements ICmdExecutorService {
-	#preferences: SettingsService
+	#board: IBoardService
+	#settings: ISettingsService
 	#vimScreen: IVimScreenService
 	constructor({
-		preferences,
+		board,
+		settings,
 		vimScreen,
 	}: {
-		preferences: SettingsService
+		board: IBoardService
+		settings: ISettingsService
 		vimScreen: IVimScreenService
 	}) {
-		this.#preferences = preferences
+		this.#board = board
+		this.#settings = settings
 		this.#vimScreen = vimScreen
 	}
 
@@ -24,7 +33,12 @@ export class CmdExecutorService implements ICmdExecutorService {
 			for (const { fn, subPattern } of subcommandOption) {
 				if (!subPattern(subcommand)) continue
 
-				fn({ subcommand, preferences: this.#preferences, vimScreen: this.#vimScreen })
+				fn({
+					board: this.#board,
+					subcommand,
+					preferences: this.#settings,
+					vimScreen: this.#vimScreen,
+				})
 				break
 			}
 			break
