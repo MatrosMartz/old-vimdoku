@@ -7,6 +7,7 @@
 		cmdHighlight,
 		cmdSuggestions,
 		executor,
+		modes,
 		suggestionsStore,
 	} from '$infra/svelte/stores'
 
@@ -37,7 +38,7 @@
 		if (key === 'Enter') {
 			cmdAutocomplete.push(currentValue)
 			executor.exec(currentValue)
-			currentValue = ''
+			modes.setNormal()
 		}
 		if (key === 'ArrowUp') {
 			ev.preventDefault()
