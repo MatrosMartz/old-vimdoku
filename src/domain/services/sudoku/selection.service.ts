@@ -1,6 +1,13 @@
 import type { ISelectionService, Position } from '~/domain/models'
 import type { Observer } from '~/domain/utils'
 
+function min(value: number, { min, max }: { min: number; max?: number }) {
+	return value < min ? min : max == null ? value : max
+}
+function max(value: number, { min, max }: { min?: number; max: number }) {
+	return value > max ? max : min == null ? value : min
+}
+
 export class SelectionService implements ISelectionService {
 	static MAX_BOX_POS = 8
 	static MIN_BOX_POS = 0
@@ -31,27 +38,26 @@ export class SelectionService implements ISelectionService {
 	}
 	moveDown(times = 1) {
 		if (this.#isEndPosition()) return
+		times = min(times, { min: 1 })
 
 		const row = this.#value.row + times
-		const rowIsMax = row > SelectionService.MAX_BOX_POS
-		const col = rowIsMax ? SelectionService.MAX_BOX_POS : this.#value.col
+		const col = max(row, { max: SelectionService.MAX_BOX_POS, min: this.#value.col })
 
-		this.moveTo({ row: rowIsMax ? SelectionService.MAX_BOX_POS : row, col })
+		this.moveTo({ row: max(row, { max: SelectionService.MAX_BOX_POS }), col })
 	}
 	moveLeft(times = 1) {
 		if (this.#isStartPosition()) return
+		times = min(times, { min: 1 })
 
 		const col = this.#value.col - times
-		const colIxMin = col < SelectionService.MIN_BOX_POS
-		const row = this.#value.row + (colIxMin ? col : SelectionService.MIN_BOX_POS)
+		const isComesOut = col < SelectionService.MIN_BOX_POS
+		const row = this.#value.row + (isComesOut ? -1 : 0)
 
-		this.moveTo({
-			row,
-			col: colIxMin ? col + 9 : col,
-		})
+		this.moveTo({ row, col: isComesOut ? SelectionService.MAX_BOX_POS : col })
 	}
 	moveRight(times = 1) {
 		if (this.#isEndPosition()) return
+		times = min(times, { min: 1 })
 
 		const col = this.#value.col + times
 		const row = this.#value.row + Math.trunc(col / 9)
@@ -60,12 +66,12 @@ export class SelectionService implements ISelectionService {
 	}
 	moveUp(times = 1) {
 		if (this.#isStartPosition()) return
+		times = min(times, { min: 1 })
 
 		const row = this.#value.row - times
-		const rowISMin = row < SelectionService.MIN_BOX_POS
-		const col = rowISMin ? SelectionService.MIN_BOX_POS : this.#value.col
+		const col = min(row, { min: SelectionService.MIN_BOX_POS, max: this.#value.col })
 
-		this.#value = { row: rowISMin ? SelectionService.MIN_BOX_POS : row, col }
+		this.moveTo({ row: min(row, { min: SelectionService.MIN_BOX_POS }), col })
 	}
 	moveToNextEmpty(emptiesPos: readonly Position[]) {
 		const { row, col } = this.#value
