@@ -29,8 +29,8 @@ export class BoardService implements IBoardService {
 
 	#opts: { difficulty: Difficulties; solution: Solution } | null
 	#selectionService: SelectionService
-	#value: BoardValue
-	#observers: Observer<BoardSchema>[] = []
+	#value: { hasBoard: true; board: BoxSchema[][] } | { hasBoard: false }
+	#observers: Observer<BoardValue>[] = []
 
 	constructor({
 		selectionService = new SelectionService(),
@@ -38,35 +38,30 @@ export class BoardService implements IBoardService {
 		selectionService?: SelectionService
 	} = {}) {
 		this.#opts = null
-		this.#value = { isActive: false }
+		this.#value = { hasBoard: false }
 		this.#selectionService = selectionService
 	}
-	hasBoard = () => this.#value.isActive
-	#boardFreeze(board: BoxSchema[][]) {
+	hasBoard = () => this.#value.hasBoard
+	#boardFreeze() {
+		if (!this.#value.hasBoard) return this.#value
+
+		const { board } = this.#value
 		const freezeBox = (box: BoxSchema) => Object.freeze({ ...box, notes: [...box.notes] })
-		const freezeCol = (col: BoxSchema[]) => Object.freeze(col.map(freezeBox))
-		return Object.freeze(board.map(freezeCol))
+		const freezeCol = (col: readonly BoxSchema[]) => Object.freeze(col.map(freezeBox))
+		return { ...this.#value, board: Object.freeze(board.map(freezeCol)) }
 	}
 	#notifyObservers() {
-		if (this.#value.isActive) {
-			const immutableBoard = this.#boardFreeze(this.#value.board)
-			this.#observers.forEach(obs => obs.update(immutableBoard))
-		}
+		const immutableBoard = this.#boardFreeze()
+		this.#observers.forEach(obs => obs.update(immutableBoard))
 	}
-	addObserver(observer: Observer<BoardSchema>) {
+	addObserver(observer: Observer<BoardValue>) {
 		this.#observers = [...this.#observers, observer]
-		if (this.#value.isActive) {
-			const immutableBoard = this.#boardFreeze(this.#value.board)
-			observer.update(immutableBoard)
-		}
 	}
-	removeObserver(observer: Observer<BoardSchema>) {
+	removeObserver(observer: Observer<BoardValue>) {
 		this.#observers = this.#observers.filter(obs => obs !== observer)
 	}
 	getValue() {
-		console.log(this.#value)
-		if (!this.#value.isActive) throw new Error('board not initialized')
-		return this.#boardFreeze(this.#value.board)
+		return this.#boardFreeze()
 	}
 
 	#createBoard({ difficulty, solution }: { difficulty: Difficulties; solution: Solution }) {
@@ -84,7 +79,7 @@ export class BoardService implements IBoardService {
 		return boardValue
 	}
 	#updateSelected(update: (args: { box: BoxSchema } & Position) => BoxSchema) {
-		if (!this.#value.isActive) throw new Error('board not initialized')
+		if (!this.#value.hasBoard) throw new Error('board not initialized')
 		for (let row = 0; row < 9; row++) {
 			for (let col = 0; col < 9; col++) {
 				const box = this.getBox({ col, row })
@@ -101,7 +96,7 @@ export class BoardService implements IBoardService {
 	}: { difficulty?: Difficulties; solution?: Solution } = {}) {
 		setTimeout(() => {
 			this.#opts = { difficulty, solution }
-			this.#value = { isActive: true, board: this.#createBoard(this.#opts) }
+			this.#value = { hasBoard: true, board: this.#createBoard(this.#opts) }
 			this.#notifyObservers()
 		}, 0)
 	}
@@ -122,7 +117,7 @@ export class BoardService implements IBoardService {
 	}
 
 	getBox({ col, row }: Position) {
-		if (!this.#value.isActive) throw new Error('board not initialized')
+		if (!this.#value.hasBoard) throw new Error('board not initialized')
 		return Object.freeze(this.#value.board[row][col])
 	}
 	getDifficulty() {
@@ -135,7 +130,7 @@ export class BoardService implements IBoardService {
 	}
 
 	getEmptyBoxesPos() {
-		if (!this.#value.isActive) throw new Error('board not initialized')
+		if (!this.#value.hasBoard) throw new Error('board not initialized')
 		const emptyBoxesPos: Position[] = []
 		for (let row = 0; row < 9; row++) {
 			for (let col = 0; col < 9; col++) {

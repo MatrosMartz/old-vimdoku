@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BoxKinds, Modes } from '~/domain/models'
+	import { BoxKinds, Modes, type BoxSchema } from '~/domain/models'
 
 	import { boardStore, selectionStore, selection, board, modes } from '$infra/svelte/stores'
 
@@ -7,7 +7,8 @@
 	export let col: number
 
 	let boxBtn: HTMLButtonElement
-	$: box = $boardStore[row][col]
+	let box: BoxSchema
+	$: if ($boardStore.hasBoard) box = $boardStore.board[row][col]
 	$: value = box.value > 0 ? box.value : ''
 	$: selected = $selectionStore.col === col && $selectionStore.row === row
 	$: if (selected && boxBtn != null) boxBtn.focus()

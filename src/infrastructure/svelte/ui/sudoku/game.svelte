@@ -7,7 +7,7 @@
 	$: hasBars = $settingsStore.numbers || $settingsStore.relativeNumbers
 </script>
 
-{#if $boardStore !== false}
+{#if $boardStore.hasBoard}
 	<section
 		in:blur
 		class="relative bg-surface-100-800-token rounded-lg gap-0 p-2 transition-[border-radius]"

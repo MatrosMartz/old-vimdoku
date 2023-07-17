@@ -28,9 +28,9 @@ export interface BoxSchema {
 
 export type BoardSchema = readonly (readonly BoxSchema[])[]
 
-export type BoardValue = { isActive: true; board: BoxSchema[][] } | { isActive: false }
+export type BoardValue = { hasBoard: true; board: BoardSchema } | { hasBoard: false }
 
-export interface IBoardService extends Observable<BoardSchema> {
+export interface IBoardService extends Observable<BoardValue> {
 	addNote: (value: number) => void
 	erase: () => void
 	getBox: (pos: Position) => Readonly<BoxSchema>
