@@ -1,11 +1,11 @@
 import { defaultSettings, type Settings } from '~/domain/models'
-import type { DataStorageRepo, ISettingsRepo } from '~/domain/repositories'
+import type { DataRepo, ISettingsRepo } from '~/domain/repositories'
 
 export class SettingsRepo implements ISettingsRepo {
-	#storage: DataStorageRepo<Settings>
+	#storage: DataRepo<Settings>
 	#settings = { ...defaultSettings }
 
-	constructor({ storage }: { storage: DataStorageRepo<Settings> }) {
+	constructor({ storage }: { storage: DataRepo<Settings> }) {
 		this.#storage = storage
 	}
 

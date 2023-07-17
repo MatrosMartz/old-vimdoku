@@ -1,29 +1,15 @@
-import { derived, readable, writable } from 'svelte/store'
+import { derived, writable } from 'svelte/store'
 
-import { type BoardSchema, type Position } from '~/domain/models'
 import { BoardService, SelectionService } from '~/domain/services'
-import type { Observer } from '~/domain/utils'
+
+import { storeFromObservable } from './utils'
 
 export const selection = new SelectionService()
 export const board = new BoardService({ selectionService: selection })
 
-export const boardStore = readable(board.hasBoard() && board.getValue(), set => {
-	const observer: Observer<BoardSchema> = {
-		update: value => set(board.hasBoard() && value),
-	}
-	board.addObserver(observer)
+export const selectionStore = storeFromObservable(selection)
+export const boardStore = storeFromObservable(board)
 
-	return () => board.removeObserver(observer)
-})
-
-export const selectionStore = readable(selection.getValue(), set => {
-	const observer: Observer<Position> = {
-		update: value => set(value),
-	}
-	selection.addObserver(observer)
-
-	return () => selection.removeObserver(observer)
-})
 export const formattedSelection = derived(selectionStore, ({ col, row }) => `${row + 1}:${col + 1}`)
 
 function createMistakeStore() {

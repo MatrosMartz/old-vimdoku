@@ -1,9 +1,9 @@
-import type { DataStorageRepo, IHistoryRepo } from '~/domain/repositories'
+import type { DataRepo, IHistoryRepo } from '~/domain/repositories'
 
 export class HistoryRepo implements IHistoryRepo {
 	#history: string[] = []
-	#storage: DataStorageRepo<string[]>
-	constructor({ storage }: { storage: DataStorageRepo<string[]> }) {
+	#storage: DataRepo<string[]>
+	constructor({ storage }: { storage: DataRepo<string[]> }) {
 		this.#storage = storage
 	}
 

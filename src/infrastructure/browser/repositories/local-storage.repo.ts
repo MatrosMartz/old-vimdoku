@@ -1,6 +1,6 @@
-import type { DataStorageRepo } from '~/domain/repositories'
+import type { DataRepo } from '~/domain/repositories'
 
-export class DataStorageBrowser<T> implements DataStorageRepo<T> {
+export class LocalStorageDataRepo<T> implements DataRepo<T> {
 	#keyName: string
 
 	constructor({ keyName }: { keyName: string }) {
