@@ -57,7 +57,7 @@
 </script>
 
 <section
-	class="absolute inset-0 h-full w-full glass-command backdrop-blur-lg backdrop-opacity-90 z-20 flex flex-col justify-center items-center pb-[60vh]"
+	class="absolute inset-0 h-full w-full glass-command backdrop-blur-lg backdrop-opacity-75 z-20 flex flex-col justify-center items-center pb-[60vh]"
 	transition:fade
 >
 	<div class="relative bg-surface-50-900-token command-width rounded-lg">
