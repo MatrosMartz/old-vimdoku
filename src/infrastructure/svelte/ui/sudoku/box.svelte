@@ -50,17 +50,6 @@
 	>
 		{value}
 	</span>
-	<span
-		data-testid="notes"
-		class="grid grid-cols-3 grid-rows-3 w-max h-max absolute top-0 left-0"
-		hidden={box.notes.length === 0}
-	>
-		{#each [1, 2, 3, 4, 5, 6, 7, 8, 9] as note}
-			<span data-testid="note-{note}" class="note-{note}" hidden={!box.notes.includes(note)}>
-				{note}
-			</span>
-		{/each}
-	</span>
 </button>
 
 <style lang="postcss">
@@ -70,61 +59,23 @@
 		outline: none;
 	}
 	.initial {
-		color: rgb(var(--color-primary-600));
-	}
-	:global(.dark) .initial {
-		color: rgb(var(--color-primary-300));
+		@apply text-primary-600 dark:text-primary-300;
 	}
 	.selected {
-		--border-color: var(--color-primary-300);
-		border-color: rgb(var(--border-color));
-		animation: blink 500ms ease-in-out infinite alternate;
-	}
-	:global(.dark) .selected {
-		--border-color: var(--color-primary-600);
+		@apply border-primary-300 dark:text-primary-600 motion-safe:animate-[blink_500ms_ease-in-out_infinite_alternate];
 	}
 
 	@keyframes blink {
 		0% {
-			border-color: rgb(var(--border-color));
+			@apply border-primary-300-600-token;
 		}
 		100% {
-			border-color: transparent;
+			@apply border-transparent;
 		}
 	}
 
 	.father * {
 		width: 100%;
 		height: 100%;
-	}
-	.note-1,
-	.note-4,
-	.note-7 {
-		grid-row: 0 1;
-	}
-	.note-2,
-	.note-5,
-	.note-8 {
-		grid-row: 1 2;
-	}
-	.note-3,
-	.note-6,
-	.note-9 {
-		grid-row: 2 3;
-	}
-	.note-1,
-	.note-2,
-	.note-3 {
-		grid-column: 0 1;
-	}
-	.note-4,
-	.note-5,
-	.note-6 {
-		grid-column: 1 2;
-	}
-	.note-7,
-	.note-8,
-	.note-9 {
-		grid-column: 2 3;
 	}
 </style>

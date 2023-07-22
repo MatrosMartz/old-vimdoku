@@ -120,6 +120,11 @@ export class BoardService implements IBoardService {
 		if (!this.#value.hasBoard) throw new Error('board not initialized')
 		return Object.freeze(this.#value.board[row][col])
 	}
+	getBoard() {
+		const value = this.getValue()
+		if (!value.hasBoard) throw new Error('board not initialized')
+		return value.board
+	}
 	getDifficulty() {
 		if (this.#opts == null) throw new Error('opts not defined')
 		return this.#opts.difficulty

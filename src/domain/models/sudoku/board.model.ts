@@ -34,6 +34,7 @@ export interface IBoardService extends Observable<BoardValue> {
 	addNote: (value: number) => void
 	erase: () => void
 	getBox: (pos: Position) => Readonly<BoxSchema>
+	getBoard: () => BoardSchema
 	getDifficulty: () => Difficulties
 	getEmptyBoxesPos: () => readonly Position[]
 	getSudokuValue: (pos: Position) => number
