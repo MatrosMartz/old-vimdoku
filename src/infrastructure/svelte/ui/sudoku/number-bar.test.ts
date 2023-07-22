@@ -60,7 +60,7 @@ describe('Number Bar component', () => {
 	})
 	test('Number Should be number selection', async () => {
 		await act(() => {
-			selection.moveTo({ col: 0, row: 5 })
+			selection.moveTo({ col: 0, row: 6 })
 			settings.updateByKey('numbers', SettingsService.on)
 			settings.updateByKey('relativeNumbers', SettingsService.on)
 		})

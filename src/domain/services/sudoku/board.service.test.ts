@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { Solution } from '~/domain/entities'
 import { BoxKinds, type BoxSchema } from '~/domain/models'
@@ -15,22 +15,28 @@ describe('Sudoku Board', () => {
 		kind: BoxKinds.Empty,
 		value: BoardService.EMPTY_BOX_VALUE,
 	}
+	beforeAll(() => {
+		vi.useFakeTimers()
+		return () => vi.useRealTimers()
+	})
 
 	beforeEach(() => {
 		selection = new SelectionService()
 		board = new BoardService({ selectionService: selection })
 		board.initBoard({ solution })
+		vi.advanceTimersByTime(0)
 	})
 
-	test.concurrent('Not all box should be initials', () => {
-		expect(board.getValue().every(col => col.every(box => box.kind === BoxKinds.Initial))).toBe(
-			false
-		)
+	test('Not all box should be initials', () => {
+		const everyIsInitial = board
+			.getBoard()
+			.every(col => col.every(box => box.kind === BoxKinds.Initial))
+		expect(everyIsInitial).toBe(false)
 	})
 
 	describe('Write Number', () => {
-		test.concurrent('Should change the status to incorrect', () => {
-			const initialBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Initial)!
+		test('Should change the status to incorrect', () => {
+			const initialBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Initial)!
 			const correctValue = board.getSudokuValue(initialBoxPos)
 			const incorrectValue = correctValue > 9 ? 1 : correctValue + 1
 
@@ -44,8 +50,8 @@ describe('Sudoku Board', () => {
 				value: correctValue,
 			})
 		})
-		test.concurrent('Should change the status to incorrect', () => {
-			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
+		test('Should change the status to incorrect', () => {
+			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 			const incorrectValue = correctValue > 9 ? 1 : correctValue + 1
 
@@ -59,8 +65,8 @@ describe('Sudoku Board', () => {
 				value: incorrectValue,
 			})
 		})
-		test.concurrent('Should change the status to correct', () => {
-			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
+		test('Should change the status to correct', () => {
+			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 
 			selection.moveTo(voidBoxPos)
@@ -73,8 +79,8 @@ describe('Sudoku Board', () => {
 				value: correctValue,
 			})
 		})
-		test.concurrent('should reset notes', () => {
-			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
+		test('should reset notes', () => {
+			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 			const correctValue = board.getSudokuValue(voidBoxPos)
 
 			selection.moveTo(voidBoxPos)
@@ -91,8 +97,8 @@ describe('Sudoku Board', () => {
 	})
 
 	describe('Add Notes', () => {
-		test.concurrent('Should change the status to notes', () => {
-			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
+		test('Should change the status to notes', () => {
+			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
 			selection.moveTo(voidBoxPos)
 			board.addNote(1)
@@ -105,8 +111,8 @@ describe('Sudoku Board', () => {
 			})
 		})
 	})
-	test.concurrent('should arrange the notes correctly', () => {
-		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
+	test('should arrange the notes correctly', () => {
+		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
 		selection.moveTo(voidBoxPos)
 		board.addNote(3)
@@ -121,8 +127,8 @@ describe('Sudoku Board', () => {
 			notes: [1, 2, 3, 9],
 		})
 	})
-	test.concurrent('should not repeat notes', () => {
-		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
+	test('should not repeat notes', () => {
+		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
 		selection.moveTo(voidBoxPos)
 		board.addNote(1)
@@ -135,8 +141,8 @@ describe('Sudoku Board', () => {
 			notes: [1],
 		})
 	})
-	test.concurrent('should reset value', () => {
-		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getValue(), BoxKinds.Empty)!
+	test('should reset value', () => {
+		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
 		selection.moveTo(voidBoxPos)
 		board.writeNumber(9)
