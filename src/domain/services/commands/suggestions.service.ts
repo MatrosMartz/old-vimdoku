@@ -22,7 +22,9 @@ export class CmdSuggestionService implements ICmdSuggestionsService {
 	removeObserver(observer: Observer<SuggestionOption[]>) {
 		this.#observers = this.#observers.filter(obs => obs !== observer) ?? []
 	}
-	getValue = () => Object.freeze(this.#value.map(sub => ({ ...sub })))
+	get value() {
+		return Object.freeze(this.#value.map(sub => ({ ...sub })))
+	}
 
 	update(input: string) {
 		const commands = input.trimStart().toLowerCase().split(' ')

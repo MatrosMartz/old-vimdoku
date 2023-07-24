@@ -30,7 +30,9 @@ export class SelectionService implements ISelectionService {
 	removeObserver(observer: Observer<Position>) {
 		this.#observers = this.#observers.filter(obs => obs !== observer)
 	}
-	getValue = () => Object.freeze(this.#value)
+	get value() {
+		return Object.freeze(this.#value)
+	}
 
 	moveTo(newPosition: Position) {
 		this.#value = newPosition

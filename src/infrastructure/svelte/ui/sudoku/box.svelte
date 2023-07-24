@@ -20,13 +20,13 @@
 			const insertNum = Number(key)
 			if (key === 'Backspace' || insertNum === 0) board.erase()
 			else if (!Number.isNaN(insertNum)) {
-				if (modes.getValue() === Modes.Insert) board.writeNumber(insertNum)
-				else if (modes.getValue() === Modes.Annotation) board.addNote(insertNum)
+				if (modes.value === Modes.Insert) board.writeNumber(insertNum)
+				else if (modes.value === Modes.Annotation) board.addNote(insertNum)
 			}
 
 			if (
 				key === 'Backspace' ||
-				(!Number.isNaN(insertNum) && [Modes.Insert, Modes.Annotation].includes(modes.getValue()))
+				(!Number.isNaN(insertNum) && [Modes.Insert, Modes.Annotation].includes(modes.value))
 			)
 				selection.moveToNextEmpty(board.getEmptyBoxesPos())
 		}
@@ -43,11 +43,7 @@
 	on:click={InputHandler}
 	on:keydown={KeyHandler}
 >
-	<span
-		data-testid="value"
-		class="flex justify-center items-center absolute top-0 left-0"
-		hidden={box.notes.length > 0}
-	>
+	<span data-testid="value" class="flex justify-center items-center absolute top-0 left-0">
 		{value}
 	</span>
 </button>

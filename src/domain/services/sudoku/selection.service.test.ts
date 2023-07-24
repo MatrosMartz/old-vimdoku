@@ -16,7 +16,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 8, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveLeft()
-			const actualPosition = selection.getValue()
+			const actualPosition = selection.value
 
 			expect(actualPosition).toEqual<Position>({ col: 7, row: 0 })
 		})
@@ -24,7 +24,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 0, row: 8 }
 			selection.moveTo(initialPosition)
 			selection.moveLeft()
-			const actualPosition = selection.getValue()
+			const actualPosition = selection.value
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 7 })
 		})
@@ -32,7 +32,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 0, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveLeft()
-			const actualPosition = selection.getValue()
+			const actualPosition = selection.value
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 0 })
 		})
@@ -43,7 +43,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 0, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveRight()
-			const actualPosition = selection.getValue()
+			const actualPosition = selection.value
 
 			expect(actualPosition).toEqual<Position>({ col: 1, row: 0 })
 		})
@@ -51,7 +51,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 8, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveRight()
-			const actualPosition = selection.getValue()
+			const actualPosition = selection.value
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 1 })
 		})
@@ -60,7 +60,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 8, row: 8 }
 			selection.moveTo(initialPosition)
 			selection.moveRight()
-			const actualPosition = selection.getValue()
+			const actualPosition = selection.value
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 8 })
 		})
@@ -71,7 +71,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 0, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveDown()
-			const actualPosition = selection.getValue()
+			const actualPosition = selection.value
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 1 })
 		})
@@ -79,7 +79,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 0, row: 8 }
 			selection.moveTo(initialPosition)
 			selection.moveDown()
-			const actualPosition = selection.getValue()
+			const actualPosition = selection.value
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 8 })
 		})
@@ -88,7 +88,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 8, row: 8 }
 			selection.moveTo(initialPosition)
 			selection.moveDown()
-			const actualPosition = selection.getValue()
+			const actualPosition = selection.value
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 8 })
 		})
@@ -99,7 +99,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 8, row: 8 }
 			selection.moveTo(initialPosition)
 			selection.moveUp()
-			const actualPosition = selection.getValue()
+			const actualPosition = selection.value
 
 			expect(actualPosition).toEqual<Position>({ col: 8, row: 7 })
 		})
@@ -107,7 +107,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 8, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveUp()
-			const actualPosition = selection.getValue()
+			const actualPosition = selection.value
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 0 })
 		})
@@ -116,7 +116,7 @@ describe('selection Move', () => {
 			const initialPosition: Position = { col: 0, row: 0 }
 			selection.moveTo(initialPosition)
 			selection.moveUp()
-			const actualPosition = selection.getValue()
+			const actualPosition = selection.value
 
 			expect(actualPosition).toEqual<Position>({ col: 0, row: 0 })
 		})

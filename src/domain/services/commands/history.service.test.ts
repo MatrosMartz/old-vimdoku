@@ -38,23 +38,23 @@ describe.concurrent('History Service', () => {
 		cmdAutocomplete = new CmdAutocompleteService({ cmdHistory })
 	})
 	test('The current command should be are ""', () => {
-		expect(cmdAutocomplete.getValue()).toBe('')
+		expect(cmdAutocomplete.value).toBe('')
 	})
 	test('The command "help :start" should be added at the end', () => {
 		cmdAutocomplete.push('help :start')
 
-		expect(cmdHistory.getValue()).toEqual([...defaultCommands, 'help :start'])
+		expect(cmdHistory.value).toEqual([...defaultCommands, 'help :start'])
 	})
 	test('The current command after undo Should be "help :set"', () => {
 		cmdAutocomplete.undo()
 
-		expect(cmdAutocomplete.getValue()).toBe('help :set')
+		expect(cmdAutocomplete.value).toBe('help :set')
 	})
 	test('The current command after undo two Should be "se nu"', () => {
 		cmdAutocomplete.undo()
 		cmdAutocomplete.undo()
 
-		expect(cmdAutocomplete.getValue()).toBe('quit')
+		expect(cmdAutocomplete.value).toBe('quit')
 	})
 	test('The current command after undo four times Should be "help \'rnu\'"', () => {
 		cmdAutocomplete.undo()
@@ -62,12 +62,12 @@ describe.concurrent('History Service', () => {
 		cmdAutocomplete.undo()
 		cmdAutocomplete.undo()
 
-		expect(cmdAutocomplete.getValue()).toBe("help 'rnu'")
+		expect(cmdAutocomplete.value).toBe("help 'rnu'")
 	})
 	test('The current command after redo Should be ""', () => {
 		cmdAutocomplete.redo()
 
-		expect(cmdAutocomplete.getValue()).toBe('')
+		expect(cmdAutocomplete.value).toBe('')
 	})
 	test('The current command after undo five times and redo two times Should be "pause"', () => {
 		cmdAutocomplete.undo()
@@ -78,7 +78,7 @@ describe.concurrent('History Service', () => {
 		cmdAutocomplete.redo()
 		cmdAutocomplete.redo()
 
-		expect(cmdAutocomplete.getValue()).toBe('pause')
+		expect(cmdAutocomplete.value).toBe('pause')
 	})
 	test('The current command after add "start easy" undo three times Should be "quit"', () => {
 		cmdAutocomplete.push('start easy')
@@ -86,7 +86,7 @@ describe.concurrent('History Service', () => {
 		cmdAutocomplete.undo()
 		cmdAutocomplete.undo()
 
-		expect(cmdAutocomplete.getValue()).toBe('quit')
+		expect(cmdAutocomplete.value).toBe('quit')
 	})
 	test('The autocomplete history should contains only the history commands start with help', () => {
 		cmdAutocomplete.search('help')
@@ -105,7 +105,7 @@ describe.concurrent('History Service', () => {
 		vi.advanceTimersByTime(500)
 		cmdAutocomplete.undo()
 
-		expect(cmdAutocomplete.getValue()).toBe('help :set')
+		expect(cmdAutocomplete.value).toBe('help :set')
 	})
 	test('should remember what the input was', () => {
 		cmdAutocomplete.search('help')
@@ -115,6 +115,6 @@ describe.concurrent('History Service', () => {
 		cmdAutocomplete.redo()
 		cmdAutocomplete.redo()
 
-		expect(cmdAutocomplete.getValue()).toBe('help')
+		expect(cmdAutocomplete.value).toBe('help')
 	})
 })

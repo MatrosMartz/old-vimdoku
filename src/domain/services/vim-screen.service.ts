@@ -30,7 +30,9 @@ export class VimScreenService implements IVimScreenService {
 	removeObserver(observer: Observer<VimScreen>) {
 		this.#observers = this.#observers.filter(obs => obs !== observer)
 	}
-	getValue = () => this.#value
+	get value() {
+		return this.#value
+	}
 	#setPrimaryWindow(newWindow: WindowPrimaryKinds) {
 		this.#prevSplit = null
 		this.#value = { primary: newWindow }

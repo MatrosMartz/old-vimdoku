@@ -18,7 +18,9 @@ export class TimerService implements ITimerService {
 	removeObserver(observer: Observer<TimerSchema>) {
 		this.#observers = this.#observers.filter(obs => obs !== observer)
 	}
-	getValue = () => Object.freeze(this.#value)
+	get value() {
+		return Object.freeze(this.#value)
+	}
 
 	stop = () => {
 		if (this.#interval) clearInterval(this.#interval)

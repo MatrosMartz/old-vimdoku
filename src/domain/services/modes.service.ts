@@ -18,7 +18,9 @@ export class ModesService implements IModesService {
 	removeObserver(observer: Observer<Modes>) {
 		this.#observers = this.#observers.filter(obs => obs !== observer)
 	}
-	getValue = () => this.#value
+	get value() {
+		return this.#value
+	}
 
 	setAnnotation() {
 		this.#value = Modes.Annotation

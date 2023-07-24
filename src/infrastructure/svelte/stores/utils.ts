@@ -3,7 +3,7 @@ import type { Observable, Observer } from '~/domain/utils'
 
 export function storeFromObservable<T>(observable: Observable<T>): Readable<T> {
 	function subscribe(update: Subscriber<T>) {
-		update(observable.getValue())
+		update(observable.value)
 
 		const observer: Observer<T> = { update }
 

@@ -43,11 +43,11 @@
 		if (key === 'ArrowUp') {
 			ev.preventDefault()
 			cmdAutocomplete.undo()
-			currentValue = cmdAutocomplete.getValue()
+			currentValue = cmdAutocomplete.value
 		}
 		if (key === 'ArrowDown') {
 			cmdAutocomplete.redo()
-			currentValue = cmdAutocomplete.getValue()
+			currentValue = cmdAutocomplete.value
 		}
 	}
 

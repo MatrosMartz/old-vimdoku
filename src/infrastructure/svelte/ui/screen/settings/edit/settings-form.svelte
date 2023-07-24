@@ -7,7 +7,7 @@
 	import SettingsSelection from './settings-selection.svelte'
 	import BtnReset from './btn-reset.svelte'
 
-	let initialSettings = settings.getValue()
+	let initialSettings = settings.value
 </script>
 
 <form action="" class="h-[calc(100%-4rem)] overflow-y-auto px-6 py-4" data-testid="settings-form">
@@ -28,7 +28,7 @@
 		</section>
 	{/each}
 	<section class="flex items-center justify-center gap-12">
-		<BtnReset on:click={() => (initialSettings = settings.getValue())} />
+		<BtnReset on:click={() => (initialSettings = settings.value)} />
 	</section>
 </form>
 

@@ -1,9 +1,5 @@
 import type { Difficulties } from '../models'
 
-export function addNewNote(notes: number[], note: number) {
-	if (notes.includes(note)) return [...notes]
-	return [...notes, note].sort()
-}
 export const probabilityToBeInitial = (difficulty: Difficulties) =>
 	!Math.trunc(Math.random() * difficulty)
 

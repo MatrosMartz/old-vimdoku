@@ -4,8 +4,7 @@
 	import { settingsStore, vimScreen, vimScreenStore } from '$infra/svelte/stores'
 
 	function ClickHandler() {
-		if (vimScreen.getValue().secondary?.kind === WindowSecondaryKinds.Sets)
-			vimScreen.removeSecondary()
+		if (vimScreen.value.secondary?.kind === WindowSecondaryKinds.Sets) vimScreen.removeSecondary()
 		else vimScreen.setSetsSecondary()
 	}
 

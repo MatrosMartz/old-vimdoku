@@ -1,6 +1,6 @@
 import type { Observable } from '~/domain/utils'
 import type { Position } from './selection.model'
-import type { Solution } from '~/domain/entities'
+import type { Notes, Solution } from '~/domain/entities'
 
 export const enum BoxKinds {
 	Correct = 'correct',
@@ -21,7 +21,7 @@ export enum Difficulties {
 }
 
 export interface BoxSchema {
-	notes: number[]
+	notes: Notes
 	kind: BoxKinds
 	value: number
 }

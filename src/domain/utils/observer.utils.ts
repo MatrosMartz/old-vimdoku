@@ -5,5 +5,5 @@ export interface Observer<T> {
 export interface Observable<T> {
 	addObserver: (observer: Observer<T>) => void
 	removeObserver: (observer: Observer<T>) => void
-	getValue: () => Readonly<T>
+	readonly value: Readonly<T>
 }

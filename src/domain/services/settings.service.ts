@@ -32,7 +32,9 @@ export class SettingsService implements ISettingsService {
 	removeObserver(observer: Observer<Settings>) {
 		this.#observers = this.#observers.filter(obs => obs !== observer)
 	}
-	getValue = () => this.#repo.get()
+	get value() {
+		return this.#repo.get()
+	}
 
 	updateAll(updater: (settings: Settings) => Settings) {
 		this.#repo.update(oldPref => updater(oldPref))

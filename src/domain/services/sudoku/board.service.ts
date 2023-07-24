@@ -7,8 +7,8 @@ import {
 	type BoardSchema,
 	type BoardValue,
 } from '~/domain/models'
-import { addNewNote, probabilityToBeInitial, type Observer } from '~/domain/utils'
-import { Solution } from '~/domain/entities'
+import { probabilityToBeInitial, type Observer } from '~/domain/utils'
+import { Notes, Solution } from '~/domain/entities'
 
 import { SelectionService } from './selection.service'
 
@@ -46,7 +46,7 @@ export class BoardService implements IBoardService {
 		if (!this.#value.hasBoard) return this.#value
 
 		const { board } = this.#value
-		const freezeBox = (box: BoxSchema) => Object.freeze({ ...box, notes: [...box.notes] })
+		const freezeBox = (box: BoxSchema) => Object.freeze({ ...box })
 		const freezeCol = (col: readonly BoxSchema[]) => Object.freeze(col.map(freezeBox))
 		return { ...this.#value, board: Object.freeze(board.map(freezeCol)) }
 	}
@@ -60,7 +60,7 @@ export class BoardService implements IBoardService {
 	removeObserver(observer: Observer<BoardValue>) {
 		this.#observers = this.#observers.filter(obs => obs !== observer)
 	}
-	getValue() {
+	get value() {
 		return this.#boardFreeze()
 	}
 
@@ -73,7 +73,7 @@ export class BoardService implements IBoardService {
 				const kind = isInitial ? BoxKinds.Initial : BoxKinds.Empty
 				const value = isInitial ? solution.value[row][col] : BoardService.EMPTY_BOX_VALUE
 
-				boardValue[row][col] = { notes: [], kind, value }
+				boardValue[row][col] = { notes: new Notes(), kind, value }
 			}
 		}
 		return boardValue
@@ -89,6 +89,9 @@ export class BoardService implements IBoardService {
 		}
 		this.#notifyObservers()
 	}
+	#isCorrect({ value, pos }: { value: number; pos: Position }) {
+		return this.getSudokuValue(pos) === value
+	}
 
 	initBoard({
 		difficulty = Difficulties.Easy,
@@ -101,16 +104,15 @@ export class BoardService implements IBoardService {
 		}, 0)
 	}
 	isSelected({ col, row }: Position) {
-		const { col: selectedCol, row: selectedRow } = this.#selectionService.getValue()
+		const { col: selectedCol, row: selectedRow } = this.#selectionService.value
 		return col === selectedCol && row === selectedRow
 	}
 	addNote(value: number) {
-		this.#updateSelected(({ box }) => ({
-			...box,
-			value: BoardService.EMPTY_BOX_VALUE,
-			notes: addNewNote(box.notes, value),
-			kind: BoxKinds.WhitNotes,
-		}))
+		this.#updateSelected(({ box }) => {
+			box.notes.toggleNote(value)
+			const kind = box.notes.value ? BoxKinds.WhitNotes : BoxKinds.Empty
+			return { ...box, value: BoardService.EMPTY_BOX_VALUE, kind }
+		})
 	}
 	erase() {
 		this.writeNumber(BoardService.EMPTY_BOX_VALUE)
@@ -121,7 +123,7 @@ export class BoardService implements IBoardService {
 		return Object.freeze(this.#value.board[row][col])
 	}
 	getBoard() {
-		const value = this.getValue()
+		const value = this.value
 		if (!value.hasBoard) throw new Error('board not initialized')
 		return value.board
 	}
@@ -148,13 +150,9 @@ export class BoardService implements IBoardService {
 
 	writeNumber(value: number) {
 		this.#updateSelected(({ box, ...pos }) => {
-			const isCorrect = this.getSudokuValue(pos) === value
-			return {
-				...box,
-				notes: [],
-				value: value,
-				kind: isCorrect ? BoxKinds.Correct : BoxKinds.Incorrect,
-			}
+			box.notes.toggleNote(0)
+			const kind = this.#isCorrect({ value, pos }) ? BoxKinds.Correct : BoxKinds.Incorrect
+			return { ...box, value: value, kind }
 		})
 	}
 }

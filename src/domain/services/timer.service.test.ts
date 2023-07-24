@@ -23,30 +23,30 @@ describe('Time Service', () => {
 	})
 
 	test.concurrent('At startup the timer, seconds should be zero, and if isPause true', () => {
-		expect(timer.getValue()).toEqual<TimerSchema>({ isPause: true, seconds: 0 })
+		expect(timer.value).toEqual<TimerSchema>({ isPause: true, seconds: 0 })
 	})
 	test.concurrent('The seconds should be 10 after start timer', () => {
 		timer.start()
 		vi.advanceTimersByTime(seconds(10))
-		expect(timer.getValue()).toEqual<TimerSchema>({ isPause: false, seconds: 10 })
+		expect(timer.value).toEqual<TimerSchema>({ isPause: false, seconds: 10 })
 	})
 	test.concurrent('The seconds should not advance after pause timer', () => {
 		timer.start()
 		vi.advanceTimersByTime(seconds(5))
-		expect(timer.getValue()).toEqual<TimerSchema>({ isPause: false, seconds: 5 })
+		expect(timer.value).toEqual<TimerSchema>({ isPause: false, seconds: 5 })
 
 		timer.stop()
 		vi.advanceTimersByTime(seconds(5))
-		expect(timer.getValue()).toEqual<TimerSchema>({ isPause: true, seconds: 5 })
+		expect(timer.value).toEqual<TimerSchema>({ isPause: true, seconds: 5 })
 	})
 	test.concurrent('The seconds should be 5 after reset timer', () => {
 		timer.start()
 		vi.advanceTimersByTime(seconds(10))
-		expect(timer.getValue()).toEqual<TimerSchema>({ isPause: false, seconds: 10 })
+		expect(timer.value).toEqual<TimerSchema>({ isPause: false, seconds: 10 })
 
 		timer.reset()
 		vi.advanceTimersByTime(seconds(5))
-		expect(timer.getValue()).toEqual<TimerSchema>({ isPause: false, seconds: 5 })
+		expect(timer.value).toEqual<TimerSchema>({ isPause: false, seconds: 5 })
 	})
 })
 

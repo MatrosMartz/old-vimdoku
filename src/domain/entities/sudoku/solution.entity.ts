@@ -1,15 +1,15 @@
 import { randomNumbers } from '~/domain/utils'
 
-type SolutionEntity = {
-	value: readonly (readonly number[])[]
+type ISolution = {
+	readonly value: readonly (readonly number[])[]
 }
 
-export class Solution implements SolutionEntity {
+export class Solution implements ISolution {
 	#board: number[][]
-	value: readonly (readonly number[])[]
+	#value: readonly (readonly number[])[]
 	constructor() {
 		this.#board = this.#createEmptyBoard()
-		this.value = this.#createSolution()
+		this.#value = this.#createSolution()
 	}
 
 	#createEmptyBoard() {
@@ -125,5 +125,9 @@ export class Solution implements SolutionEntity {
 		this.#fillRemaining(0, 3)
 
 		return Object.freeze(this.#board.map(row => Object.freeze(row)))
+	}
+
+	get value() {
+		return this.#value
 	}
 }

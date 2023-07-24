@@ -57,7 +57,7 @@ export const executorOptions: ExecutorOption[] = [
 				subPattern: subcommand => subcommand == null,
 				fn({ preferences, vimScreen }) {
 					const changedPreferences = (
-						Object.entries(preferences.getValue()) as settingsEntries[]
+						Object.entries(preferences.value) as settingsEntries[]
 					).filter(([key, value]) => value !== defaultSettings[key])
 
 					console.log(changedPreferences)
@@ -67,7 +67,7 @@ export const executorOptions: ExecutorOption[] = [
 			{
 				subPattern: subcommand => /^all$/.test(subcommand),
 				fn({ preferences, vimScreen }) {
-					console.log(Object.entries(preferences.getValue()))
+					console.log(Object.entries(preferences.value))
 					vimScreen.setSetsSecondary({ setType: SetType.all })
 				},
 			},
@@ -79,7 +79,7 @@ export const executorOptions: ExecutorOption[] = [
 						| undefined
 					if (preference == null) throw new PreferenceError()
 
-					console.log([preference, preferences.getValue()[preference]])
+					console.log([preference, preferences.value[preference]])
 				},
 			},
 			{
@@ -167,7 +167,7 @@ export const executorOptions: ExecutorOption[] = [
 					if (preference == null) throw new PreferenceError()
 
 					if (nonTogglePreferences.includes(preference))
-						console.log([preference, preferences.getValue()[preference]])
+						console.log([preference, preferences.value[preference]])
 					else {
 						preferences.updateByKey(preference as ToggleKeys, SettingsService.on)
 					}

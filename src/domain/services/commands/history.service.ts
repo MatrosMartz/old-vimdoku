@@ -7,7 +7,9 @@ export class CmdHistoryService implements ICmdHistoryService {
 	constructor(repo: IHistoryRepo) {
 		this.#repo = repo
 	}
-	getValue = () => this.#repo.get()
+	get value() {
+		return this.#repo.get()
+	}
 	add(cmd: string) {
 		this.#repo.update(history => [...history, cmd])
 	}
@@ -26,10 +28,10 @@ export class CmdAutocompleteService implements ICmdAutocompleteService {
 
 	constructor({ cmdHistory }: { cmdHistory: CmdHistoryService }) {
 		this.#cmdHistory = cmdHistory
-		this.#autocomplete = [...cmdHistory.getValue()]
+		this.#autocomplete = [...cmdHistory.value]
 		this.#index = this.#autocomplete.length
 	}
-	getValue() {
+	get value() {
 		return this.#value
 	}
 
@@ -42,7 +44,7 @@ export class CmdAutocompleteService implements ICmdAutocompleteService {
 	getCmdAutocomplete = () => Object.freeze(this.#autocomplete)
 	#updateAutocomplete(input: string = '') {
 		this.#currentInput = input
-		this.#autocomplete = this.#cmdHistory.getValue().filter(cmd => cmd.startsWith(input))
+		this.#autocomplete = this.#cmdHistory.value.filter(cmd => cmd.startsWith(input))
 		this.#index = this.#autocomplete.length
 		this.#updateValue()
 	}

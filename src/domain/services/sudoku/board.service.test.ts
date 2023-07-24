@@ -1,6 +1,6 @@
 import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
-import { Solution } from '~/domain/entities'
+import { Notes, Solution } from '~/domain/entities'
 import { BoxKinds, type BoxSchema } from '~/domain/models'
 
 import { BoardService } from './board.service'
@@ -11,7 +11,7 @@ const solution = new Solution()
 describe('Sudoku Board', () => {
 	let board: BoardService, selection: SelectionService
 	const standardBox: BoxSchema = {
-		notes: [],
+		notes: new Notes(),
 		kind: BoxKinds.Empty,
 		value: BoardService.EMPTY_BOX_VALUE,
 	}
@@ -107,7 +107,7 @@ describe('Sudoku Board', () => {
 			expect(box).toMatchObject<BoxSchema>({
 				...standardBox,
 				kind: BoxKinds.WhitNotes,
-				notes: [1],
+				notes: new Notes([1]),
 			})
 		})
 	})
@@ -124,7 +124,7 @@ describe('Sudoku Board', () => {
 		expect(box).toMatchObject<BoxSchema>({
 			...standardBox,
 			kind: BoxKinds.WhitNotes,
-			notes: [1, 2, 3, 9],
+			notes: new Notes([1, 2, 3, 9]),
 		})
 	})
 	test('should not repeat notes', () => {
@@ -138,7 +138,7 @@ describe('Sudoku Board', () => {
 		expect(box).toMatchObject<BoxSchema>({
 			...standardBox,
 			kind: BoxKinds.WhitNotes,
-			notes: [1],
+			notes: new Notes([1]),
 		})
 	})
 	test('should reset value', () => {
@@ -153,7 +153,7 @@ describe('Sudoku Board', () => {
 		expect(box).toMatchObject<BoxSchema>({
 			...standardBox,
 			kind: BoxKinds.WhitNotes,
-			notes: [1],
+			notes: new Notes([1]),
 		})
 	})
 })
