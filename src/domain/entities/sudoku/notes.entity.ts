@@ -1,4 +1,4 @@
-import { createArrayMap } from '~/domain/utils'
+import { createArray } from '~/domain/utils'
 
 interface INotes {
 	addNote: (note: number) => void
@@ -8,7 +8,7 @@ interface INotes {
 }
 
 export class Notes implements INotes {
-	#value = createArrayMap<number | null>(9, () => null)
+	#value = createArray<number | null>(9, { value: null })
 
 	constructor(initialNotes?: number[]) {
 		if (initialNotes != null) for (const note of initialNotes) this.#value[note - 1] = note
@@ -24,7 +24,7 @@ export class Notes implements INotes {
 	toggleNote(note: number) {
 		if (note < 0 && note > 9) throw new Error(`'${note}' can not be a note`)
 
-		if (note === 0) this.#value = createArrayMap(9, () => null)
+		if (note === 0) this.#value = createArray(9, { value: null })
 		else if (this.#value[note - 1]) this.removeNote(note)
 		else this.addNote(note)
 	}
