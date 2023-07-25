@@ -1,9 +1,7 @@
-import { createArray } from '~/domain/utils'
+import { boardErrors, createArray } from '~/domain/utils'
 
 interface INotes {
-	addNote: (note: number) => void
 	readonly value: readonly (number | null)[]
-	removeNote: (note: number) => void
 	toggleNote: (note: number) => void
 }
 
@@ -14,19 +12,19 @@ export class Notes implements INotes {
 		if (initialNotes != null) for (const note of initialNotes) this.#value[note - 1] = note
 	}
 
-	addNote(note: number) {
+	#addNote(note: number) {
 		this.#value[note - 1] = note
 	}
-	removeNote(note: number) {
+	#removeNote(note: number) {
 		this.#value[note - 1] = null
 	}
 
 	toggleNote(note: number) {
-		if (note < 0 && note > 9) throw new Error(`'${note}' can not be a note`)
+		if (note < 0 || note > 9) throw new boardErrors.InvalidValue({ type: 'note', value: note })
 
 		if (note === 0) this.#value = createArray(9, { value: null })
-		else if (this.#value[note - 1]) this.removeNote(note)
-		else this.addNote(note)
+		else if (this.#value[note - 1]) this.#removeNote(note)
+		else this.#addNote(note)
 	}
 	get value() {
 		return Object.freeze([...this.#value])

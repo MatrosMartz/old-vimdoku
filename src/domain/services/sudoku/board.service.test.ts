@@ -8,7 +8,7 @@ import { SelectionService } from './selection.service'
 
 const solution = new Solution()
 
-describe('Sudoku Board', () => {
+describe.concurrent('Sudoku Board', () => {
 	let board: BoardService, selection: SelectionService
 	const standardBox: BoxSchema = {
 		notes: new Notes(),
