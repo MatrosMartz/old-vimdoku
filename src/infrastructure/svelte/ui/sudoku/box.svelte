@@ -18,10 +18,10 @@
 	const KeyHandler = ({ key }: KeyboardEvent) => {
 		if (selected && box.kind !== BoxKinds.Initial) {
 			const insertNum = Number(key)
-			if (key === 'Backspace' || insertNum === 0) board.erase()
+			if (key === 'Backspace') board.erase()
 			else if (!Number.isNaN(insertNum)) {
-				if (modes.value === Modes.Insert) board.writeNumber(insertNum)
-				else if (modes.value === Modes.Annotation) board.addNote(insertNum)
+				if (modes.value === Modes.Insert) board.toggleNumber(insertNum)
+				else if (modes.value === Modes.Annotation) board.toggleNote(insertNum)
 			}
 
 			if (

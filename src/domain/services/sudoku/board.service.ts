@@ -7,7 +7,7 @@ import {
 	type BoardSchema,
 	type BoardValue,
 } from '~/domain/models'
-import { probabilityToBeInitial, type Observer } from '~/domain/utils'
+import { probabilityToBeInitial, type Observer, boardEach } from '~/domain/utils'
 import { Notes, Solution } from '~/domain/entities'
 
 import { SelectionService } from './selection.service'
@@ -79,14 +79,13 @@ export class BoardService implements IBoardService {
 		return boardValue
 	}
 	#updateSelected(update: (args: { box: BoxSchema } & Position) => BoxSchema) {
-		if (!this.#value.hasBoard) throw new Error('board not initialized')
-		for (let row = 0; row < 9; row++) {
-			for (let col = 0; col < 9; col++) {
-				const box = this.getBox({ col, row })
-				if (this.isSelected({ row, col }) && box.kind !== BoxKinds.Initial)
-					this.#value.board[row][col] = update({ box, col, row })
-			}
-		}
+		boardEach(({ row, col }) => {
+			if (!this.#value.hasBoard) throw new Error('board not initialized')
+			const box = this.getBox({ row, col })
+			if (this.isSelected({ row, col }) && box.kind !== BoxKinds.Initial)
+				this.#value.board[row][col] = update({ box, row, col })
+		})
+
 		this.#notifyObservers()
 	}
 	#isCorrect({ value, pos }: { value: number; pos: Position }) {
@@ -107,7 +106,7 @@ export class BoardService implements IBoardService {
 		const { col: selectedCol, row: selectedRow } = this.#selectionService.value
 		return col === selectedCol && row === selectedRow
 	}
-	addNote(value: number) {
+	toggleNote(value: number) {
 		this.#updateSelected(({ box }) => {
 			box.notes.toggleNote(value)
 			const kind = box.notes.value ? BoxKinds.WhitNotes : BoxKinds.Empty
@@ -115,7 +114,7 @@ export class BoardService implements IBoardService {
 		})
 	}
 	erase() {
-		this.writeNumber(BoardService.EMPTY_BOX_VALUE)
+		this.toggleNumber(BoardService.EMPTY_BOX_VALUE)
 	}
 
 	getBox({ col, row }: Position) {
@@ -137,22 +136,27 @@ export class BoardService implements IBoardService {
 	}
 
 	getEmptyBoxesPos() {
-		if (!this.#value.hasBoard) throw new Error('board not initialized')
 		const emptyBoxesPos: Position[] = []
-		for (let row = 0; row < 9; row++) {
-			for (let col = 0; col < 9; col++) {
-				if (this.#value.board[row][col].kind !== BoxKinds.Initial) emptyBoxesPos.push({ row, col })
-			}
-		}
+		boardEach(({ row, col }) => {
+			if (!this.#value.hasBoard) throw new Error('board not initialized')
+			const isInitial = this.#value.board[row][col].kind !== BoxKinds.Initial
+			if (isInitial) emptyBoxesPos.push({ row, col })
+		})
 
 		return Object.freeze(emptyBoxesPos)
 	}
 
-	writeNumber(value: number) {
+	toggleNumber(value: number) {
 		this.#updateSelected(({ box, ...pos }) => {
-			box.notes.toggleNote(0)
+			// reset notes
+			box.notes.toggleNote(BoardService.EMPTY_BOX_VALUE)
+
+			// clear box if the insert value is same to box value or empty box value
+			if (box.value === value || value === BoardService.EMPTY_BOX_VALUE)
+				return { ...box, value: BoardService.EMPTY_BOX_VALUE, kind: BoxKinds.Empty }
+
 			const kind = this.#isCorrect({ value, pos }) ? BoxKinds.Correct : BoxKinds.Incorrect
-			return { ...box, value: value, kind }
+			return { ...box, value, kind }
 		})
 	}
 }

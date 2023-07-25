@@ -18,17 +18,17 @@
 	function keyHandler(ev: KeyboardEvent) {
 		const { key } = ev
 
-		if (key === ':' && modes.getValue() === Modes.Normal) {
+		if (key === ':' && modes.value === Modes.Normal) {
 			modes.setCommand()
 			ev.preventDefault()
 		}
 
 		if (key === 'Escape') {
 			modes.setNormal()
-			if (vimScreen.getValue().secondary != null) vimScreen.removeSecondary()
+			if (vimScreen.value.secondary != null) vimScreen.removeSecondary()
 		}
 
-		if (board.hasBoard() && modes.getValue() === Modes.Normal) {
+		if (board.hasBoard() && modes.value === Modes.Normal) {
 			if (/^[iIaAoO]$/.test(key)) modes.setInsert()
 			else if (/^[nN]$/.test(key)) modes.setAnnotation()
 			else if (/^[hjkl]$/.test(key)) {

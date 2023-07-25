@@ -41,7 +41,7 @@ describe('Sudoku Board', () => {
 			const incorrectValue = correctValue > 9 ? 1 : correctValue + 1
 
 			selection.moveTo(initialBoxPos)
-			board.writeNumber(incorrectValue)
+			board.toggleNumber(incorrectValue)
 
 			const box = board.getBox(initialBoxPos)
 			expect(box).toMatchObject<BoxSchema>({
@@ -56,7 +56,7 @@ describe('Sudoku Board', () => {
 			const incorrectValue = correctValue > 9 ? 1 : correctValue + 1
 
 			selection.moveTo(voidBoxPos)
-			board.writeNumber(incorrectValue)
+			board.toggleNumber(incorrectValue)
 
 			const box = board.getBox(voidBoxPos)
 			expect(box).toMatchObject<BoxSchema>({
@@ -70,7 +70,7 @@ describe('Sudoku Board', () => {
 			const correctValue = board.getSudokuValue(voidBoxPos)
 
 			selection.moveTo(voidBoxPos)
-			board.writeNumber(correctValue)
+			board.toggleNumber(correctValue)
 
 			const box = board.getBox(voidBoxPos)
 			expect(box).toMatchObject<BoxSchema>({
@@ -84,8 +84,8 @@ describe('Sudoku Board', () => {
 			const correctValue = board.getSudokuValue(voidBoxPos)
 
 			selection.moveTo(voidBoxPos)
-			board.addNote(1)
-			board.writeNumber(correctValue)
+			board.toggleNote(1)
+			board.toggleNumber(correctValue)
 
 			const box = board.getBox(voidBoxPos)
 			expect(box).toMatchObject<BoxSchema>({
@@ -101,7 +101,7 @@ describe('Sudoku Board', () => {
 			const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
 			selection.moveTo(voidBoxPos)
-			board.addNote(1)
+			board.toggleNote(1)
 
 			const box = board.getBox(voidBoxPos)
 			expect(box).toMatchObject<BoxSchema>({
@@ -115,10 +115,10 @@ describe('Sudoku Board', () => {
 		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
 		selection.moveTo(voidBoxPos)
-		board.addNote(3)
-		board.addNote(9)
-		board.addNote(1)
-		board.addNote(2)
+		board.toggleNote(3)
+		board.toggleNote(9)
+		board.toggleNote(1)
+		board.toggleNote(2)
 
 		const box = board.getBox(voidBoxPos)
 		expect(box).toMatchObject<BoxSchema>({
@@ -131,8 +131,8 @@ describe('Sudoku Board', () => {
 		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
 		selection.moveTo(voidBoxPos)
-		board.addNote(1)
-		board.addNote(1)
+		board.toggleNote(1)
+		board.toggleNote(1)
 
 		const box = board.getBox(voidBoxPos)
 		expect(box).toMatchObject<BoxSchema>({
@@ -145,9 +145,9 @@ describe('Sudoku Board', () => {
 		const voidBoxPos = BoardService.getFirstBoxWithKind(board.getBoard(), BoxKinds.Empty)!
 
 		selection.moveTo(voidBoxPos)
-		board.writeNumber(9)
-		board.addNote(1)
-		board.addNote(1)
+		board.toggleNumber(9)
+		board.toggleNote(1)
+		board.toggleNote(1)
 
 		const box = board.getBox(voidBoxPos)
 		expect(box).toMatchObject<BoxSchema>({

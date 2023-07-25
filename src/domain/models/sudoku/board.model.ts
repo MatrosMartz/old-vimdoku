@@ -31,15 +31,15 @@ export type BoardSchema = readonly (readonly BoxSchema[])[]
 export type BoardValue = { hasBoard: true; board: BoardSchema } | { hasBoard: false }
 
 export interface IBoardService extends Observable<BoardValue> {
-	addNote: (value: number) => void
 	erase: () => void
-	getBox: (pos: Position) => Readonly<BoxSchema>
 	getBoard: () => BoardSchema
+	getBox: (pos: Position) => Readonly<BoxSchema>
 	getDifficulty: () => Difficulties
 	getEmptyBoxesPos: () => readonly Position[]
 	getSudokuValue: (pos: Position) => number
-	initBoard: (args: { difficulty?: Difficulties; solution?: Solution }) => void
 	hasBoard: () => boolean
+	initBoard: (args: { difficulty?: Difficulties; solution?: Solution }) => void
 	isSelected: (pos: Position) => boolean
-	writeNumber: (value: number) => void
+	toggleNote: (value: number) => void
+	toggleNumber: (value: number) => void
 }
