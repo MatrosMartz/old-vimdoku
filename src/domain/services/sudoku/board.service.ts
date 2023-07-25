@@ -7,7 +7,7 @@ import {
 	type BoardSchema,
 	type BoardValue,
 } from '~/domain/models'
-import { probabilityToBeInitial, type Observer, boardEach } from '~/domain/utils'
+import { probabilityToBeInitial, type Observer, boardEach, boardErrors } from '~/domain/utils'
 import { Notes, Solution } from '~/domain/entities'
 
 import { SelectionService } from './selection.service'
@@ -80,7 +80,7 @@ export class BoardService implements IBoardService {
 	}
 	#updateSelected(update: (args: { box: BoxSchema } & Position) => BoxSchema) {
 		boardEach(({ row, col }) => {
-			if (!this.#value.hasBoard) throw new Error('board not initialized')
+			if (!this.#value.hasBoard) throw new boardErrors.NotInitialized()
 			const box = this.getBox({ row, col })
 			if (this.isSelected({ row, col }) && box.kind !== BoxKinds.Initial)
 				this.#value.board[row][col] = update({ box, row, col })
@@ -118,27 +118,27 @@ export class BoardService implements IBoardService {
 	}
 
 	getBox({ col, row }: Position) {
-		if (!this.#value.hasBoard) throw new Error('board not initialized')
+		if (!this.#value.hasBoard) throw new boardErrors.NotInitialized()
 		return Object.freeze(this.#value.board[row][col])
 	}
 	getBoard() {
 		const value = this.value
-		if (!value.hasBoard) throw new Error('board not initialized')
+		if (!value.hasBoard) throw new boardErrors.NotInitialized()
 		return value.board
 	}
 	getDifficulty() {
-		if (this.#opts == null) throw new Error('opts not defined')
+		if (this.#opts == null) throw new boardErrors.OptsNotDefined()
 		return this.#opts.difficulty
 	}
 	getSudokuValue({ col, row }: Position) {
-		if (this.#opts == null) throw new Error('opts not defined')
+		if (this.#opts == null) throw new boardErrors.OptsNotDefined()
 		return this.#opts.solution.value[row][col]
 	}
 
 	getEmptyBoxesPos() {
 		const emptyBoxesPos: Position[] = []
 		boardEach(({ row, col }) => {
-			if (!this.#value.hasBoard) throw new Error('board not initialized')
+			if (!this.#value.hasBoard) throw new boardErrors.NotInitialized()
 			const isInitial = this.#value.board[row][col].kind !== BoxKinds.Initial
 			if (isInitial) emptyBoxesPos.push({ row, col })
 		})

@@ -3,3 +3,16 @@ export class PreferenceError extends Error {
 		super(kind === 'property' ? 'preference does not exits' : 'value is incorrect')
 	}
 }
+
+export const boardErrors = {
+	NotInitialized: class extends Error {
+		constructor() {
+			super('board not initialized')
+		}
+	},
+	OptsNotDefined: class extends Error {
+		constructor() {
+			super('opts not defined')
+		}
+	},
+}
