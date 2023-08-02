@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { BoxKinds, Modes, type BoxSchema } from '~/domain/models'
+	import type { DeepReadonly } from '~/domain/utils'
 
 	import { boardStore, selectionStore, selection, board, modes } from '$infra/svelte/stores'
 
@@ -7,7 +8,7 @@
 	export let col: number
 
 	let boxBtn: HTMLButtonElement
-	let box: BoxSchema
+	let box: DeepReadonly<BoxSchema>
 	$: if ($boardStore.hasBoard) box = $boardStore.board[row][col]
 	$: value = box.value > 0 ? box.value : ''
 	$: selected = $selectionStore.col === col && $selectionStore.row === row

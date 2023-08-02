@@ -28,7 +28,7 @@
 			if (vimScreen.value.secondary != null) vimScreen.removeSecondary()
 		}
 
-		if (board.hasBoard() && modes.value === Modes.Normal) {
+		if (board.value.hasBoard && modes.value === Modes.Normal) {
 			if (/^[iIaAoO]$/.test(key)) modes.setInsert()
 			else if (/^[nN]$/.test(key)) modes.setAnnotation()
 			else if (/^[hjkl]$/.test(key)) {

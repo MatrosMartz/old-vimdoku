@@ -6,11 +6,20 @@ import {
 	type Position,
 	type BoardSchema,
 	type BoardValue,
+	type BoardOpts,
 } from '~/domain/models'
-import { probabilityToBeInitial, type Observer, boardEach, boardErrors } from '~/domain/utils'
-import { Notes, Solution } from '~/domain/entities'
+import {
+	type Observer,
+	boardEach,
+	BoardErrors,
+	type DeepReadonly,
+	deepFreeze,
+	createBoard,
+} from '~/domain/utils'
+import { Solution } from '~/domain/entities'
 
 import { SelectionService } from './selection.service'
+import type { IBoardRepo } from '~/domain/repositories'
 
 export class BoardService implements IBoardService {
 	static EMPTY_BOX_VALUE = 0
@@ -19,7 +28,7 @@ export class BoardService implements IBoardService {
 			cols.every(box => [BoxKinds.Initial, BoxKinds.Correct].includes(box.kind))
 		)
 	}
-	static getFirstBoxWithKind(board: BoardSchema, kind: BoxKinds) {
+	static getFirstBoxWithKind(board: DeepReadonly<BoardSchema>, kind: BoxKinds) {
 		for (let row = 0; row < board.length; row++) {
 			for (let col = 0; col < board[row].length; col++) {
 				if (board[row][col].kind === kind) return { col, row }
@@ -27,63 +36,48 @@ export class BoardService implements IBoardService {
 		}
 	}
 
-	#opts: { difficulty: Difficulties; solution: Solution } | null
+	#boardRepo: IBoardRepo
 	#selectionService: SelectionService
-	#value: { hasBoard: true; board: BoxSchema[][] } | { hasBoard: false }
-	#observers: Observer<BoardValue>[] = []
+	#observers: Observer<DeepReadonly<BoardValue>>[] = []
 
 	constructor({
 		selectionService = new SelectionService(),
+		boardRepo,
 	}: {
+		boardRepo: IBoardRepo
 		selectionService?: SelectionService
-	} = {}) {
-		this.#opts = null
-		this.#value = { hasBoard: false }
+	}) {
+		this.#boardRepo = boardRepo
 		this.#selectionService = selectionService
+		this.#notifyObservers()
 	}
-	hasBoard = () => this.#value.hasBoard
-	#boardFreeze() {
-		if (!this.#value.hasBoard) return this.#value
-
-		const { board } = this.#value
-		const freezeBox = (box: BoxSchema) => Object.freeze({ ...box })
-		const freezeCol = (col: readonly BoxSchema[]) => Object.freeze(col.map(freezeBox))
-		return { ...this.#value, board: Object.freeze(board.map(freezeCol)) }
+	#getValue(): BoardValue {
+		const board = this.#boardRepo.getBoard()
+		if (board == null) return { hasBoard: false }
+		return { hasBoard: true, board }
 	}
 	#notifyObservers() {
-		const immutableBoard = this.#boardFreeze()
+		const immutableBoard = deepFreeze(this.#getValue())
 		this.#observers.forEach(obs => obs.update(immutableBoard))
 	}
-	addObserver(observer: Observer<BoardValue>) {
+	addObserver(observer: Observer<DeepReadonly<BoardValue>>) {
 		this.#observers = [...this.#observers, observer]
 	}
-	removeObserver(observer: Observer<BoardValue>) {
+	removeObserver(observer: Observer<DeepReadonly<BoardValue>>) {
 		this.#observers = this.#observers.filter(obs => obs !== observer)
 	}
 	get value() {
-		return this.#boardFreeze()
+		return deepFreeze(this.#getValue())
 	}
 
-	#createBoard({ difficulty, solution }: { difficulty: Difficulties; solution: Solution }) {
-		const boardValue: BoxSchema[][] = []
-		for (let row = 0; row < 9; row++) {
-			boardValue[row] = []
-			for (let col = 0; col < 9; col++) {
-				const isInitial = probabilityToBeInitial(difficulty)
-				const kind = isInitial ? BoxKinds.Initial : BoxKinds.Empty
-				const value = isInitial ? solution.value[row][col] : BoardService.EMPTY_BOX_VALUE
-
-				boardValue[row][col] = { notes: new Notes(), kind, value }
-			}
-		}
-		return boardValue
-	}
 	#updateSelected(update: (args: { box: BoxSchema } & Position) => BoxSchema) {
-		boardEach(({ row, col }) => {
-			if (!this.#value.hasBoard) throw new boardErrors.NotInitialized()
-			const box = this.getBox({ row, col })
-			if (this.isSelected({ row, col }) && box.kind !== BoxKinds.Initial)
-				this.#value.board[row][col] = update({ box, row, col })
+		this.#boardRepo.update(value => {
+			boardEach(({ row, col }) => {
+				const box = this.getBox({ row, col })
+				if (this.isSelected({ row, col }) && box.kind !== BoxKinds.Initial)
+					value.board[row][col] = update({ box, row, col })
+			})
+			return { ...value }
 		})
 
 		this.#notifyObservers()
@@ -92,13 +86,14 @@ export class BoardService implements IBoardService {
 		return this.getSudokuValue(pos) === value
 	}
 
-	initBoard({
-		difficulty = Difficulties.Easy,
-		solution = new Solution(),
-	}: { difficulty?: Difficulties; solution?: Solution } = {}) {
+	initBoard(initialOpts: Partial<BoardOpts> = {}) {
 		setTimeout(() => {
-			this.#opts = { difficulty, solution }
-			this.#value = { hasBoard: true, board: this.#createBoard(this.#opts) }
+			const opts: BoardOpts = {
+				difficulty: initialOpts.difficulty ?? Difficulties.Easy,
+				solution: initialOpts.solution ?? new Solution(),
+			}
+			this.#boardRepo.setBoard(createBoard(opts))
+			this.#boardRepo.setOpts(opts)
 			this.#notifyObservers()
 		}, 0)
 	}
@@ -118,28 +113,32 @@ export class BoardService implements IBoardService {
 	}
 
 	getBox({ col, row }: Position) {
-		if (!this.#value.hasBoard) throw new boardErrors.NotInitialized()
-		return Object.freeze(this.#value.board[row][col])
+		const value = this.#getValue()
+		if (!value.hasBoard) throw new BoardErrors.NotInitialized()
+		return Object.freeze(value.board[row][col])
 	}
 	getBoard() {
 		const value = this.value
-		if (!value.hasBoard) throw new boardErrors.NotInitialized()
+		if (!value.hasBoard) throw new BoardErrors.NotInitialized()
 		return value.board
 	}
 	getDifficulty() {
-		if (this.#opts == null) throw new boardErrors.OptsNotDefined()
-		return this.#opts.difficulty
+		const opts = this.#boardRepo.getOpts()
+		if (opts == null) throw new BoardErrors.OptsNotDefined()
+		return opts.difficulty
 	}
 	getSudokuValue({ col, row }: Position) {
-		if (this.#opts == null) throw new boardErrors.OptsNotDefined()
-		return this.#opts.solution.value[row][col]
+		const opts = this.#boardRepo.getOpts()
+		if (opts == null) throw new BoardErrors.OptsNotDefined()
+		return opts.solution.value[row][col]
 	}
 
 	getEmptyBoxesPos() {
 		const emptyBoxesPos: Position[] = []
+		const value = this.#getValue()
+		if (!value.hasBoard) throw new BoardErrors.NotInitialized()
 		boardEach(({ row, col }) => {
-			if (!this.#value.hasBoard) throw new boardErrors.NotInitialized()
-			const isInitial = this.#value.board[row][col].kind !== BoxKinds.Initial
+			const isInitial = value.board[row][col].kind !== BoxKinds.Initial
 			if (isInitial) emptyBoxesPos.push({ row, col })
 		})
 

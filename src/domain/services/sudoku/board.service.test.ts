@@ -1,20 +1,48 @@
 import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { Notes, Solution } from '~/domain/entities'
-import { BoxKinds, type BoxSchema } from '~/domain/models'
+import { BoxKinds, type BoardOpts, type BoxSchema, type BoardSchema } from '~/domain/models'
 
 import { BoardService } from './board.service'
 import { SelectionService } from './selection.service'
+import type { IBoardRepo } from '~/domain/repositories'
+import { boardEach, createMatrix, deepClone } from '~/domain/utils'
 
 const solution = new Solution()
+const mockBoardRepo = (): IBoardRepo => {
+	let value: { board: BoardSchema | null; opts: BoardOpts | null } = { board: null, opts: null }
+	return {
+		getBoard: () => {
+			if (value.board == null) return null
+			const copyBoard = createMatrix(9, { value: {} as BoxSchema })
+			boardEach(({ row, col }) => {
+				const box = value.board![row][col]
+				const notes = new Notes(box.notes.value.filter(n => n != null) as number[])
+
+				copyBoard[row][col] = { ...box, notes }
+			})
+
+			return copyBoard
+		},
+		setBoard: newBoard => (value.board = newBoard),
+		getOpts: () => ({
+			difficulty: value.opts?.difficulty!,
+			solution: new Solution({ initialSolution: value.opts?.solution.value }),
+		}),
+		setOpts: newOpts => (value.opts = newOpts),
+		update: updater => {
+			value = updater({ board: value.board!, opts: value.opts! })
+		},
+	}
+}
+let board: BoardService, selection: SelectionService
+const standardBox: BoxSchema = {
+	notes: new Notes(),
+	kind: BoxKinds.Empty,
+	value: BoardService.EMPTY_BOX_VALUE,
+}
 
 describe.concurrent('Sudoku Board', () => {
-	let board: BoardService, selection: SelectionService
-	const standardBox: BoxSchema = {
-		notes: new Notes(),
-		kind: BoxKinds.Empty,
-		value: BoardService.EMPTY_BOX_VALUE,
-	}
 	beforeAll(() => {
 		vi.useFakeTimers()
 		return () => vi.useRealTimers()
@@ -22,7 +50,7 @@ describe.concurrent('Sudoku Board', () => {
 
 	beforeEach(() => {
 		selection = new SelectionService()
-		board = new BoardService({ selectionService: selection })
+		board = new BoardService({ selectionService: selection, boardRepo: mockBoardRepo() })
 		board.initBoard({ solution })
 		vi.advanceTimersByTime(0)
 	})

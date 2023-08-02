@@ -1,4 +1,4 @@
-import { boardErrors, createArray } from '~/domain/utils'
+import { BoardErrors, createArray } from '~/domain/utils'
 
 interface INotes {
 	readonly value: readonly (number | null)[]
@@ -8,7 +8,7 @@ interface INotes {
 export class Notes implements INotes {
 	#value = createArray<number | null>(9, { value: null })
 
-	constructor(initialNotes?: number[]) {
+	constructor(initialNotes?: readonly number[]) {
 		if (initialNotes != null) for (const note of initialNotes) this.#value[note - 1] = note
 	}
 
@@ -20,7 +20,7 @@ export class Notes implements INotes {
 	}
 
 	toggleNote(note: number) {
-		if (note < 0 || note > 9) throw new boardErrors.InvalidValue({ type: 'note', value: note })
+		if (note < 0 || note > 9) throw new BoardErrors.InvalidValue({ type: 'note', value: note })
 
 		if (note === 0) this.#value = createArray(9, { value: null })
 		else if (this.#value[note - 1]) this.#removeNote(note)

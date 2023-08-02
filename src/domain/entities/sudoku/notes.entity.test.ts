@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { boardErrors } from '~/domain/utils'
+import { BoardErrors } from '~/domain/utils'
 
 import { Notes } from './notes.entity'
 
@@ -13,7 +13,7 @@ describe.concurrent('Notes Entity', () => {
 
 	test.each([-1, -10, 10, 19])('should be throw', value => {
 		const notes = new Notes()
-		const assertError = new boardErrors.InvalidValue({ type: 'note', value })
+		const assertError = new BoardErrors.InvalidValue({ type: 'note', value })
 
 		expect(() => notes.toggleNote(value)).toThrow(assertError)
 	})

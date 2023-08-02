@@ -1,11 +1,10 @@
-import { act, cleanup, prettyDOM, render, screen } from '@testing-library/svelte'
+import { act, cleanup, render, screen } from '@testing-library/svelte'
 import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { board, selection } from '$infra/svelte/stores'
 
 import Notes from './notes.svelte'
 import { Solution } from '~/domain/entities'
-import type { BoxSchema } from '~/domain/models'
 
 const solution = new Solution()
 

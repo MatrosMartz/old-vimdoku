@@ -1,13 +1,19 @@
 import { derived, writable } from 'svelte/store'
 
 import { BoardService, SelectionService } from '~/domain/services'
-import { boardErrors } from '~/domain/utils'
+import { BoardErrors } from '~/domain/utils'
+import { BoardRepo } from '$infra/repository'
+import { LocalStorageDataRepo } from '$infra/browser/repositories'
 
 import { storeFromObservable } from './utils'
 import { Notes } from '~/domain/entities'
 
+const boardRepo = new BoardRepo({
+	gameStorage: new LocalStorageDataRepo({ keyName: 'game' }),
+	optsStorage: new LocalStorageDataRepo({ keyName: 'options' }),
+})
 export const selection = new SelectionService()
-export const board = new BoardService({ selectionService: selection })
+export const board = new BoardService({ selectionService: selection, boardRepo })
 
 export const selectionStore = storeFromObservable(selection)
 export const boardStore = storeFromObservable(board)
@@ -17,7 +23,7 @@ export const notesStore = derived([selectionStore, boardStore], ([pos]) => {
 	try {
 		return board.getBox(pos).notes.value
 	} catch (err) {
-		if (err instanceof boardErrors.NotInitialized) return new Notes().value
+		if (err instanceof BoardErrors.NotInitialized) return new Notes().value
 		throw err
 	}
 })

@@ -1,4 +1,4 @@
-import type { Observable } from '~/domain/utils'
+import type { DeepReadonly, Observable } from '~/domain/utils'
 import type { Position } from './selection.model'
 import type { Notes, Solution } from '~/domain/entities'
 
@@ -26,18 +26,21 @@ export interface BoxSchema {
 	value: number
 }
 
-export type BoardSchema = readonly (readonly BoxSchema[])[]
+export type BoardSchema = BoxSchema[][]
 
 export type BoardValue = { hasBoard: true; board: BoardSchema } | { hasBoard: false }
 
-export interface IBoardService extends Observable<BoardValue> {
+export interface BoardOpts {
+	difficulty: Difficulties
+	solution: Solution
+}
+export interface IBoardService extends Observable<DeepReadonly<BoardValue>> {
 	erase: () => void
-	getBoard: () => BoardSchema
+	getBoard: () => DeepReadonly<BoardSchema>
 	getBox: (pos: Position) => Readonly<BoxSchema>
 	getDifficulty: () => Difficulties
 	getEmptyBoxesPos: () => readonly Position[]
 	getSudokuValue: (pos: Position) => number
-	hasBoard: () => boolean
 	initBoard: (args: { difficulty?: Difficulties; solution?: Solution }) => void
 	isSelected: (pos: Position) => boolean
 	toggleNote: (value: number) => void

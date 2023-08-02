@@ -4,20 +4,25 @@ export class PreferenceError extends Error {
 	}
 }
 
-export const boardErrors = {
-	NotInitialized: class extends Error {
-		constructor() {
-			super('board not initialized')
-		}
-	},
-	OptsNotDefined: class extends Error {
-		constructor() {
-			super('opts not defined')
-		}
-	},
-	InvalidValue: class extends TypeError {
+export namespace BoardErrors {
+	export class InvalidValue extends TypeError {
 		constructor({ type, value }: { type: 'note' | 'box value'; value: unknown }) {
 			super(`"${value}" is invalid for "${type}" type`)
 		}
-	},
+	}
+	export class InvalidSolution extends Error {
+		constructor() {
+			super('Solution stored is invalid')
+		}
+	}
+	export class NotInitialized extends Error {
+		constructor() {
+			super('board not initialized')
+		}
+	}
+	export class OptsNotDefined extends Error {
+		constructor() {
+			super('opts not defined')
+		}
+	}
 }

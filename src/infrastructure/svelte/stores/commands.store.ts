@@ -9,9 +9,9 @@ import { HistoryRepo } from '$infra/repository'
 
 import { storeFromObservable } from './utils'
 
-const historyStorage = new LocalStorageDataRepo<string[]>({ keyName: 'history' })
-
-export const cmdHistory = new CmdHistoryService(new HistoryRepo({ storage: historyStorage }))
+export const cmdHistory = new CmdHistoryService(
+	new HistoryRepo({ storage: new LocalStorageDataRepo({ keyName: 'history' }) })
+)
 export const cmdAutocomplete = new CmdAutocompleteService({ cmdHistory })
 export const cmdHighlight = new CmdHighlightService()
 export const cmdSuggestions = new CmdSuggestionService()
