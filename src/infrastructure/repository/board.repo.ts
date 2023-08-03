@@ -1,21 +1,13 @@
-import { Notes } from '~/domain/entities'
+import { init } from 'svelte/internal'
+import { Notes, Solution } from '~/domain/entities'
 import { BoxKinds, type BoardOpts, type BoardSchema, type BoxSchema } from '~/domain/models'
-import type { DataRepo, IBoardRepo } from '~/domain/repositories'
+import type { DataRepo, GameBoxData, IBoardRepo, OptsStorage } from '~/domain/repositories'
 import { type DeepReadonly, type UpdaterRepo, createMatrix, deepFreeze } from '~/domain/utils'
-
-export type GameBoxData =
-	| {
-			kind: Exclude<BoxKinds, BoxKinds.WhitNotes | BoxKinds.Empty>
-			notes: undefined
-			value: number
-	  }
-	| { kind: BoxKinds.Empty; notes: undefined; value: undefined }
-	| { kind: BoxKinds.WhitNotes; notes: number[]; value: undefined }
 
 export class BoardRepo implements IBoardRepo {
 	#gameStorage: DataRepo<DeepReadonly<GameBoxData[][]>>
 	#gameValue?: DeepReadonly<GameBoxData[][]>
-	#optsStorage: DataRepo<BoardOpts>
+	#optsStorage: DataRepo<OptsStorage>
 	#optsValue?: BoardOpts
 
 	constructor({
@@ -23,17 +15,24 @@ export class BoardRepo implements IBoardRepo {
 		optsStorage,
 	}: {
 		gameStorage: DataRepo<DeepReadonly<GameBoxData[][]>>
-		optsStorage: DataRepo<BoardOpts>
+		optsStorage: DataRepo<OptsStorage>
 	}) {
 		this.#gameStorage = gameStorage
 		this.#optsStorage = optsStorage
 	}
 
-	getOpts = () => this.#optsValue ?? this.#optsStorage.get()
+	#parseOpts(): BoardOpts | null {
+		const opts = this.#optsStorage.get()
+		if (opts == null) return null
 
-	setOpts(newOpts: BoardOpts) {
-		this.#optsValue = { ...newOpts }
-		this.#optsStorage.set(this.#optsValue)
+		const solution = new Solution({ initialSolution: opts.solution })
+		return { difficulty: opts.difficulty, solution }
+	}
+
+	getOpts = () => this.#optsValue ?? this.#parseOpts()
+
+	setOpts({ difficulty, solution }: BoardOpts) {
+		this.#optsStorage.set({ difficulty, solution: solution.value })
 	}
 	setBoard(newBoard: BoardSchema) {
 		this.#gameValue = createMatrix<GameBoxData>(9, {
