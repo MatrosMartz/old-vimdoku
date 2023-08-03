@@ -28,7 +28,10 @@
 		</tr>
 		<tr>
 			<td>type</td>
-			<td>:start <span class="option">&#123;Difficulty&#125;</span></td>
+			<td
+				>:start <span class="option">&#123;Option&#125;</span><span class="key">&lt;Enter&gt;</span
+				></td
+			>
 			<td>for start game</td>
 		</tr>
 	</table>

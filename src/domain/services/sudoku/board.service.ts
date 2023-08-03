@@ -67,7 +67,7 @@ export class BoardService implements IBoardService {
 		this.#observers = this.#observers.filter(obs => obs !== observer)
 	}
 	get value() {
-		return deepFreeze(this.#getValue())
+		return this.#getValue()
 	}
 
 	#updateSelected(update: (args: { box: BoxSchema } & Position) => BoxSchema) {

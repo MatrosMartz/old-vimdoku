@@ -5,27 +5,36 @@
 	let difficultySelected: Difficulties = Difficulties.Easy
 
 	function submitHandler() {
-		vimScreen.setGameWindow()
 		board.initBoard({ difficulty: difficultySelected })
+		vimScreen.setGameWindow()
+	}
+
+	function continueClick() {
+		if (board.value.hasBoard) {
+			vimScreen.setGameWindow()
+		}
 	}
 </script>
 
-<form action="" on:submit|preventDefault={submitHandler}>
-	<label for="select-difficulty">Select Difficulty</label>
-	<select
-		class="select-difficulty"
-		name="select-difficulty"
-		id="select-difficulty"
-		bind:value={difficultySelected}
-	>
-		{#each difficultiesKeys as [key, value] (value)}
-			<option {value}>{key}</option>
-		{/each}
-	</select>
-	<div class="mt-2">
-		<button class="btn-start variant-glass-tertiary">Start game</button>
-	</div>
-</form>
+<div class="flex justify-center gap-6 items-end">
+	<form action="" on:submit|preventDefault={submitHandler}>
+		<label for="select-difficulty">Select Difficulty:</label>
+		<select
+			class="select-difficulty my-1"
+			name="select-difficulty"
+			id="select-difficulty"
+			bind:value={difficultySelected}
+		>
+			{#each difficultiesKeys as [key, value] (value)}
+				<option {value}>{key}</option>
+			{/each}
+		</select>
+		<div class="mt-2">
+			<button class="btn-start variant-glass-tertiary">Start game</button>
+		</div>
+	</form>
+	<button on:click={continueClick} class="btn-start variant-glass-primary">Continue game</button>
+</div>
 
 <style lang="postcss">
 	.btn-start {

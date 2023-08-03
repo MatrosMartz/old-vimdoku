@@ -1,5 +1,4 @@
 <script>
-	import { blur } from 'svelte/transition'
 	import { boardStore, settingsStore } from '$infra/svelte/stores'
 	import NumberBar from './number-bar.svelte'
 	import Board from './board.svelte'
@@ -9,7 +8,6 @@
 
 {#if $boardStore.hasBoard}
 	<section
-		in:blur
 		class="relative bg-surface-100-800-token rounded-lg gap-0 p-2 transition-[border-radius]"
 		class:has-bars={hasBars}
 	>

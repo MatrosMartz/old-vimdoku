@@ -1,4 +1,3 @@
-export * from './commands-input.store'
 export * from './commands.store'
 export * from './modes.store'
 export * from './settings.store'

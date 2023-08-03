@@ -45,7 +45,6 @@
 		}
 	}
 
-	$: console.log(times)
 	$: if ($vimScreenStore.secondary != null) modes.setNormal()
 	$: if ($modesStore === Modes.Command) vimScreen.removeSecondary()
 </script>

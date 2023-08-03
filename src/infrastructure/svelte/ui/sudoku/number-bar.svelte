@@ -14,7 +14,7 @@
 </script>
 
 <ul
-	transition:fly={{ duration: 1_000, ...flyParams }}
+	transition:fly={{ duration: 1_500, ...flyParams }}
 	class="absolute {direction} flex justify-around items-center rounded-lg bg-surface-100-800-token brightness-[107%] dark:brightness-[93%]"
 >
 	{#each lines as line}
