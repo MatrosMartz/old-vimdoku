@@ -59,7 +59,7 @@
 		@apply text-primary-600 dark:text-primary-300;
 	}
 	.selected {
-		@apply border-primary-300 dark:text-primary-600 motion-safe:animate-[blink_500ms_ease-in-out_infinite_alternate];
+		@apply border-primary-300 motion-safe:animate-[blink_500ms_ease-in-out_infinite_alternate];
 	}
 
 	@keyframes blink {
