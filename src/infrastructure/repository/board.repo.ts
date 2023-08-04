@@ -1,12 +1,13 @@
-import { init } from 'svelte/internal'
 import { Notes, Solution } from '~/domain/entities'
 import { BoxKinds, type BoardOpts, type BoardSchema, type BoxSchema } from '~/domain/models'
 import type { DataRepo, GameBoxData, IBoardRepo, OptsStorage } from '~/domain/repositories'
-import { type DeepReadonly, type UpdaterRepo, createMatrix, deepFreeze } from '~/domain/utils'
+import { type DeepReadonly, type UpdaterRepo, createMatrix } from '~/domain/utils'
+
+type ReadonlyGameBoxData = DeepReadonly<GameBoxData[][]>
 
 export class BoardRepo implements IBoardRepo {
-	#gameStorage: DataRepo<DeepReadonly<GameBoxData[][]>>
-	#gameValue?: DeepReadonly<GameBoxData[][]>
+	#gameStorage: DataRepo<ReadonlyGameBoxData>
+	#gameValue?: ReadonlyGameBoxData
 	#optsStorage: DataRepo<OptsStorage>
 	#optsValue?: BoardOpts
 
@@ -14,7 +15,7 @@ export class BoardRepo implements IBoardRepo {
 		gameStorage,
 		optsStorage,
 	}: {
-		gameStorage: DataRepo<DeepReadonly<GameBoxData[][]>>
+		gameStorage: DataRepo<ReadonlyGameBoxData>
 		optsStorage: DataRepo<OptsStorage>
 	}) {
 		this.#gameStorage = gameStorage
@@ -29,7 +30,9 @@ export class BoardRepo implements IBoardRepo {
 		return { difficulty: opts.difficulty, solution }
 	}
 
-	getOpts = () => this.#optsValue ?? this.#parseOpts()
+	getOpts() {
+		return this.#optsValue ?? this.#parseOpts()
+	}
 
 	setOpts({ difficulty, solution }: BoardOpts) {
 		this.#optsStorage.set({ difficulty, solution: solution.value })
@@ -70,5 +73,10 @@ export class BoardRepo implements IBoardRepo {
 
 		this.setOpts(newOpts)
 		this.setBoard(newBoard)
+	}
+
+	delete() {
+		this.#gameStorage.delete()
+		this.#optsStorage.delete()
 	}
 }

@@ -29,11 +29,8 @@ export class BoardService implements IBoardService {
 		)
 	}
 	static getFirstBoxWithKind(board: DeepReadonly<BoardSchema>, kind: BoxKinds) {
-		for (let row = 0; row < board.length; row++) {
-			for (let col = 0; col < board[row].length; col++) {
-				if (board[row][col].kind === kind) return { col, row }
-			}
-		}
+		for (let row = 0; row < 9; row++)
+			for (let col = 0; col < 9; col++) if (board[row][col].kind === kind) return { col, row }
 	}
 
 	#boardRepo: IBoardRepo
@@ -87,6 +84,8 @@ export class BoardService implements IBoardService {
 	}
 
 	initBoard(initialOpts: Partial<BoardOpts> = {}) {
+		this.#boardRepo.delete()
+		this.#notifyObservers()
 		setTimeout(() => {
 			const opts: BoardOpts = {
 				difficulty: initialOpts.difficulty ?? Difficulties.Easy,

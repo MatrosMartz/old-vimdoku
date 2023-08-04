@@ -1,4 +1,6 @@
+import type { UpdaterRepo } from '../utils'
+
 export interface IHistoryRepo {
 	get: () => readonly string[]
-	update: (updater: (history: string[]) => string[]) => void
+	update: (updater: UpdaterRepo<string[]>) => void
 }

@@ -1,6 +1,6 @@
 import type { SolutionValue } from '~/domain/entities'
 import type { BoardOpts, BoardSchema, BoxKinds, Difficulties } from '~/domain/models'
-import type { UpdateRepo } from '~/domain/utils'
+import type { UpdaterRepo } from '~/domain/utils'
 
 export type GameBoxData =
 	| {
@@ -21,5 +21,6 @@ export interface IBoardRepo {
 	setBoard: (newBoard: BoardSchema) => void
 	getOpts: () => Readonly<BoardOpts> | null
 	setOpts: (newOpts: BoardOpts) => void
-	update: UpdateRepo<{ board: BoardSchema; opts: BoardOpts }>
+	update: (updater: UpdaterRepo<{ board: BoardSchema; opts: BoardOpts }>) => void
+	delete: () => void
 }

@@ -6,7 +6,7 @@ import { BoxKinds, type BoardOpts, type BoxSchema, type BoardSchema } from '~/do
 import { BoardService } from './board.service'
 import { SelectionService } from './selection.service'
 import type { IBoardRepo } from '~/domain/repositories'
-import { boardEach, createMatrix, deepClone } from '~/domain/utils'
+import { boardEach, createMatrix } from '~/domain/utils'
 
 const solution = new Solution()
 const mockBoardRepo = (): IBoardRepo => {
@@ -33,6 +33,7 @@ const mockBoardRepo = (): IBoardRepo => {
 		update: updater => {
 			value = updater({ board: value.board!, opts: value.opts! })
 		},
+		delete: () => (value = { board: null, opts: null }),
 	}
 }
 let board: BoardService, selection: SelectionService
