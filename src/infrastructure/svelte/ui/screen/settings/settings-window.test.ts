@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, test } from 'vitest'
 import { act, cleanup, render, screen } from '@testing-library/svelte'
+import { beforeEach, describe, expect, test } from 'vitest'
 
 import { SetType } from '~/domain/models'
 import { vimScreen } from '~/infrastructure/svelte/stores'

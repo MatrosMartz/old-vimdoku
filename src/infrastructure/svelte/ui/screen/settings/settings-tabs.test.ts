@@ -1,13 +1,16 @@
-import { beforeEach, describe, expect, test } from 'vitest'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/svelte'
+import { beforeEach, describe, expect, test } from 'vitest'
+
+import { SetType } from '~/domain/models'
+import { vimScreen } from '~/infrastructure/svelte/stores'
 
 import SettingsTabs from './settings-tabs.svelte'
-import { vimScreen } from '~/infrastructure/svelte/stores'
-import { SetType } from '~/domain/models'
 
 describe('Settings Tabs', () => {
 	beforeEach(async () => {
-		await act(() => vimScreen.setSetsSecondary())
+		await act(() => {
+			vimScreen.setSetsSecondary()
+		})
 		render(SettingsTabs)
 
 		return () => {
@@ -30,7 +33,9 @@ describe('Settings Tabs', () => {
 		expect(vimScreen.getOptForKey('setType')).toBe(SetType.diff)
 	})
 	test('should be change SetType to edit if clicked', async () => {
-		await act(() => vimScreen.setSetsSecondary({ setType: SetType.all }))
+		await act(() => {
+			vimScreen.setSetsSecondary({ setType: SetType.all })
+		})
 		const editTab = screen.getByTestId('edit-tab')
 
 		await fireEvent.click(editTab)

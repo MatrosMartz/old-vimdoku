@@ -8,17 +8,18 @@ export class LocalStorageDataRepo<T> implements DataRepo<T> {
 		if (!('localStorage' in window)) throw new Error('localStorage not defined')
 	}
 
+	delete() {
+		window.localStorage.removeItem(this.#keyName)
+	}
+
 	get() {
 		const data = window.localStorage.getItem(this.#keyName)
 
 		return data != null ? (JSON.parse(data) as T) : null
 	}
+
 	set(data: T) {
 		const dataStringify = JSON.stringify(data)
 		window.localStorage.setItem(this.#keyName, dataStringify)
-	}
-
-	delete() {
-		window.localStorage.removeItem(this.#keyName)
 	}
 }

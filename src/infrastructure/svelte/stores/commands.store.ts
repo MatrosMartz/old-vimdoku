@@ -1,8 +1,8 @@
 import {
-	CmdHighlightService,
-	CmdSuggestionService,
-	CmdHistoryService,
 	CmdAutocompleteService,
+	CmdHighlightService,
+	CmdHistoryService,
+	CmdSuggestionService,
 } from '~/domain/services'
 import { LocalStorageDataRepo } from '$infra/browser/repositories'
 import { HistoryRepo } from '$infra/repository'

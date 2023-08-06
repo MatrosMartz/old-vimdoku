@@ -5,8 +5,8 @@
 	import { vimScreenStore } from '$infra/svelte/stores'
 
 	import SettingsForm from './edit/settings-form.svelte'
-	import SettingsTabs from './settings-tabs.svelte'
 	import SettingsShowAll from './settings-show.svelte'
+	import SettingsTabs from './settings-tabs.svelte'
 </script>
 
 {#if $vimScreenStore.secondary?.kind === WindowSecondaryKinds.Sets}

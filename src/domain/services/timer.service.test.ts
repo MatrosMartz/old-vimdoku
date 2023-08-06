@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { seconds } from '~/tests/utils'
 
@@ -10,16 +10,14 @@ describe.concurrent('Time Service', () => {
 
 	beforeAll(() => {
 		vi.useFakeTimers()
+		return () => vi.useRealTimers()
 	})
 	beforeEach(() => {
 		timer = new TimerService()
-	})
-	afterEach(() => {
-		timer.stop()
-		timer.reset()
-	})
-	afterAll(() => {
-		vi.useRealTimers
+		return () => {
+			timer.stop()
+			timer.reset()
+		}
 	})
 
 	test('At startup the timer, seconds should be zero, and if isPause true', () => {

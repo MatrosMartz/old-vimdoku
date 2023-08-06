@@ -17,10 +17,10 @@ export interface OptsStorage {
 }
 
 export interface IBoardRepo {
-	getBoard: () => BoardSchema | null
-	setBoard: (newBoard: BoardSchema) => void
-	getOpts: () => Readonly<BoardOpts> | null
-	setOpts: (newOpts: BoardOpts) => void
-	update: (updater: UpdaterRepo<{ board: BoardSchema; opts: BoardOpts }>) => void
-	delete: () => void
+	delete(): void
+	getBoard(): BoardSchema | null
+	getOpts(): Readonly<BoardOpts> | null
+	setBoard(newBoard: BoardSchema): void
+	setOpts(newOpts: BoardOpts): void
+	update(updater: UpdaterRepo<{ board: BoardSchema; opts: BoardOpts }>): void
 }

@@ -16,7 +16,9 @@
 	function InputHandler({ currentTarget }: Event & { currentTarget: HTMLInputElement }) {
 		const newValue = Number(currentTarget.value)
 		if (timerID != null) clearTimeout(timerID)
-		timerID = setTimeout(() => settings.updateByKey(key, () => newValue), 500)
+		timerID = setTimeout(() => {
+			settings.updateByKey(key, () => newValue)
+		}, 500)
 	}
 </script>
 

@@ -1,6 +1,7 @@
-import type { DeepReadonly, Observable } from '~/domain/utils'
-import type { Position } from './selection.model'
 import type { Notes, Solution } from '~/domain/entities'
+import type { DeepReadonly, Observable } from '~/domain/utils'
+
+import type { Position } from './selection.model'
 
 export const enum BoxKinds {
 	Correct = 'correct',
@@ -21,28 +22,28 @@ export enum Difficulties {
 }
 
 export interface BoxSchema {
-	notes: Notes
 	kind: BoxKinds
+	notes: Notes
 	value: number
 }
 
 export type BoardSchema = BoxSchema[][]
 
-export type BoardValue = { hasBoard: true; board: BoardSchema } | { hasBoard: false }
+export type BoardValue = { board: BoardSchema; hasBoard: true } | { hasBoard: false }
 
 export interface BoardOpts {
 	difficulty: Difficulties
 	solution: Solution
 }
 export interface IBoardService extends Observable<DeepReadonly<BoardValue>> {
-	erase: () => void
-	getBoard: () => DeepReadonly<BoardSchema>
-	getBox: (pos: Position) => Readonly<BoxSchema>
-	getDifficulty: () => Difficulties
-	getEmptyBoxesPos: () => readonly Position[]
-	getSudokuValue: (pos: Position) => number
-	initBoard: (args: { difficulty?: Difficulties; solution?: Solution }) => void
-	isSelected: (pos: Position) => boolean
-	toggleNote: (value: number) => void
-	toggleNumber: (value: number) => void
+	erase(): void
+	getBoard(): DeepReadonly<BoardSchema>
+	getBox(pos: Position): Readonly<BoxSchema>
+	getDifficulty(): Difficulties
+	getEmptyBoxesPos(): readonly Position[]
+	getSudokuValue(pos: Position): number
+	initBoard(args: { difficulty?: Difficulties; solution?: Solution }): void
+	isSelected(pos: Position): boolean
+	toggleNote(value: number): void
+	toggleNumber(value: number): void
 }

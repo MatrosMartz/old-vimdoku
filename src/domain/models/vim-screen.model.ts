@@ -14,7 +14,7 @@ export enum SetType {
 	diff = 'differ',
 	edit = 'edit',
 }
-
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface HelpWindowOpts {}
 export interface SetsWindowOpts {
 	setType: SetType
@@ -29,18 +29,18 @@ export interface WindowSecondaryOptsAll extends HelpWindowOpts, SetsWindowOpts {
 }
 
 export interface VimScreen {
-	primary: WindowPrimaryKinds
 	secondary?: WindowSecondaryOpts
+	primary: WindowPrimaryKinds
 }
 
 export const defaultScreen: VimScreen = { primary: WindowPrimaryKinds.Init }
 
 export interface IVimScreenService extends Observable<VimScreen> {
-	getOptForKey: <K extends keyof WindowSecondaryOptsAll>(key: K) => WindowSecondaryOptsAll[K]
-	removeSecondary: () => void
-	setGameWindow: () => void
-	setHelpSecondary: (opts?: Partial<HelpWindowOpts>) => void
-	setInitWindow: () => void
-	setSetsSecondary: (opts?: Partial<SetsWindowOpts>) => void
-	undo: () => void
+	getOptForKey<K extends keyof WindowSecondaryOptsAll>(key: K): WindowSecondaryOptsAll[K]
+	removeSecondary(): void
+	setGameWindow(): void
+	setHelpSecondary(opts?: Partial<HelpWindowOpts>): void
+	setInitWindow(): void
+	setSetsSecondary(opts?: Partial<SetsWindowOpts>): void
+	undo(): void
 }

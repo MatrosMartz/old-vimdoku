@@ -6,7 +6,7 @@ export interface TimerSchema {
 }
 
 export interface ITimerService extends Observable<TimerSchema> {
-	stop: () => void
-	reset: () => void
-	start: () => void
+	reset(): void
+	start(): void
+	stop(): void
 }

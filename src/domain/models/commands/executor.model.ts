@@ -1,15 +1,19 @@
+import { SettingsService } from '~/domain/services'
 import { PreferenceError } from '~/domain/utils'
+
 import {
 	defaultSettings,
-	MouseEnable,
 	type ISettingsService,
+	type Langs,
+	type MouseEnable,
+	type NumberKeys,
 	type Settings,
 	type StringKeys,
+	type Themes,
 	type ToggleKeys,
-	Langs,
-	Themes,
-	type NumberKeys,
 } from '../settings.model'
+import { Difficulties, type IBoardService } from '../sudoku'
+import { type IVimScreenService, SetType } from '../vim-screen.model'
 import {
 	allPreferencesKeys,
 	nonToggleKeys,
@@ -17,9 +21,6 @@ import {
 	stringKeys,
 	toggleKeys,
 } from './commands.model'
-import { SettingsService } from '~/domain/services'
-import { SetType, type IVimScreenService } from '../vim-screen.model'
-import { Difficulties, type IBoardService } from '../sudoku'
 
 export const allPreferences = allPreferencesKeys.map(({ preference }) => preference).join('|')
 export const togglePreferences = toggleKeys.map(({ preference }) => preference).join('|')
@@ -28,23 +29,23 @@ export const numberPreferences = numberKeys.map(({ preference }) => preference).
 export const nonTogglePreferences = nonToggleKeys.map(({ preference }) => preference).join('|')
 
 interface SubcommandOption {
-	subPattern: (subcommand: string) => boolean
-	fn: ({
+	fn({
 		preferences,
 		subcommand,
 		vimScreen,
 		board,
 	}: {
+		board: IBoardService
 		preferences: ISettingsService
 		subcommand: string
 		vimScreen: IVimScreenService
-		board: IBoardService
-	}) => void
+	}): void
+	subPattern(subcommand: string): boolean
 }
 
 interface ExecutorOption {
-	pattern: (command: string) => boolean
 	subcommandOption: SubcommandOption[]
+	pattern(command: string): boolean
 }
 
 type settingsEntries<T extends keyof Settings = keyof Settings> = [T, Settings[T]]
@@ -166,9 +167,9 @@ export const executorOptions: ExecutorOption[] = [
 						| undefined
 					if (preference == null) throw new PreferenceError()
 
-					if (nonTogglePreferences.includes(preference))
+					if (nonTogglePreferences.includes(preference)) {
 						console.log([preference, preferences.value[preference]])
-					else {
+					} else {
 						preferences.updateByKey(preference as ToggleKeys, SettingsService.on)
 					}
 				},
@@ -287,5 +288,5 @@ export const executorOptions: ExecutorOption[] = [
 ]
 
 export interface ICmdExecutorService {
-	exec: (input: string) => void
+	exec(input: string): void
 }

@@ -1,11 +1,10 @@
 import { CmdExecutorService, SettingsService } from '~/domain/services'
-
 import { LocalStorageDataRepo } from '$infra/browser/repositories'
 import { SettingsRepo } from '$infra/repository'
 
-import { vimScreen } from './vim-screen.store'
 import { board } from './sudoku.store'
 import { storeFromObservable } from './utils'
+import { vimScreen } from './vim-screen.store'
 
 export const settings = new SettingsService(
 	new SettingsRepo({ storage: new LocalStorageDataRepo({ keyName: 'preferences' }) })

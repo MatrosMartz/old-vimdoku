@@ -2,9 +2,9 @@ import type { SuggestionOption } from '../models'
 import { normalCase } from './normal-case'
 
 const initialPreferencesKeys: {
-	toggleKeys: { name: string; preference: string }[]
-	numberKeys: { name: string; preference: string }[]
-	stringKeys: { name: string; preference: string }[]
+	numberKeys: Array<{ name: string; preference: string }>
+	stringKeys: Array<{ name: string; preference: string }>
+	toggleKeys: Array<{ name: string; preference: string }>
 } = {
 	toggleKeys: [],
 	numberKeys: [],

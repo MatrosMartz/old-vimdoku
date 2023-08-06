@@ -2,7 +2,7 @@ import { act, cleanup, render, screen } from '@testing-library/svelte'
 import { beforeEach, describe, expect, test } from 'vitest'
 
 import { SettingsService } from '~/domain/services'
-import { settings, selection } from '$infra/svelte/stores'
+import { selection, settings } from '$infra/svelte/stores'
 
 import NumberBar from './number-bar.svelte'
 

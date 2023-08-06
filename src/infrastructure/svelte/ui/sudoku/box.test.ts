@@ -1,8 +1,8 @@
-import { afterEach, beforeAll, describe, expect, test } from 'vitest'
 import { cleanup, fireEvent, render, screen } from '@testing-library/svelte'
+import { afterEach, beforeAll, describe, expect, test } from 'vitest'
 
-import { BoxKinds } from '~/domain/models'
 import { Solution } from '~/domain/entities'
+import { BoxKinds } from '~/domain/models'
 import { getBoxAndPosByKind } from '~/tests/utils'
 import { board, modes } from '$infra/svelte/stores'
 
@@ -10,13 +10,17 @@ import Box from './box.svelte'
 
 const solution = new Solution()
 
-afterEach(() => cleanup())
+afterEach(() => {
+	cleanup()
+})
 
 describe('Box Component in Insert Mode', () => {
 	beforeAll(() => {
 		modes.setInsert()
 		board.initBoard({ solution })
-		return () => modes.setNormal()
+		return () => {
+			modes.setNormal()
+		}
 	})
 
 	describe('Box Component Empty', () => {

@@ -2,8 +2,8 @@ import { defaultSettings, type Settings } from '~/domain/models'
 import type { DataRepo, ISettingsRepo } from '~/domain/repositories'
 
 export class SettingsRepo implements ISettingsRepo {
-	#storage: DataRepo<Settings>
 	#settings = { ...defaultSettings }
+	#storage: DataRepo<Settings>
 
 	constructor({ storage }: { storage: DataRepo<Settings> }) {
 		this.#storage = storage
@@ -14,6 +14,7 @@ export class SettingsRepo implements ISettingsRepo {
 
 		return Object.freeze(this.#settings)
 	}
+
 	update(updater: (settings: Settings) => Settings) {
 		this.#storage.set(updater(this.#settings))
 	}

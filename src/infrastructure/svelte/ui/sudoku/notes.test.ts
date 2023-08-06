@@ -1,10 +1,10 @@
 import { act, cleanup, render, screen } from '@testing-library/svelte'
 import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
+import { Solution } from '~/domain/entities'
 import { board, selection } from '$infra/svelte/stores'
 
 import Notes from './notes.svelte'
-import { Solution } from '~/domain/entities'
 
 const solution = new Solution()
 
@@ -20,7 +20,9 @@ describe('Notes Component', () => {
 		const boxPos = board.getEmptyBoxesPos()[0]
 		selection.moveTo(boxPos)
 
-		return () => cleanup()
+		return () => {
+			cleanup()
+		}
 	})
 
 	test('should render empty dom', () => {

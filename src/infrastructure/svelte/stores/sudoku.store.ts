@@ -1,12 +1,12 @@
 import { derived, writable } from 'svelte/store'
 
+import { Notes } from '~/domain/entities'
 import { BoardService, SelectionService } from '~/domain/services'
 import { BoardErrors } from '~/domain/utils'
-import { BoardRepo } from '$infra/repository'
 import { LocalStorageDataRepo } from '$infra/browser/repositories'
+import { BoardRepo } from '$infra/repository'
 
 import { storeFromObservable } from './utils'
-import { Notes } from '~/domain/entities'
 
 const boardRepo = new BoardRepo({
 	gameStorage: new LocalStorageDataRepo({ keyName: 'game' }),

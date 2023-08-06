@@ -4,7 +4,7 @@
 
 	const initialSelected = vimScreen.getOptForKey('setType')
 
-	const Messages: Record<SetType, String> = {
+	const Messages: Record<SetType, string> = {
 		all: 'Show All',
 		differ: 'Show Only Differ',
 		edit: 'Edit',
@@ -19,7 +19,9 @@
 			id={setTab}
 			value={setTab}
 			checked={initialSelected === setTab}
-			on:click={() => vimScreen.setSetsSecondary({ setType: setTab })}
+			on:click={() => {
+				vimScreen.setSetsSecondary({ setType: setTab })
+			}}
 			class="hidden"
 			data-testid="{setTab}-tab"
 		/>

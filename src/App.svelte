@@ -1,8 +1,7 @@
 <script lang="ts">
 	import '@skeletonlabs/skeleton/styles/all.css'
-
 	import './theme.postcss'
-	import { Vim, Screen, Sudoku } from '$infra/svelte/ui'
+
 	import {
 		board,
 		modes,
@@ -11,6 +10,8 @@
 		vimScreen,
 		vimScreenStore,
 	} from '$infra/svelte/stores'
+	import { Screen, Sudoku, Vim } from '$infra/svelte/ui'
+
 	import { Modes, WindowPrimaryKinds } from './domain/models'
 
 	let times = ''
@@ -40,7 +41,7 @@
 				else if (key === 'l') selection.moveRight(parsedTimes)
 			}
 
-			if (/^[1-9]$/.test(key) || (/0/.test(key) && times.length > 0)) times += key
+			if (/^[1-9]$/.test(key) || (key.includes('0') && times.length > 0)) times += key
 			else times = ''
 		}
 	}

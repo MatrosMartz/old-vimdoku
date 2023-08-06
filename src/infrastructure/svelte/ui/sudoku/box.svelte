@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { BoxKinds, Modes, type BoxSchema } from '~/domain/models'
+	import { BoxKinds, type BoxSchema, Modes } from '~/domain/models'
 	import type { DeepReadonly } from '~/domain/utils'
-
-	import { boardStore, selectionStore, selection, board, modes } from '$infra/svelte/stores'
+	import { board, boardStore, modes, selection, selectionStore } from '$infra/svelte/stores'
 
 	export let row: number
 	export let col: number
@@ -14,7 +13,9 @@
 	$: selected = $selectionStore.col === col && $selectionStore.row === row
 	$: if (selected && boxBtn != null) boxBtn.focus()
 
-	const InputHandler = () => selection.moveTo({ row, col })
+	const InputHandler = () => {
+		selection.moveTo({ row, col })
+	}
 
 	const KeyHandler = ({ key }: KeyboardEvent) => {
 		if (selected && box.kind !== BoxKinds.Initial) {
@@ -28,8 +29,9 @@
 			if (
 				key === 'Backspace' ||
 				(!Number.isNaN(insertNum) && [Modes.Insert, Modes.Annotation].includes(modes.value))
-			)
+			) {
 				selection.moveToNextEmpty(board.getEmptyBoxesPos())
+			}
 		}
 	}
 </script>

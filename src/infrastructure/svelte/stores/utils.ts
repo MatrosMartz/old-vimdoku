@@ -1,4 +1,5 @@
 import type { Readable, Subscriber } from 'svelte/store'
+
 import type { Observable, Observer } from '~/domain/utils'
 
 export function storeFromObservable<T>(observable: Observable<T>): Readable<T> {
@@ -9,7 +10,9 @@ export function storeFromObservable<T>(observable: Observable<T>): Readable<T> {
 
 		observable.addObserver(observer)
 
-		return () => observable.removeObserver(observer)
+		return () => {
+			observable.removeObserver(observer)
+		}
 	}
 
 	return { subscribe }

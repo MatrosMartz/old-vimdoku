@@ -1,17 +1,17 @@
 import { Notes, type SolutionValue } from '../entities'
 import {
-	BoxKinds,
 	type BoardOpts,
+	BoxKinds,
 	type BoxSchema,
 	type Difficulties,
 	type Position,
 } from '../models'
 import { BoardService } from '../services'
-
 import { createArray } from './array.utils'
 
-export const probabilityToBeInitial = (difficulty: Difficulties) =>
-	!Math.trunc(Math.random() * difficulty)
+export function probabilityToBeInitial(difficulty: Difficulties) {
+	return Boolean(Math.trunc(Math.random() * difficulty))
+}
 
 export function randomNumbers() {
 	const numbers = createArray(9, { fn: i => i + 1 })

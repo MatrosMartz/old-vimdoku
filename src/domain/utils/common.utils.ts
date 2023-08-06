@@ -1,8 +1,8 @@
 export function noop() {}
 
 export type DeepReadonly<T> = T extends Array<infer U>
-	? readonly DeepReadonly<U>[]
-	: T extends Object
+	? ReadonlyArray<DeepReadonly<U>>
+	: T extends Record<string, unknown>
 	? { readonly [K in keyof T]: DeepReadonly<T[K]> }
 	: T
 

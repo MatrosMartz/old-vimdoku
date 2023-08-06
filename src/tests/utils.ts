@@ -27,7 +27,7 @@ const colors: Record<number, string> = {
 	9: '\x1b[38;2;200;140;255m9\x1b[0m',
 }
 
-export function printSudoku(sudoku: readonly (readonly number[])[]) {
+export function printSudoku(sudoku: ReadonlyArray<readonly number[]>) {
 	let a = '\n'
 
 	for (let columns = 0; columns < 9; columns++) {

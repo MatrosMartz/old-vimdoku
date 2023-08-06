@@ -71,7 +71,9 @@
 				bind:this={input}
 				bind:value={currentValue}
 				on:keydown={keyHandler}
-				on:input={({ currentTarget }) => cmdAutocomplete.search(currentTarget.value)}
+				on:input={({ currentTarget }) => {
+					cmdAutocomplete.search(currentTarget.value)
+				}}
 			/>
 		</div>
 		<ul class="autocomplete-list">

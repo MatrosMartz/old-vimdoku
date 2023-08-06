@@ -40,8 +40,8 @@ export interface UserSettings {
 export interface Settings extends VimSettings, SudokuSettings, UserSettings {}
 
 export type SettingUpdater<K extends keyof Settings = keyof Settings> = (args: {
-	value: Settings[K]
 	key: K
+	value: Settings[K]
 }) => Settings[K]
 
 type KeysByType<O, T> = {
@@ -53,8 +53,8 @@ export type NumberKeys = KeysByType<Settings, number>
 export type StringKeys = KeysByType<Settings, string>
 
 export interface ISettingsService extends Observable<Settings> {
-	updateAll: (updater: (settings: Settings) => Settings) => void
-	updateByKey: <K extends keyof Settings>(key: K, updater: SettingUpdater<K>) => void
+	updateAll(updater: (settings: Settings) => Settings): void
+	updateByKey<K extends keyof Settings>(key: K, updater: SettingUpdater<K>): void
 }
 
 const defaultSudokuSettings: SudokuSettings = {
@@ -90,9 +90,9 @@ type FormField<T extends number | boolean | string> = T extends number
 	? { type: 'number' }
 	: T extends boolean
 	? { type: 'boolean' }
-	: { type: 'option'; options: string[] }
+	: { options: string[]; type: 'option' }
 
-type GroupFields<K extends keyof Settings> = (FormField<Settings[K]> & { key: K })[]
+type GroupFields<K extends keyof Settings> = Array<FormField<Settings[K]> & { key: K }>
 
 type SettingsForm = [
 	['Sudoku', GroupFields<keyof SudokuSettings>],

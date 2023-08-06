@@ -1,3 +1,3 @@
 export interface ICmdHighlightService {
-	highlighting: (input: string) => string
+	highlighting(input: string): string
 }

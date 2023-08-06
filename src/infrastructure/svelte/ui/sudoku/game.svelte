@@ -1,9 +1,10 @@
 <script>
 	import { boardStore, settingsStore } from '$infra/svelte/stores'
-	import NumberBar from './number-bar.svelte'
-	import Board from './board.svelte'
 
-	$: hasBars = $settingsStore.numbers || $settingsStore.relativeNumbers
+	import Board from './board.svelte'
+	import NumberBar from './number-bar.svelte'
+
+	$: hasBars = Boolean($settingsStore.relativeNumbers) || $settingsStore.numbers
 </script>
 
 {#if $boardStore.hasBoard}

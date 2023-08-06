@@ -1,7 +1,7 @@
 import type { ISelectionService, Position } from '~/domain/models'
 import type { Observer } from '~/domain/utils'
 
-function min(value: number, { min, max }: { min: number; max?: number }) {
+function min(value: number, { min, max }: { max?: number; min: number }) {
 	return value < min ? min : max == null ? value : max
 }
 function max(value: number, { min, max }: { min?: number; max: number }) {
@@ -11,33 +11,21 @@ function max(value: number, { min, max }: { min?: number; max: number }) {
 export class SelectionService implements ISelectionService {
 	static MAX_BOX_POS = 8
 	static MIN_BOX_POS = 0
+	#observers: Array<Observer<Position>> = []
 	#value: Position
-	#observers: Observer<Position>[] = []
-
-	#isEndPosition = () => this.#value.row === 8 && this.#value.col === 8
-	#isStartPosition = () => this.#value.row === 0 && this.#value.col === 0
 
 	constructor({ initialPosition = { col: 0, row: 0 } }: { initialPosition?: Position } = {}) {
 		this.#value = initialPosition
 	}
 
-	#notifyObservers() {
-		this.#observers.forEach(obs => obs.update({ ...this.#value }))
-	}
-	addObserver(observer: Observer<Position>) {
-		this.#observers = [...this.#observers, observer]
-	}
-	removeObserver(observer: Observer<Position>) {
-		this.#observers = this.#observers.filter(obs => obs !== observer)
-	}
 	get value() {
 		return Object.freeze(this.#value)
 	}
 
-	moveTo(newPosition: Position) {
-		this.#value = newPosition
-		this.#notifyObservers()
+	addObserver(observer: Observer<Position>) {
+		this.#observers = [...this.#observers, observer]
 	}
+
 	moveDown(times = 1) {
 		if (this.#isEndPosition()) return
 		times = min(times, { min: 1 })
@@ -47,6 +35,7 @@ export class SelectionService implements ISelectionService {
 
 		this.moveTo({ row: max(row, { max: SelectionService.MAX_BOX_POS }), col })
 	}
+
 	moveLeft(times = 1) {
 		if (this.#isStartPosition()) return
 		times = min(times, { min: 1 })
@@ -57,6 +46,7 @@ export class SelectionService implements ISelectionService {
 
 		this.moveTo({ row, col: isComesOut ? SelectionService.MAX_BOX_POS : col })
 	}
+
 	moveRight(times = 1) {
 		if (this.#isEndPosition()) return
 		times = min(times, { min: 1 })
@@ -66,6 +56,19 @@ export class SelectionService implements ISelectionService {
 
 		this.moveTo({ row, col: col % 9 })
 	}
+
+	moveTo(newPosition: Position) {
+		this.#value = newPosition
+		this.#notifyObservers()
+	}
+
+	moveToNextEmpty(emptiesPos: readonly Position[]) {
+		const { row, col } = this.#value
+		const actualIndex = emptiesPos.findIndex(box => row === box.row && col === box.col)
+		const nextEmptyIndex = actualIndex + 1 < emptiesPos.length ? actualIndex + 1 : 0
+		this.moveTo({ ...emptiesPos[nextEmptyIndex] })
+	}
+
 	moveUp(times = 1) {
 		if (this.#isStartPosition()) return
 		times = min(times, { min: 1 })
@@ -75,10 +78,17 @@ export class SelectionService implements ISelectionService {
 
 		this.moveTo({ row: min(row, { min: SelectionService.MIN_BOX_POS }), col })
 	}
-	moveToNextEmpty(emptiesPos: readonly Position[]) {
-		const { row, col } = this.#value
-		const actualIndex = emptiesPos.findIndex(box => row === box.row && col === box.col)
-		const nextEmptyIndex = actualIndex + 1 < emptiesPos.length ? actualIndex + 1 : 0
-		this.moveTo({ ...emptiesPos[nextEmptyIndex] })
+
+	removeObserver(observer: Observer<Position>) {
+		this.#observers = this.#observers.filter(obs => obs !== observer)
+	}
+
+	#isEndPosition = () => this.#value.row === 8 && this.#value.col === 8
+	#isStartPosition = () => this.#value.row === 0 && this.#value.col === 0
+
+	#notifyObservers() {
+		this.#observers.forEach(obs => {
+			obs.update({ ...this.#value })
+		})
 	}
 }

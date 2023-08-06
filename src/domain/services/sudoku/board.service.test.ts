@@ -1,12 +1,12 @@
 import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { Notes, Solution } from '~/domain/entities'
-import { BoxKinds, type BoardOpts, type BoxSchema, type BoardSchema } from '~/domain/models'
+import { type BoardOpts, type BoardSchema, BoxKinds, type BoxSchema } from '~/domain/models'
+import type { IBoardRepo } from '~/domain/repositories'
+import { boardEach, createMatrix } from '~/domain/utils'
 
 import { BoardService } from './board.service'
 import { SelectionService } from './selection.service'
-import type { IBoardRepo } from '~/domain/repositories'
-import { boardEach, createMatrix } from '~/domain/utils'
 
 const solution = new Solution()
 const mockBoardRepo = (): IBoardRepo => {
@@ -14,7 +14,7 @@ const mockBoardRepo = (): IBoardRepo => {
 	return {
 		getBoard: () => {
 			if (value.board == null) return null
-			const copyBoard = createMatrix(9, { value: {} as BoxSchema })
+			const copyBoard = createMatrix<BoxSchema>(9, { value: {} as BoxSchema })
 			boardEach(({ row, col }) => {
 				const box = value.board![row][col]
 				const notes = new Notes(box.notes.value.filter(n => n != null) as number[])
@@ -26,7 +26,7 @@ const mockBoardRepo = (): IBoardRepo => {
 		},
 		setBoard: newBoard => (value.board = newBoard),
 		getOpts: () => ({
-			difficulty: value.opts?.difficulty!,
+			difficulty: value.opts!.difficulty,
 			solution: new Solution({ initialSolution: value.opts?.solution.value }),
 		}),
 		setOpts: newOpts => (value.opts = newOpts),

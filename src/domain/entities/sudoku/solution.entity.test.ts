@@ -1,7 +1,8 @@
 import { describe, expect, test } from 'vitest'
 
-import { Solution } from './solution.entity'
 import { isCorrectSolution } from '~/domain/utils'
+
+import { Solution } from './solution.entity'
 
 const solution = new Solution()
 
@@ -19,7 +20,7 @@ describe.concurrent('Create Solution', () => {
 		expect(solution.value.every(col => col.every(box => typeof box === 'number'))).toBe(true)
 	})
 	test('All boxes should be contain numbers from one to nine', () => {
-		expect(solution.value.every(col => col.every(box => 0 < box && box < 10))).toBe(true)
+		expect(solution.value.every(col => col.every(box => box > 0 && box < 10))).toBe(true)
 	})
 	test('Should be solution are correct', () => {
 		expect(isCorrectSolution(solution.value)).toBe(true)

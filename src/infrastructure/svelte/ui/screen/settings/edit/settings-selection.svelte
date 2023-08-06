@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { type Settings, type StringKeys } from '~/domain/models'
-	import { settings } from '$infra/svelte/stores'
 	import { normalCase } from '~/domain/utils'
+	import { settings } from '$infra/svelte/stores'
 
 	export let key: StringKeys
 	export let initialSettings: Settings
-	export let options: Settings[typeof key][]
+	export let options: Array<Settings[typeof key]>
 	let select: HTMLSelectElement
 
 	const value = initialSettings[key]
@@ -17,7 +17,9 @@
 	function ChangeHandler({ currentTarget }: Event & { currentTarget: HTMLSelectElement }) {
 		const newValue = currentTarget.value as typeof value
 		if (timerID != null) clearTimeout(timerID)
-		timerID = setTimeout(() => settings.updateByKey(key, () => newValue), 500)
+		timerID = setTimeout(() => {
+			settings.updateByKey(key, () => newValue)
+		}, 500)
 	}
 </script>
 

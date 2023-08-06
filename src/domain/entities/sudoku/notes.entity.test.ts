@@ -15,6 +15,8 @@ describe.concurrent('Notes Entity', () => {
 		const notes = new Notes()
 		const assertError = new BoardErrors.InvalidValue({ type: 'note', value })
 
-		expect(() => notes.toggleNote(value)).toThrow(assertError)
+		expect(() => {
+			notes.toggleNote(value)
+		}).toThrow(assertError)
 	})
 })

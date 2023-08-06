@@ -2,10 +2,10 @@
 	import { settingsForm } from '~/domain/models'
 	import { settings } from '$infra/svelte/stores'
 
+	import BtnReset from './btn-reset.svelte'
 	import SettingsCheckbox from './settings-checkbox.svelte'
 	import SettingsNumber from './settings-number.svelte'
 	import SettingsSelection from './settings-selection.svelte'
-	import BtnReset from './btn-reset.svelte'
 
 	let initialSettings = settings.value
 </script>

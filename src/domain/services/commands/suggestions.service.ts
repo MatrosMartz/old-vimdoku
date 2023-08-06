@@ -1,10 +1,10 @@
-import { suggestions, type ICmdSuggestionsService, type SuggestionOption } from '~/domain/models'
+import { type ICmdSuggestionsService, type SuggestionOption, suggestions } from '~/domain/models'
 import type { Observer } from '~/domain/utils'
 
 export class CmdSuggestionService implements ICmdSuggestionsService {
 	#initialSuggestions: SuggestionOption[]
+	#observers: Array<Observer<SuggestionOption[]>> = []
 	#value: SuggestionOption[] = []
-	#observers: Observer<SuggestionOption[]>[] = []
 
 	constructor({
 		initialSuggestions = suggestions,
@@ -13,22 +13,27 @@ export class CmdSuggestionService implements ICmdSuggestionsService {
 		this.update('')
 	}
 
-	#notifyObservers() {
-		this.#observers.forEach(obs => obs.update(this.#value.map(sub => ({ ...sub }))))
+	get value() {
+		return Object.freeze(this.#value.map(sub => ({ ...sub })))
 	}
+
 	addObserver(observer: Observer<SuggestionOption[]>) {
 		this.#observers = [...this.#observers, observer]
 	}
+
 	removeObserver(observer: Observer<SuggestionOption[]>) {
 		this.#observers = this.#observers.filter(obs => obs !== observer) ?? []
-	}
-	get value() {
-		return Object.freeze(this.#value.map(sub => ({ ...sub })))
 	}
 
 	update(input: string) {
 		const commands = input.trimStart().toLowerCase().split(' ')
 		this.#value = this.#initialSuggestions.filter(({ match }) => match(commands))
 		this.#notifyObservers()
+	}
+
+	#notifyObservers() {
+		this.#observers.forEach(obs => {
+			obs.update(this.#value.map(sub => ({ ...sub })))
+		})
 	}
 }

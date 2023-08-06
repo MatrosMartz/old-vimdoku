@@ -1,9 +1,8 @@
 import { beforeEach, describe, expect, test } from 'vitest'
 
-import { SettingsService } from './settings.service'
-
-import type { ISettingsRepo } from '../repositories'
 import { defaultSettings, type Settings } from '../models'
+import type { ISettingsRepo } from '../repositories'
+import { SettingsService } from './settings.service'
 
 const getPrefDataRepo = (): ISettingsRepo => {
 	let preferences = { ...defaultSettings }

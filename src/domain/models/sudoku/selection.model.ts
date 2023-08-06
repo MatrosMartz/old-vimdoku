@@ -6,10 +6,10 @@ export interface Position {
 }
 
 export interface ISelectionService extends Observable<Position> {
-	moveDown: (times?: number) => void
-	moveLeft: (times?: number) => void
-	moveRight: (times?: number) => void
-	moveTo: (pos: Position) => void
-	moveToNextEmpty: (emptiesPos: readonly Position[]) => void
-	moveUp: (times?: number) => void
+	moveDown(times?: number): void
+	moveLeft(times?: number): void
+	moveRight(times?: number): void
+	moveTo(pos: Position): void
+	moveToNextEmpty(emptiesPos: readonly Position[]): void
+	moveUp(times?: number): void
 }

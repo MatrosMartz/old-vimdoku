@@ -1,5 +1,5 @@
-import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/svelte'
+import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { hours, minutes, seconds } from '~/tests/utils'
 import { timer } from '$infra/svelte/stores'

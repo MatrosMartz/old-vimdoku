@@ -1,25 +1,40 @@
 <script lang="ts">
-	import { settingsStore } from '$infra/svelte/stores'
 	import {
-		sudokuSettingsKeys,
+		defaultSettings,
 		type Settings,
 		type SudokuSettings,
+		sudokuSettingsKeys,
 		type UserSettings,
-		type VimSettings,
 		userSettingsKeys,
+		type VimSettings,
 		vimSettingsKeys,
-		defaultSettings,
 	} from '~/domain/models'
 	import { normalCase } from '~/domain/utils'
+	import { settingsStore } from '$infra/svelte/stores'
 
 	export let showType: 'all' | 'differ' = 'all'
 
-	type SettingsEntries<K extends keyof Settings = keyof Settings> = [K, Settings[K]][]
+	type Groups<Sudoku, User, Vim> = [
+		{ entries: Sudoku; group: 'Sudoku' },
+		{ entries: User; group: 'User' },
+		{ entries: Vim; group: 'Vim' }
+	]
 
-	const initialGroups = [
-		{ group: 'Sudoku', entries: [] as [string, unknown][] },
-		{ group: 'User', entries: [] as [string, unknown][] },
-		{ group: 'Vim', entries: [] as [string, unknown][] },
+	type SettingsEntries<K extends keyof Settings = keyof Settings> = Array<[K, Settings[K]]>
+	type GroupSettings = Groups<
+		SettingsEntries<keyof SudokuSettings>,
+		SettingsEntries<keyof UserSettings>,
+		SettingsEntries<keyof VimSettings>
+	>
+
+	const initialGroups: Groups<
+		Array<[string, unknown]>,
+		Array<[string, unknown]>,
+		Array<[string, unknown]>
+	> = [
+		{ group: 'Sudoku', entries: [] },
+		{ group: 'User', entries: [] },
+		{ group: 'Vim', entries: [] },
 	]
 	$: groupSettings = Object.entries($settingsStore).reduce((acc, cur) => {
 		const canPush = showType === 'all' || defaultSettings[cur[0] as keyof Settings] === cur[1]
@@ -29,11 +44,7 @@
 			else if (vimSettingsKeys.includes(cur[0])) acc[2].entries.push(cur)
 		}
 		return acc
-	}, initialGroups) as [
-		{ group: 'Sudoku'; entries: SettingsEntries<keyof SudokuSettings> },
-		{ group: 'User'; entries: SettingsEntries<keyof UserSettings> },
-		{ group: 'Vim'; entries: SettingsEntries<keyof VimSettings> }
-	]
+	}, initialGroups) as GroupSettings
 
 	const valueClass = (value: number | boolean | string) =>
 		typeof value === 'number'
@@ -52,7 +63,7 @@
 					<li class="flex justify-between w-full mx-auto">
 						<strong>{normalCase(key)}:</strong>
 						<span class={valueClass(value)}>
-							{typeof value === 'string' ? `"${value}"` : value}
+							{typeof value === 'string' ? `"${String(value)}"` : value}
 						</span>
 					</li>
 				{/each}

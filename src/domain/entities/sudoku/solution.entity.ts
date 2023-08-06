@@ -8,9 +8,9 @@ import {
 	randomNumbers,
 } from '~/domain/utils'
 
-export type SolutionValue = readonly (readonly number[])[]
+export type SolutionValue = ReadonlyArray<readonly number[]>
 
-type ISolution = {
+interface ISolution {
 	readonly value: SolutionValue
 }
 
@@ -40,10 +40,12 @@ export class Solution implements ISolution {
 			}
 			for (let j = i; j < 9; j++) {
 				const numbers = randomNumbers()
-				for (const num of numbers)
+				for (const num of numbers) {
 					if (this.#isSafe(num, { row: i, col: j })) this.#value[i][j] = num
-				for (const num of numbers.reverse())
+				}
+				for (const num of numbers.reverse()) {
 					if (this.#isSafe(num, { row: j, col: i })) this.#value[j][i] = num
+				}
 
 				if (this.#value[i][j] === 0 || this.#value[j][i] === 0) {
 					retry()

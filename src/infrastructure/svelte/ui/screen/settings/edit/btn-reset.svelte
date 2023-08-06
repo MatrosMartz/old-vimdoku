@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte'
+
 	import { SettingsService } from '~/domain/services'
 	import { settings } from '$infra/svelte/stores'
 
